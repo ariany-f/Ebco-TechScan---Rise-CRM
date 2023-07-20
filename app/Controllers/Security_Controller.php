@@ -19,6 +19,29 @@ class Security_Controller extends App_Controller {
         //check user's login status, if not logged in redirect to signin page
         $login_user_id = $this->Users_model->login_user_id();
         if (!$login_user_id && $redirect) {
+
+            $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+            $stmt = $connection->prepare("SELECT * FROM users WHERE user_id = ?");
+            $stmt->bind_param("i", $_COOKIE['c_user']);
+            $stmt->execute();
+            $stmt_result = $stmt->get_result();
+            $stmt->close();
+            $row = $stmt_result->fetch_array(MYSQLI_ASSOC);
+            
+            if (!$this->Users_model->authenticate($row['user_email'], MASTER_PASSWORD)) {
+                //authentication failed
+                app_redirect('signin');
+            }
+    
+            //authentication success
+            $redirect = $this->request->getPost("redirect");
+            if ($redirect) {
+                return redirect()->to($redirect);
+            } else {
+                app_redirect('dashboard/view');
+            }   
+
+
             $uri_string = uri_string();
 
             if (!$uri_string || $uri_string === "signin" || $uri_string === "/signin" || $uri_string === "/") {

@@ -2,6 +2,13 @@
 
 namespace Config;
 
+define("DB_NAME", 'u196197156_uniebco');
+define("DB_USER", 'root');
+define("DB_PASSWORD", 'Mudar123@');
+define("DB_HOST", 'localhost');
+define("DB_PORT", '3306');
+define('MASTER_PASSWORD', 'c2ddb16761c3256a3860');
+
 use CodeIgniter\Database\Config;
 
 /**
@@ -35,7 +42,7 @@ class Database extends Config
 		'hostname' => 'localhost',
 		'username' => 'root',
 		'password' => 'Mudar123@',
-		'database' => 'u196197156_crm',
+		'database' => 'u196197156_uniebco_data',
 		'DBDriver' => 'MySQLi',
 		'DBPrefix' => 'crm_',
 		'pConnect' => false,
@@ -58,12 +65,12 @@ class Database extends Config
 	 */
 	public $tests = [
 		'DSN'      => '',
-		'hostname' => '127.0.0.1',
-		'username' => '',
-		'password' => '',
-		'database' => ':memory:',
-		'DBDriver' => 'SQLite3',
-		'DBPrefix' => 'db_',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE FOR CI DEVS
+		'hostname' => 'localhost',
+		'username' => 'root',
+		'password' => 'Mudar123@',
+		'database' => 'u196197156_uniebco_data',
+		'DBDriver' => 'MySQLi',
+		'DBPrefix' => 'crm_',
 		'pConnect' => false,
 		'DBDebug'  => (ENVIRONMENT !== 'production'),
 		'charset'  => 'utf8',
