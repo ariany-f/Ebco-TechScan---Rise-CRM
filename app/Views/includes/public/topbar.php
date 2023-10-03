@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-sm fixed-top navbar-light bg-white shadow-sm public-navbar" role="navigation">
     <div class="container-fluid">
-        <a class="navbar-brand" href="<?php echo_uri('dashboard'); ?>"><img class="dashboard-image" src="<?php echo get_logo_url(); ?>" /></a>
+        <a class="navbar-brand" href="<?= '/' ?>"><img class="dashboard-image" src="<?php echo get_logo_url(); ?>" /></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false">
             <span class="navbar-toggler-icon"></span>
         </button>

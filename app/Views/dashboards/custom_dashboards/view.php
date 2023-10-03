@@ -38,7 +38,7 @@
         });
 
         //update dashboard link
-        $(".dashboard-menu, .dashboard-image").closest("a").attr("href", window.location.href);
+        //$(".dashboard-menu, .dashboard-image").closest("a").attr("href", window.location.href);
 
         onDashboardDeleteSuccess = function (result, $selector) {
             window.location.href = "<?php echo get_uri("dashboard"); ?>";

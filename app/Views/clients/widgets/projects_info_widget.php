@@ -3,6 +3,11 @@
 
     <div class="card-body pt0 rounded-bottom" id="projects-container">
         <ul class="list-group list-group-flush">
+            <a class="client-widget-link" data-filter="has_new_projects" href="<?php echo get_uri("clients/index/clients_list#has_new_projects"); ?>">
+                <li class="list-group-item text-default">
+                    <i data-feather="grid" class="icon-18 me-2"></i><?php echo app_lang("clients_has_new_projects"); ?> <span class="float-end text-primary"><?php echo $clients_has_new_projects; ?></span>
+                </li>
+            </a>
             <a class="client-widget-link" data-filter="has_open_projects" href="<?php echo get_uri("clients/index/clients_list#has_open_projects"); ?>">
                 <li class="list-group-item text-default">
                     <i data-feather="grid" class="icon-18 me-2"></i><?php echo app_lang("clients_has_open_projects"); ?> <span class="float-end text-primary"><?php echo $clients_has_open_projects; ?></span>

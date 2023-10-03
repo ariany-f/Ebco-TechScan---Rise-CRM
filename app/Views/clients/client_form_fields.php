@@ -51,6 +51,58 @@
             </div>
         </div>
     </div>
+
+    <?php if ($model_info->type != "person") { ?>
+        <div class="form-group cnpj">
+            <div class="row">
+                <label for="cnpj" class=" col-md-3"><?php echo app_lang('cnpj'); ?></label>
+                <div class="col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "cnpj",
+                        "name" => "cnpj",
+                        "value" => $model_info->cnpj,
+                        "class" => "form-control",
+                        "placeholder" => app_lang('cnpj'),
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group cnpj">
+            <div class="row">
+                <label for="state_subscription" class=" col-md-3"><?php echo app_lang('state_subscription'); ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "state_subscription",
+                        "name" => "state_subscription",
+                        "value" => $model_info->state_subscription,
+                        "class" => "form-control",
+                        "placeholder" => app_lang('state_subscription'),
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group cnpj">
+            <div class="row">
+                <label for="city_subscription" class=" col-md-3"><?php echo app_lang('city_subscription'); ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "city_subscription",
+                        "name" => "city_subscription",
+                        "value" => $model_info->city_subscription,
+                        "class" => "form-control",
+                        "placeholder" => app_lang('city_subscription'),
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+
 <?php } else { ?>
     <div class="form-group">
         <div class="row">
@@ -66,6 +118,55 @@
                     "autofocus" => true,
                     "data-rule-required" => true,
                     "data-msg-required" => app_lang("field_required"),
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
+        
+    <div class="form-group cnpj">
+        <div class="row">
+            <label for="cnpj" class=" col-md-3"><?php echo app_lang('cnpj'); ?></label>
+            <div class=" col-md-9">
+                <?php
+                echo form_input(array(
+                    "id" => "cnpj",
+                    "name" => "cnpj",
+                    "value" => $model_info->cnpj,
+                    "class" => "form-control",
+                    "placeholder" => app_lang('cnpj'),
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
+    <div class="form-group cnpj">
+        <div class="row">
+            <label for="state_subscription" class=" col-md-3"><?php echo app_lang('state_subscription'); ?></label>
+            <div class=" col-md-9">
+                <?php
+                echo form_input(array(
+                    "id" => "state_subscription",
+                    "name" => "state_subscription",
+                    "value" => $model_info->state_subscription,
+                    "class" => "form-control",
+                    "placeholder" => app_lang('state_subscription'),
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
+    <div class="form-group cnpj">
+        <div class="row">
+            <label for="city_subscription" class=" col-md-3"><?php echo app_lang('city_subscription'); ?></label>
+            <div class=" col-md-9">
+                <?php
+                echo form_input(array(
+                    "id" => "city_subscription",
+                    "name" => "city_subscription",
+                    "value" => $model_info->city_subscription,
+                    "class" => "form-control",
+                    "placeholder" => app_lang('city_subscription'),
                 ));
                 ?>
             </div>
@@ -96,6 +197,43 @@
     </div>
 <?php } ?>
 
+
+<div class="form-group">
+    <div class="row">
+        <label for="limit_date_for_nota_fiscal" class="<?php echo $label_column; ?>"><?php echo app_lang('limit_date_for_nota_fiscal'); ?>
+            <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('day_of_month') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+        </label>
+        <div class="col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "limit_date_for_nota_fiscal",
+                "name" => "limit_date_for_nota_fiscal",
+                "value" => $model_info->limit_date_for_nota_fiscal,
+                "class" => "form-control",
+                "placeholder" => app_lang('limit_date_for_nota_fiscal'),
+                "autocomplete" => "off",
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <label for="lead_interested" class=" col-md-3"><?php echo app_lang('lead_interested'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_textarea(array(
+                "id" => "lead_interested",
+                "name" => "lead_interested",
+                "value" => $model_info->lead_interested,
+                "class" => "form-control",
+                "placeholder" => app_lang('lead_interested'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
 <div class="form-group">
     <div class="row">
         <label for="address" class="<?php echo $label_column; ?>"><?php echo app_lang('address'); ?></label>
@@ -209,38 +347,6 @@
         </div>
     </div>
 </div>
-<div class="form-group">
-    <div class="row">
-        <label for="vat_number" class="<?php echo $label_column; ?>"><?php echo app_lang('vat_number'); ?></label>
-        <div class="<?php echo $field_column; ?>">
-            <?php
-            echo form_input(array(
-                "id" => "vat_number",
-                "name" => "vat_number",
-                "value" => $model_info->vat_number,
-                "class" => "form-control",
-                "placeholder" => app_lang('vat_number')
-            ));
-            ?>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <div class="row">
-        <label for="gst_number" class="<?php echo $label_column; ?>"><?php echo app_lang('gst_number'); ?></label>
-        <div class="<?php echo $field_column; ?>">
-            <?php
-            echo form_input(array(
-                "id" => "gst_number",
-                "name" => "gst_number",
-                "value" => $model_info->gst_number,
-                "class" => "form-control",
-                "placeholder" => app_lang('gst_number')
-            ));
-            ?>
-        </div>
-    </div>
-</div>
 
 <?php if ($login_user->user_type === "staff") { ?>
     <div class="form-group">
@@ -259,8 +365,43 @@
             </div>
         </div>
     </div>
+    <div class="form-group">
+        <div class="row">
+            <label for="invoice_rule_id" class="<?php echo $label_column; ?>"><?php echo app_lang('invoice_rule'); ?>
+                <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('invoice_rule_detail') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+            </label>
+            <div class="<?php echo $field_column; ?>">
+                <?php
+                echo form_input(array(
+                    "id" => "invoice_rule_id",
+                    "name" => "invoice_rule_id",
+                    "value" => $model_info->invoice_rule_id,
+                    "class" => "form-control",
+                    "placeholder" => app_lang('invoice_rule')
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
 <?php } ?>
 
+<div class="form-group invoice_rule_date <?=((!$model_info->invoice_rule_date) || $model_info->invoice_rule_date == 0)  ? 'hide' : '' ?>">
+    <div class="row">
+        <label for="invoice_rule_date" class=" col-md-3"><?php echo app_lang('invoice_rule_date'); ?></label>
+        <div class="col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "invoice_rule_date",
+                "name" => "invoice_rule_date",
+                "value" => $model_info->invoice_rule_date,
+                "class" => "form-control",
+                "placeholder" => app_lang('invoice_rule_date'),
+                "autocomplete" => "off"
+            ));
+            ?>
+        </div>
+    </div>
+</div>
 
 <?php if ($login_user->is_admin && get_setting("module_invoice")) { ?>
     <div class="form-group">
@@ -332,16 +473,37 @@
             });
 <?php } ?>
 
+<?php if (isset($invoice_rules_dropdown)) { ?>
+            $("#invoice_rule_id").select2({
+                data: <?php echo json_encode($invoice_rules_dropdown); ?>
+            });
+<?php } ?>
+
 <?php if ($login_user->is_admin || get_array_value($login_user->permissions, "client") === "all") { ?>
             $('#created_by').select2({data: <?php echo $team_members_dropdown; ?>});
 <?php } ?>
+       
+        $('#invoice_rule_id').on('change', function(){
+            
+            /* Caso alterado para data específica mostrar input pra seleção da data */
+            if(this.value == 2)
+            {
+                $(".invoice_rule_date").removeClass('hide');
+            }
+            else{
+                $(".invoice_rule_date").addClass('hide');
+                $('#invoice_rule_date').attr('value', '');
+            }
+        })
 
         $('.account_type').click(function () {
             var inputValue = $(this).attr("value");
             if (inputValue === "person") {
+                $(".cnpj").addClass('hide');
                 $(".company_name_section").html("Name");
                 $(".company_name_input_section").attr("placeholder", "Name");
             } else {
+                $(".cnpj").removeClass('hide');
                 $(".company_name_section").html("Company name");
                 $(".company_name_input_section").attr("placeholder", "Company name");
             }

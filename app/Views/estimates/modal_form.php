@@ -10,7 +10,23 @@
             <input type="hidden" name="discount_amount_type" value="<?php echo $model_info->discount_amount_type; ?>" />
             <input type="hidden" name="discount_type" value="<?php echo $model_info->discount_type; ?>" />
         <?php } ?>
-
+        <div class="form-group">
+            <div class="row">
+                <label for="estimate_number" class=" col-md-3"><?php echo app_lang('estimate_number'); ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "estimate_number",
+                        "name" => "estimate_number",
+                        "value" => $model_info->estimate_number ? process_images_from_content($model_info->estimate_number, false) : "",
+                        "class" => "form-control",
+                        "placeholder" => app_lang('estimate_number'),
+                        "data-rich-text-editor" => true
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
         <div class="form-group">
             <div class="row">
                 <label for="estimate_date" class=" col-md-3"><?php echo app_lang('estimate_date'); ?></label>
@@ -54,7 +70,7 @@
         <?php if (count($companies_dropdown) > 1) { ?>
             <div class="form-group">
                 <div class="row">
-                    <label for="company_id" class=" col-md-3"><?php echo app_lang('company'); ?></label>
+                    <label for="company_id" class=" col-md-3"><?php echo app_lang('company_owner'); ?></label>
                     <div class="col-md-9">
                         <?php
                         echo form_input(array(
@@ -62,7 +78,7 @@
                             "name" => "company_id",
                             "value" => $model_info->company_id,
                             "class" => "form-control",
-                            "placeholder" => app_lang('company')
+                            "placeholder" => app_lang('company_owner')
                         ));
                         ?>
                     </div>
@@ -86,6 +102,16 @@
 
         <div class="form-group">
             <div class="row">
+                <label for="estimate_type_id" class=" col-md-3"><?php echo app_lang('estimate_type'); ?></label>
+                <div class="col-md-9">
+                    <?php
+                    echo form_dropdown("estimate_type_id", $estimate_type_dropdown, array($model_info->estimate_type_id), "class='select2 estimate-type-select2'");
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
                 <label for="tax_id" class=" col-md-3"><?php echo app_lang('tax'); ?></label>
                 <div class="col-md-9">
                     <?php
@@ -106,7 +132,7 @@
         </div>
         <div class="form-group">
             <div class="row">
-                <label for="estimate_note" class=" col-md-3"><?php echo app_lang('note'); ?></label>
+                <label for="estimate_note" class=" col-md-3"><?php echo app_lang('note') . ' (Ex: ' . app_lang('payment_conditions') . ', ' . app_lang('term') . ')' ; ?></label>
                 <div class=" col-md-9">
                     <?php
                     echo form_textarea(array(
@@ -213,6 +239,7 @@
             }
         });
         $("#estimate-form .tax-select2").select2();
+        $("#estimate-form .estimate-type-select2").select2();
         $("#estimate_client_id").select2();
 
         $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});

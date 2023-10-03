@@ -138,13 +138,13 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end w200">
                             <?php if ($login_user->user_type == "client") { ?>
-                                <li><?php echo get_client_contact_profile_link($login_user->id . '/general', "<i data-feather='user' class='icon-16 me-2'></i>" . app_lang('my_profile'), array("class" => "dropdown-item")); ?></li>
-                                <li><?php echo get_client_contact_profile_link($login_user->id . '/account', "<i data-feather='key' class='icon-16 me-2'></i>" . app_lang('change_password'), array("class" => "dropdown-item")); ?></li>
-                                <li><?php echo get_client_contact_profile_link($login_user->id . '/my_preferences', "<i data-feather='settings' class='icon-16 me-2'></i>" . app_lang('my_preferences'), array("class" => "dropdown-item")); ?></li>
+                                <!-- <li><?php // echo get_client_contact_profile_link($login_user->id . '/general', "<i data-feather='user' class='icon-16 me-2'></i>" . app_lang('my_profile'), array("class" => "dropdown-item")); ?></li> -->
+                                <!-- <li><?php // echo get_client_contact_profile_link($login_user->id . '/account', "<i data-feather='key' class='icon-16 me-2'></i>" . app_lang('change_password'), array("class" => "dropdown-item")); ?></li> -->
+                                <!-- <li><?php // echo get_client_contact_profile_link($login_user->id . '/my_preferences', "<i data-feather='settings' class='icon-16 me-2'></i>" . app_lang('my_preferences'), array("class" => "dropdown-item")); ?></li> -->
                             <?php } else { ?>
-                                <li><?php echo get_team_member_profile_link($login_user->id . '/general', "<i data-feather='user' class='icon-16 me-2'></i>" . app_lang('my_profile'), array("class" => "dropdown-item")); ?></li>
-                                <li><?php echo get_team_member_profile_link($login_user->id . '/account', "<i data-feather='key' class='icon-16 me-2'></i>" . app_lang('change_password'), array("class" => "dropdown-item")); ?></li>
-                                <li><?php echo get_team_member_profile_link($login_user->id . '/my_preferences', "<i data-feather='settings' class='icon-16 me-2'></i>" . app_lang('my_preferences'), array("class" => "dropdown-item")); ?></li>
+                                <!-- <li><?php // echo get_team_member_profile_link($login_user->id . '/general', "<i data-feather='user' class='icon-16 me-2'></i>" . app_lang('my_profile'), array("class" => "dropdown-item")); ?></li> -->
+                                <!-- <li><?php // echo get_team_member_profile_link($login_user->id . '/account', "<i data-feather='key' class='icon-16 me-2'></i>" . app_lang('change_password'), array("class" => "dropdown-item")); ?></li> -->
+                                <!-- <li><?php // echo get_team_member_profile_link($login_user->id . '/my_preferences', "<i data-feather='settings' class='icon-16 me-2'></i>" . app_lang('my_preferences'), array("class" => "dropdown-item")); ?></li> -->
                             <?php } ?>
 
                             <?php if (get_setting("show_theme_color_changer") === "yes") { ?>

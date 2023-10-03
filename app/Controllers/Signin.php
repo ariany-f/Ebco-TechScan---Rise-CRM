@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Controllers\Security_Controller;
 
 class Signin extends App_Controller {
 
@@ -13,11 +14,14 @@ class Signin extends App_Controller {
     }
 
     function index() {
+        
+        /** Validar usuário para redirecionar caso já esteja logado */
+        $ci = new Security_Controller(true);
+        
         if ($this->Users_model->login_user_id()) {
             app_redirect('dashboard/view');
         } else {
-
-            $view_data["redirect"] = "";
+            $view_data["redirect"] = "/";
             if (isset($_REQUEST["redirect"])) {
                 $view_data["redirect"] = $_REQUEST["redirect"];
             }

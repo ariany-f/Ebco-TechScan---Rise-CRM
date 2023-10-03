@@ -65,63 +65,76 @@
         <div id="estimate-status-bar">
             <?php echo view("estimates/estimate_status_bar"); ?>
         </div>
+        
         <div class="mt15">
-            <div class="card p15 b-t">
-                <div class="clearfix p20">
-                    <!-- small font size is required to generate the pdf, overwrite that for screen -->
-                    <style type="text/css">
-                        .invoice-meta {
-                            font-size: 100% !important;
+            <div class="card no-border clearfix ">
+                <ul data-bs-toggle="ajax-tab" class="nav nav-tabs bg-white title" role="tablist">
+                    <li><a role="presentation" data-bs-toggle="tab" href="javascript:;" data-bs-target="#estimate-items"><?php echo app_lang("estimate") . " " . app_lang("items"); ?></a></li>
+                    <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("estimates/editor/" . $estimate_info->id); ?>" data-bs-target="#estimate-editor"><?php echo app_lang("estimate_editor"); ?></a></li>
+                    <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("estimates/preview/" . $estimate_info->id . "/0/1"); ?>" data-bs-target="#estimate-preview" data-reload="true"><?php echo app_lang("preview"); ?></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade" id="estimate-items">
+                        <div class="clearfix p20">
+                            <!-- small font size is required to generate the pdf, overwrite that for screen -->
+                            <style type="text/css">
+                                .invoice-meta {
+                                    font-size: 100% !important;
+                                }
+                            </style>
+
+                            <?php
+                            $color = get_setting("estimate_color");
+                            if (!$color) {
+                                $color = get_setting("invoice_color");
+                            }
+                            $style = get_setting("invoice_style");
+                            ?>
+                            <?php
+                            $data = array(
+                                "client_info" => $client_info,
+                                "color" => $color ? $color : "#2AA384",
+                                "estimate_info" => $estimate_info
+                            );
+                            
+                            if ($style === "style_3") {
+                                echo view('estimates/estimate_parts/header_style_3.php', $data);
+                            } else if ($style === "style_2") {
+                                echo view('estimates/estimate_parts/header_style_2.php', $data);
+                            } else {
+                                echo view('estimates/estimate_parts/header_style_1.php', $data);
+                            }
+                            ?>
+
+                        </div>
+
+                        <div class="table-responsive mt15 pl15 pr15">
+                            <table id="estimate-item-table" class="display" width="100%">            
+                            </table>
+                        </div>
+
+                        <div class="clearfix">
+                            <div class="float-start mt20 ml15">
+                                <?php echo modal_anchor(get_uri("estimates/item_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_item'), array("class" => "btn btn-info text-white", "title" => app_lang('add_item'), "data-post-estimate_id" => $estimate_info->id)); ?>
+                            </div>
+                            <div class="float-end pr15" id="estimate-total-section">
+                                <?php echo view("estimates/estimate_total_section"); ?>
+                            </div>
+                        </div>
+
+                        <p class="b-t b-info pt10 m15 pb10"><?php echo nl2br($estimate_info->note ? process_images_from_content($estimate_info->note) : ""); ?></p>
+
+                        <?php
+                        if (get_setting("enable_comments_on_estimates") && !($estimate_info->status === "draft")) {
+                            echo view("estimates/comment_form");
                         }
-                    </style>
+                        ?>
 
-                    <?php
-                    $color = get_setting("estimate_color");
-                    if (!$color) {
-                        $color = get_setting("invoice_color");
-                    }
-                    $style = get_setting("invoice_style");
-                    ?>
-                    <?php
-                    $data = array(
-                        "client_info" => $client_info,
-                        "color" => $color ? $color : "#2AA384",
-                        "estimate_info" => $estimate_info
-                    );
+                    </div>
                     
-                    if ($style === "style_3") {
-                        echo view('estimates/estimate_parts/header_style_3.php', $data);
-                    } else if ($style === "style_2") {
-                        echo view('estimates/estimate_parts/header_style_2.php', $data);
-                    } else {
-                        echo view('estimates/estimate_parts/header_style_1.php', $data);
-                    }
-                    ?>
-
+                    <div role="tabpanel" class="tab-pane fade" id="estimate-editor"></div>
+                    <div role="tabpanel" class="tab-pane fade" id="estimate-preview"></div>
                 </div>
-
-                <div class="table-responsive mt15 pl15 pr15">
-                    <table id="estimate-item-table" class="display" width="100%">            
-                    </table>
-                </div>
-
-                <div class="clearfix">
-                    <div class="float-start mt20 ml15">
-                        <?php echo modal_anchor(get_uri("estimates/item_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_item'), array("class" => "btn btn-info text-white", "title" => app_lang('add_item'), "data-post-estimate_id" => $estimate_info->id)); ?>
-                    </div>
-                    <div class="float-end pr15" id="estimate-total-section">
-                        <?php echo view("estimates/estimate_total_section"); ?>
-                    </div>
-                </div>
-
-                <p class="b-t b-info pt10 m15 pb10"><?php echo nl2br($estimate_info->note ? process_images_from_content($estimate_info->note) : ""); ?></p>
-
-                <?php
-                if (get_setting("enable_comments_on_estimates") && !($estimate_info->status === "draft")) {
-                    echo view("estimates/comment_form");
-                }
-                ?>
-
             </div>
         </div>
 
@@ -226,6 +239,14 @@
             }
         });
 
+        $("body").on("click", "#estimate-save-and-show-btn", function () {
+            $(this).trigger("submit");
+
+            setTimeout(function () {
+                $("[data-bs-target='#estimate-preview']").trigger("click");
+            }, 400);
+        });
+
         //print estimate
         $("#print-estimate-btn").click(function () {
             appLoader.show();
@@ -281,3 +302,6 @@ load_js(array(
     "assets/js/summernote/summernote.min.js",
 ));
 ?>
+
+
+<?php echo view("estimates/print_estimate_helper_js"); ?>

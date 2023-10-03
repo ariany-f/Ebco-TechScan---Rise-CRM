@@ -136,7 +136,7 @@ class Custom_fields extends Security_Controller {
         } else {
             $placeholder = $data->placeholder;
         }
-
+        
         $field = "<label for='custom_field_$data->id' data-id='$data->id' class='field-row'>$title $required</label>";
         $field .= "<div class='form-group'>" . $this->template->view("custom_fields/input_" . $data->field_type, array("field_info" => $data, "placeholder" => $placeholder)) . "</div>";
 

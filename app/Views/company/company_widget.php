@@ -6,6 +6,10 @@ $company_address = nl2br($company_info->address ? $company_info->address : "");
 <?php } else { ?>
     <div><b><?php echo $company_info->name; ?></b></div>
 <?php } ?>
+
+<?php if ($company_info->cnpj) { ?>
+        <br /><?php echo app_lang("cnpj") . ": " . $company_info->cnpj; ?>
+    <?php } ?>
 <div style="line-height: 3px;"> </div>
 <span class="invoice-meta text-default" style="font-size: 90%; color: #666;"><?php
     if ($company_address) {
@@ -20,8 +24,5 @@ $company_address = nl2br($company_info->address ? $company_info->address : "");
     <?php } ?>
     <?php if ($company_info->website) { ?>
         <br /><?php echo app_lang("website"); ?>: <a style="color:#666; text-decoration: none;" href="<?php echo $company_info->website; ?>"><?php echo $company_info->website; ?></a>
-    <?php } ?>
-    <?php if ($company_info->vat_number) { ?>
-        <br /><?php echo app_lang("vat_number") . ": " . $company_info->vat_number; ?>
     <?php } ?>
 </span>

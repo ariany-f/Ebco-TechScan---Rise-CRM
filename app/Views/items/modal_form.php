@@ -31,23 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="row">
-                    <label for="description" class="col-md-3"><?php echo app_lang('description'); ?></label>
-                    <div class=" col-md-9">
-                        <?php
-                        echo form_textarea(array(
-                            "id" => "description",
-                            "name" => "description",
-                            "value" => $model_info->description ? process_images_from_content($model_info->description, false) : "",
-                            "class" => "form-control",
-                            "placeholder" => app_lang('description'),
-                            "data-rich-text-editor" => true
-                        ));
-                        ?>
-                    </div>
-                </div>
-            </div>
+       
             <div class="form-group">
                 <div class="row">
                     <label for="category_id" class=" col-md-3"><?php echo app_lang('category'); ?></label>

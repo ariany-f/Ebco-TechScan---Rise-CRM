@@ -24,9 +24,7 @@
             ],
             columns: [
                 {title: "<?php echo app_lang('title') ?> ", "class": "w20p all"},
-                {title: "<?php echo app_lang('description') ?>"},
                 {title: "<?php echo app_lang('category') ?>"},
-                {title: "<?php echo app_lang('unit_type') ?>", "class": "w100"},
                 {title: "<?php echo app_lang('rate') ?>", "class": "text-right w100"},
                 {title: "<i data-feather='menu' class='icon-16'></i>", "class": "text-center option w100"}
             ],

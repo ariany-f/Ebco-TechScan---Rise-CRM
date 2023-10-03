@@ -128,14 +128,15 @@ class Projects_model extends Crud_model {
         $sql = "SELECT $projects_table.status, COUNT($projects_table.id) as total
         FROM $projects_table
               $extra_join    
-        WHERE $projects_table.deleted=0 AND ($projects_table.status='open' OR  $projects_table.status='completed' OR $projects_table.status='hold') $extra_where
+        WHERE $projects_table.deleted=0 AND ($projects_table.status='open_project' OR  $projects_table.status='completed_project' OR $projects_table.status='hold_project' OR $projects_table.status='new_project') $extra_where
         GROUP BY $projects_table.status";
         $result = $this->db->query($sql)->getResult();
 
         $info = new \stdClass();
-        $info->open = 0;
-        $info->completed = 0;
-        $info->hold = 0;
+        $info->open_project = 0;
+        $info->completed_project = 0;
+        $info->hold_project = 0;
+        $info->new_project = 0;
         foreach ($result as $value) {
             $status = $value->status;
             $info->$status = $value->total;
@@ -163,7 +164,7 @@ class Projects_model extends Crud_model {
             $where .= " AND $tasks_table.project_id=$project_id";
         } else {
             //show only opened project's tasks on global view
-            $where .= " AND $tasks_table.project_id IN(SELECT $projects_table.id FROM $projects_table WHERE $projects_table.deleted=0 AND $projects_table.status='open')";
+            $where .= " AND $tasks_table.project_id IN(SELECT $projects_table.id FROM $projects_table WHERE $projects_table.deleted=0 AND $projects_table.status='open_project')";
         }
 
         $assigned_to = $this->_get_clean_value($options, "assigned_to");
@@ -347,7 +348,7 @@ class Projects_model extends Crud_model {
         LEFT JOIN (SELECT project_id, SUM(points) AS total_points FROM $tasks_table WHERE deleted=0 GROUP BY project_id) AS  total_points_table ON total_points_table.project_id= $projects_table.id
         LEFT JOIN (SELECT project_id, SUM(points) AS completed_points FROM $tasks_table WHERE deleted=0 AND status_id=3 GROUP BY project_id) AS  completed_points_table ON completed_points_table.project_id= $projects_table.id  
         $extra_join
-        WHERE $projects_table.deleted=0 AND status='open' $where";
+        WHERE $projects_table.deleted=0 AND status='open_project' $where";
         return $this->db->query($sql)->getRow();
     }
 

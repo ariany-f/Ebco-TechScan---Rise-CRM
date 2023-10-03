@@ -68,8 +68,55 @@ class Custom_fields_model extends Crud_model {
 
         $sql = "SELECT $custom_fields_table.*
         FROM $custom_fields_table
-        WHERE $custom_fields_table.deleted=0 $where 
+        WHERE $custom_fields_table.deleted=0 $where
         ORDER by $custom_fields_table.sort ASC";
+
+        /**Get options from another table */
+        $sql_options = "SELECT $custom_fields_table.*
+                        FROM $custom_fields_table
+                        WHERE $custom_fields_table.deleted=0
+                        AND (LENGTH($custom_fields_table.options) - LENGTH(REPLACE($custom_fields_table.options, ',', '')) + 1) = 1
+                        AND LOCATE('crm_', $custom_fields_table.options) >= 1
+                        $where 
+                        ORDER by $custom_fields_table.sort ASC";
+
+        $foreign_table_options_custom_field = $this->db->query($sql_options)->getRow();
+
+        if(!empty($foreign_table_options_custom_field))
+        {
+            $sql = "SELECT
+            crm_custom_fields.id,
+            crm_custom_fields.title,
+            crm_custom_fields.placeholder_language_key,
+            crm_custom_fields.title_language_key,
+            crm_custom_fields.show_in_embedded_form,
+            crm_custom_fields.placeholder,
+            crm_custom_fields.example_variable_name,
+            IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
+                                    AND LOCATE('crm_', crm_custom_fields.options) >= 1), (SELECT GROUP_CONCAT(mock.first_name)
+                        FROM $foreign_table_options_custom_field->options AS mock), crm_custom_fields.options) AS options,
+            crm_custom_fields.field_type,
+            crm_custom_fields.related_to,
+            crm_custom_fields.sort,
+            crm_custom_fields.required,
+            crm_custom_fields.add_filter,
+            crm_custom_fields.show_in_table,
+            crm_custom_fields.show_in_invoice,
+            crm_custom_fields.show_in_estimate,
+            crm_custom_fields.show_in_contract,
+            crm_custom_fields.show_in_order,
+            crm_custom_fields.show_in_proposal,
+            crm_custom_fields.visible_to_admins_only,
+            crm_custom_fields.hide_from_clients,
+            crm_custom_fields.disable_editing_by_clients,
+            crm_custom_fields.show_on_kanban_card,
+            crm_custom_fields.deleted,
+            crm_custom_fields.show_in_subscription
+                FROM $custom_fields_table
+                WHERE $custom_fields_table.deleted=0 $where
+                ORDER by $custom_fields_table.sort ASC";
+        }
+        
         return $this->db->query($sql);
     }
 
@@ -117,6 +164,57 @@ class Custom_fields_model extends Crud_model {
         LEFT JOIN $custom_field_values_table ON $custom_fields_table.id= $custom_field_values_table.custom_field_id AND $custom_field_values_table.deleted=0 AND $custom_field_values_table.related_to_id = $related_to_id
         WHERE $custom_fields_table.deleted=0 AND $custom_fields_table.related_to = '$related_to' $where
         ORDER by $custom_fields_table.sort ASC";
+
+            /**Get options from another table */
+            $sql_options = "SELECT $custom_fields_table.*,
+                $custom_field_values_table.id AS custom_field_values_id, $custom_field_values_table.value
+            FROM $custom_fields_table
+            LEFT JOIN $custom_field_values_table ON $custom_fields_table.id= $custom_field_values_table.custom_field_id AND $custom_field_values_table.deleted=0 AND $custom_field_values_table.related_to_id = $related_to_id
+            WHERE $custom_fields_table.deleted=0 AND $custom_fields_table.related_to = '$related_to' 
+            AND (LENGTH($custom_fields_table.options) - LENGTH(REPLACE($custom_fields_table.options, ',', '')) + 1) = 1
+            AND LOCATE('crm_', $custom_fields_table.options) >= 1
+            $where
+            ORDER by $custom_fields_table.sort ASC";
+
+            $foreign_table_options_custom_field = $this->db->query($sql_options)->getRow();
+
+            if(!empty($foreign_table_options_custom_field))
+            {
+                $sql = "SELECT
+                    crm_custom_fields.id,
+                    crm_custom_fields.title,
+                    crm_custom_fields.placeholder_language_key,
+                    crm_custom_fields.title_language_key,
+                    crm_custom_fields.show_in_embedded_form,
+                    crm_custom_fields.placeholder,
+                    crm_custom_fields.example_variable_name,
+                    IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
+                                AND LOCATE('crm_', crm_custom_fields.options) >= 1), (SELECT GROUP_CONCAT(mock.first_name)
+                    FROM $foreign_table_options_custom_field->options AS mock), crm_custom_fields.options) AS options,
+                    crm_custom_fields.field_type,
+                    crm_custom_fields.related_to,
+                    crm_custom_fields.sort,
+                    crm_custom_fields.required,
+                    crm_custom_fields.add_filter,
+                    crm_custom_fields.show_in_table,
+                    crm_custom_fields.show_in_invoice,
+                    crm_custom_fields.show_in_estimate,
+                    crm_custom_fields.show_in_contract,
+                    crm_custom_fields.show_in_order,
+                    crm_custom_fields.show_in_proposal,
+                    crm_custom_fields.visible_to_admins_only,
+                    crm_custom_fields.hide_from_clients,
+                    crm_custom_fields.disable_editing_by_clients,
+                    crm_custom_fields.show_on_kanban_card,
+                    crm_custom_fields.deleted,
+                    crm_custom_fields.show_in_subscription,
+                    $custom_field_values_table.id AS custom_field_values_id, $custom_field_values_table.value
+                    FROM $custom_fields_table
+                    LEFT JOIN $custom_field_values_table ON $custom_fields_table.id= $custom_field_values_table.custom_field_id AND $custom_field_values_table.deleted=0 AND $custom_field_values_table.related_to_id = $related_to_id
+                    WHERE $custom_fields_table.deleted=0 AND $custom_fields_table.related_to = '$related_to' $where
+                    ORDER by $custom_fields_table.sort ASC";
+            }
+
         return $this->db->query($sql);
     }
 
@@ -203,6 +301,30 @@ class Custom_fields_model extends Crud_model {
                 FROM $custom_fields_table
                 WHERE $custom_fields_table.related_to='$related_to' AND $custom_fields_table.add_filter=1 AND $custom_fields_table.deleted=0 AND ($custom_fields_table.field_type='select' OR $custom_fields_table.field_type='multi_select') $where    
                 ORDER BY $custom_fields_table.sort ASC";
+
+        
+        /**Get options from another table */
+        $sql_options = "SELECT id, title, options
+            FROM $custom_fields_table
+            WHERE $custom_fields_table.related_to='$related_to' AND $custom_fields_table.add_filter=1 AND $custom_fields_table.deleted=0 AND ($custom_fields_table.field_type='select' OR $custom_fields_table.field_type='multi_select') $where    
+            AND (LENGTH($custom_fields_table.options) - LENGTH(REPLACE($custom_fields_table.options, ',', '')) + 1) = 1
+            AND LOCATE('crm_', $custom_fields_table.options) >= 1
+            ORDER BY $custom_fields_table.sort ASC";
+
+        $foreign_table_options_custom_field = $this->db->query($sql_options)->getRow();
+
+        if(!empty($foreign_table_options_custom_field))
+        {
+            $sql = "SELECT
+                crm_custom_fields.id,
+                crm_custom_fields.title,
+                IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
+                            AND LOCATE('crm_', crm_custom_fields.options) >= 1), (SELECT GROUP_CONCAT(mock.first_name)
+                FROM $foreign_table_options_custom_field->options AS mock), crm_custom_fields.options) AS options
+                FROM $custom_fields_table
+                WHERE $custom_fields_table.related_to='$related_to' AND $custom_fields_table.add_filter=1 AND $custom_fields_table.deleted=0 AND ($custom_fields_table.field_type='select' OR $custom_fields_table.field_type='multi_select') $where    
+                ORDER by $custom_fields_table.sort ASC";
+        }
 
         return $this->db->query($sql)->getResult();
     }

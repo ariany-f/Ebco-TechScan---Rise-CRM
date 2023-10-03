@@ -11,43 +11,70 @@
             ));
             ?>
 
-            <div class="invoice-preview">
-                <?php
-                if ($login_user->user_type === "client" && $estimate_info->status == "new") {
-                    ?>
+            <div class="invoice-preview estimate-preview">
+                
+                <?php if (!isset($is_editor_preview)) {
+                    $action_buttons = "<div class='clearfix float-end'>";
 
-                    <div class = "card  p15 no-border clearfix inline-block w100p mb0">
+                    if ($show_close_preview) {
+                        echo "<div class='text-center'>" . anchor("estimates/view/" . $estimate_info->id, app_lang("close_preview"), array("class" => "btn btn-default round mb20 mr5")) . "</div>";
+                    }
 
-                        <div class="mr15 strong float-start">
-                            <?php
-                            if (get_setting("add_signature_option_on_accepting_estimate")) {
-                                echo modal_anchor(get_uri("estimate/accept_estimate_modal_form/$estimate_info->id"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("class" => "btn btn-success mr15", "title" => app_lang('accept_estimate')));
-                            } else {
-                                echo ajax_anchor(get_uri("estimates/update_estimate_status/$estimate_info->id/accepted"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("class" => "btn btn-success mr15", "title" => app_lang('mark_as_accepted'), "data-reload-on-success" => "1"));
-                            }
-                            ?>
-                            <?php echo ajax_anchor(get_uri("estimates/update_estimate_status/$estimate_info->id/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_rejected'), array("class" => "btn btn-danger mr15", "title" => app_lang('mark_as_rejected'), "data-reload-on-success" => "1")); ?>
+                    $action_buttons .= "<div class='float-start'>" . js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('print_estimate'), array('id' => 'print-estimate-btn', "class" => "btn btn-default round mr10")) . "</div>";
+
+                    if ($login_user->user_type === "staff") {
+                        $action_buttons .= "<div class='float-start'>" . anchor(get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key), "<i data-feather='external-link' class='icon-16'></i> " . app_lang('estimate') . " " . app_lang("url"), array("class" => "btn btn-default round mr5")) . "</div>";
+                    }
+
+                    $action_buttons .= "</div>";
+
+                    if ($estimate_info->status === "accepted" || $estimate_info->status === "declined" || $estimate_info->status === "rejected") {
+                        ?>
+                        <div class = "card  p15 no-border">
+                            <div class="clearfix">
+                                <div class="float-start mt5">
+                                    <?php if ($estimate_info->status === "accepted") { ?>
+                                        <i data-feather="check-circle" class="icon-16 text-success"></i> <?php echo app_lang("estimate_accepted"); ?>
+                                    <?php } else { ?>
+                                        <i data-feather="x-circle" class="icon-16 text-danger"></i> <?php echo app_lang("estimate_rejected"); ?>
+                                    <?php } ?>
+                                </div>
+
+                                <?php echo $action_buttons; ?>
+                            </div>
                         </div>
-                        <div class="float-end">
-                            <?php
-                            echo "<div class='text-center'>" . anchor("estimates/download_pdf/" . $estimate_info->id, app_lang("download_pdf"), array("class" => "btn btn-default round")) . "</div>";
+                        <?php
+                    } else {
+                        if ($login_user->user_type === "client" && $estimate_info->status == "new") {
                             ?>
-                        </div>
-
-                    </div>
-
-                    <?php
-                } else if ($login_user->user_type === "client") {
-                    echo "<div class='float-start'>" . anchor("estimates/download_pdf/" . $estimate_info->id, app_lang("download_pdf"), array("class" => "btn btn-default round")) . "</div>";
+        
+                            <div class = "card  p15 no-border clearfix inline-block w100p mb0">
+        
+                                <div class="mr15 strong float-start">
+                                    <?php
+                                    if (get_setting("add_signature_option_on_accepting_estimate")) {
+                                        echo modal_anchor(get_uri("estimate/accept_estimate_modal_form/$estimate_info->id"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("class" => "btn btn-success mr15", "title" => app_lang('accept_estimate')));
+                                    } else {
+                                        echo ajax_anchor(get_uri("estimates/update_estimate_status/$estimate_info->id/accepted"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("class" => "btn btn-success mr15", "title" => app_lang('mark_as_accepted'), "data-reload-on-success" => "1"));
+                                    }
+                                    ?>
+                                    <?php echo ajax_anchor(get_uri("estimates/update_estimate_status/$estimate_info->id/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_rejected'), array("class" => "btn btn-danger mr15", "title" => app_lang('mark_as_rejected'), "data-reload-on-success" => "1")); ?>
+                                </div>
+                                <div class="float-end">
+                                    <?php
+                                    echo "<div class='text-center'>" . anchor("estimates/download_pdf/" . $estimate_info->id, app_lang("download_pdf"), array("class" => "btn btn-default round")) . "</div>";
+                                    ?>
+                                </div>
+        
+                            </div>
+        
+                            <?php
+                        } else if ($login_user->user_type === "client") {
+                            echo "<div class='float-start'>" . anchor("estimates/download_pdf/" . $estimate_info->id, app_lang("download_pdf"), array("class" => "btn btn-default round")) . "</div>";
+                        }
+                    }
                 }
                 ?>
-                <div class="clearfix">
-                    <?php echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('print_estimate'), array('title' => app_lang('print_estimate'), 'id' => 'print-estimate-btn', "class" => "btn btn-default round float-end"));
-                    
-                    if ($show_close_preview)
-                    echo "<div class='float-start'>" . anchor("estimates/view/" . $estimate_info->id, app_lang("close_preview"), array("class" => "btn btn-default round")) . "</div>"
-                    ?>
-                </div>
 
                 <div id="estimate-preview" class="invoice-preview-container bg-white mt15">
                     <div class="row">

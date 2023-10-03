@@ -52,6 +52,7 @@ class App_Controller extends Controller {
     public $Expenses_model;
     public $Expense_categories_model;
     public $Taxes_model;
+    public $Estimate_type_model;
     public $Social_links_model;
     public $Notification_settings_model;
     public $Notifications_model;
@@ -156,6 +157,7 @@ class App_Controller extends Controller {
             'Expenses_model',
             'Expense_categories_model',
             'Taxes_model',
+            'Estimate_type_model',
             'Social_links_model',
             'Notification_settings_model',
             'Notifications_model',
@@ -211,7 +213,7 @@ class App_Controller extends Controller {
         }
 
         $validate = $this->validate($final_fields);
-
+        
         if (!$validate) {
             if (ENVIRONMENT === 'production') {
                 $message = app_lang('something_went_wrong');

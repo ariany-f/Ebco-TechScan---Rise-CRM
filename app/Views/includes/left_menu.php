@@ -1,18 +1,18 @@
 <div class="sidebar sidebar-off">
     <?php
     $user = $login_user->id;
-    $dashboard_link = get_uri("dashboard");
-    $user_dashboard = get_setting("user_" . $user . "_dashboard");
-    if ($user_dashboard) {
-        $dashboard_link = get_uri("dashboard/view/" . $user_dashboard);
-    }
+    //$dashboard_link = get_uri("dashboard");
+    //$user_dashboard = get_setting("user_" . $user . "_dashboard");
+    //if ($user_dashboard) {
+        //$dashboard_link = get_uri("dashboard/view/" . $user_dashboard);
+    //}
     ?>
     <a class="sidebar-toggle-btn hide" href="#">
         <i data-feather="menu" class="icon mt-1 text-off"></i>
     </a>
 
-    <a class="sidebar-brand brand-logo" href="<?php echo $dashboard_link; ?>"><img class="dashboard-image" src="<?php echo get_logo_url(); ?>" /></a>
-    <a class="sidebar-brand brand-logo-mini" href="<?php echo $dashboard_link; ?>"><img class="dashboard-image" src="<?php echo get_favicon_url(); ?>" /></a>
+    <a class="sidebar-brand brand-logo" href="<?= '/' ?>"><img class="dashboard-image" src="<?php echo get_logo_url(); ?>" /></a>
+    <a class="sidebar-brand brand-logo-mini" href="<?= '/' ?>"><img class="dashboard-image" src="<?php echo get_favicon_url(); ?>" /></a>
 
     <div class="sidebar-scroll">
         <ul id="sidebar-menu" class="sidebar-menu">

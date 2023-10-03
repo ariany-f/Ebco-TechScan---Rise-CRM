@@ -9,6 +9,7 @@
             <div class="title-button-group">
                 <?php echo modal_anchor(get_uri("leads/import_leads_modal_form"), "<i data-feather='upload' class='icon-16'></i> " . app_lang('import_leads'), array("class" => "btn btn-default", "title" => app_lang('import_leads'))); ?>
                 <?php echo modal_anchor(get_uri("leads/modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_lead'), array("class" => "btn btn-default", "title" => app_lang('add_lead'))); ?>
+                <a class="btn btn-default" href="<?php echo get_uri("lead_status")?>"><?= app_lang('lead_status') ?></a>
             </div>
         </div>
     </ul>

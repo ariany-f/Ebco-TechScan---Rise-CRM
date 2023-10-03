@@ -34,9 +34,9 @@
             <span class="badge item-rate-badge font-18 strong"><?php echo to_currency($model_info->rate); ?></span> <?php echo $model_info->unit_type ? "/" . $model_info->unit_type : ""; ?>
         </div>
 
-        <div class="col-md-12 mb15">
-            <?php echo $model_info->description ? nl2br(link_it(process_images_from_content($model_info->description))) : "-"; ?>
-        </div>
+        <!-- <div class="col-md-12 mb15">
+            <?php //echo $model_info->description ? nl2br(link_it(process_images_from_content($model_info->description))) : "-"; ?>
+        </div> -->
 
         <?php
         if ($model_info->files) {

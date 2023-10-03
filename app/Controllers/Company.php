@@ -8,7 +8,6 @@ class Company extends Security_Controller {
 
     function __construct() {
         parent::__construct();
-        $this->access_only_admin_or_settings_admin();
         $this->Company_model = model('App\Models\Company_model');
     }
 
@@ -34,6 +33,9 @@ class Company extends Security_Controller {
         $is_default = $this->request->getPost('is_default');
         $data = array(
             "name" => $this->request->getPost('name'),
+            "cnpj" => $this->request->getPost('cnpj'),
+            "state_subscription" => $this->request->getPost('state_subscription'),
+            "city_subscription" => $this->request->getPost('city_subscription'),
             "address" => $this->request->getPost('address'),
             "phone" => $this->request->getPost('phone'),
             "email" => $this->request->getPost('email'),
@@ -44,7 +46,7 @@ class Company extends Security_Controller {
 
         $id = $this->request->getPost('id');
         $company_info = $this->Company_model->get_one($id);
-
+        
         $save_id = $this->Company_model->ci_save($data, $id);
 
         if ($save_id) {
@@ -73,7 +75,7 @@ class Company extends Security_Controller {
 
             echo json_encode(array("success" => true, "data" => $this->_row_data($save_id), 'id' => $save_id, 'message' => app_lang('record_saved')));
         } else {
-            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred'), 'data' => $company_info));
         }
     }
 
@@ -129,11 +131,11 @@ class Company extends Security_Controller {
 
         return array(
             $data->name . $default_company,
+            $data->cnpj,
             $data->address,
             $data->phone,
             $data->email,
             $data->website,
-            $data->vat_number,
             modal_anchor(get_uri("company/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_company'), "data-post-id" => $data->id))
             . $delete
         );

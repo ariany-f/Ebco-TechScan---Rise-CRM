@@ -32,7 +32,7 @@ class Estimate extends Security_Controller {
             show_404();
         }
 
-        $view_data['estimate_preview'] = prepare_estimate_pdf($estimate_data, "html");
+        $view_data['estimate_preview'] = prepare_estimate_view($estimate_data);
         $view_data['show_close_preview'] = false; //don't show back button
         $view_data['estimate_id'] = $estimate_id;
         $view_data['estimate_type'] = "public";

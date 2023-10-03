@@ -18,6 +18,7 @@
             order: [[0, "desc"]],
             filterDropdown: [<?php echo $custom_field_filters; ?>],
             columns: [
+                {title: "<?php echo app_lang("proposal_number") ?>", "class": "text-center w20p"},
                 {title: "<?php echo app_lang("proposal") ?>", "class": "w20p"},
                 {visible: false, searchable: false},
                 {visible: false, searchable: false},

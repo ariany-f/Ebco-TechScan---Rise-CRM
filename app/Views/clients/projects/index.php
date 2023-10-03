@@ -85,10 +85,11 @@ if (isset($page_type) && $page_type === 'dashboard') {
                     name: "status",
                     text: "<?php echo app_lang('status'); ?>",
                     options: [
-                        {text: '<?php echo app_lang("open") ?>', value: "open", isChecked: true},
-                        {text: '<?php echo app_lang("completed") ?>', value: "completed"},
-                        {text: '<?php echo app_lang("hold") ?>', value: "hold"},
-                        {text: '<?php echo app_lang("canceled") ?>', value: "canceled"}
+                        {text: '<?php echo app_lang("new_project") ?>', value: "new_project", isChecked: true},
+                        {text: '<?php echo app_lang("open_project") ?>', value: "open_project", isChecked: true},
+                        {text: '<?php echo app_lang("completed_project") ?>', value: "completed_project"},
+                        {text: '<?php echo app_lang("hold_project") ?>', value: "hold_project"},
+                        {text: '<?php echo app_lang("canceled_project") ?>', value: "canceled_project"}
                     ]
                 }
             ],

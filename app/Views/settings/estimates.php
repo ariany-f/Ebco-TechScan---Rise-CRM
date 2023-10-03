@@ -14,6 +14,7 @@
                 <ul data-bs-toggle="ajax-tab" class="nav nav-tabs bg-white title" role="tablist">
                     <li><a role="presentation" data-bs-toggle="tab" href="javascript:;" data-bs-target="#estimate-settings-tab"> <?php echo app_lang('estimate_settings'); ?></a></li>
                     <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("settings/estimate_request_settings/"); ?>" data-bs-target="#estimate-request-settings-tab"><?php echo app_lang('estimate_request_settings'); ?></a></li>
+                    <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("estimate_templates"); ?>" data-bs-target="#estimate-templates"><?php echo app_lang("estimate_templates"); ?></a></li>
                 </ul>
 
                 <div class="tab-content">
@@ -139,6 +140,8 @@
                         </div>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="estimate-request-settings-tab"></div>
+                    
+                    <div role="tabpanel" class="tab-pane fade" id="estimate-templates"></div>
                 </div>
             </div>
             <?php echo form_close(); ?>

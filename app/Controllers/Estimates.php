@@ -100,6 +100,7 @@ class Estimates extends Security_Controller {
             if ($info) {
                 $now = get_my_local_time("Y-m-d");
                 $model_info->estimate_date = $now;
+                $model_info->estimate_type_id = $info->estimate_type_id;
                 $model_info->valid_until = $now;
                 $model_info->client_id = $info->client_id;
                 $model_info->tax_id = $info->tax_id;
@@ -117,6 +118,7 @@ class Estimates extends Security_Controller {
 
         //make the drodown lists
         $view_data['taxes_dropdown'] = array("" => "-") + $this->Taxes_model->get_dropdown_list(array("title"));
+        $view_data['estimate_type_dropdown'] = array("" => "-") + $this->Estimate_type_model->get_dropdown_list(array("title"));
         $view_data['clients_dropdown'] = $this->get_clients_and_leads_dropdown();
 
         $view_data['client_id'] = $client_id;
@@ -124,6 +126,35 @@ class Estimates extends Security_Controller {
         //clone estimate data
         $is_clone = $this->request->getPost('is_clone');
         $view_data['is_clone'] = $is_clone;
+        if($is_clone)
+        {
+            $model_info->estimate_type_id = 2; // Revisão
+
+            $matches = array();
+            
+
+            if (strpos($model_info->estimate_number, 'Rev') !== false) {
+
+                if (preg_match('#(\d+)$#', $model_info->estimate_number, $matches)) {
+                    $number = $matches[1];
+                }
+
+                if(is_numeric($number))
+                {
+                    $number++;
+                    $model_info->estimate_number = preg_replace("/[^a-zA-Z]+/", "", $model_info->estimate_number) . (($number < 10) ? str_pad($number,2,"0",STR_PAD_LEFT) : $number);
+                }
+            }
+            else
+            {
+                $model_info->estimate_number = $model_info->estimate_number . 'Rev01';
+            }
+
+          
+        }
+        else{
+            $model_info->estimate_type_id = 1;
+        }
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("estimates", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
@@ -131,7 +162,7 @@ class Estimates extends Security_Controller {
         if (!$model_info->company_id) {
             $view_data['model_info']->company_id = get_default_company_id();
         }
-
+        
         return $this->template->view('estimates/modal_form', $view_data);
     }
 
@@ -159,12 +190,14 @@ class Estimates extends Security_Controller {
             "tax_id" => $this->request->getPost('tax_id') ? $this->request->getPost('tax_id') : 0,
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
             "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
-            "note" => $this->request->getPost('estimate_note')
+            "note" => $this->request->getPost('estimate_note'),
+            'estimate_number' => $this->request->getPost('estimate_number')
         );
 
         $is_clone = $this->request->getPost('is_clone');
         $estimate_request_id = $this->request->getPost('estimate_request_id');
         $contract_id = $this->request->getPost('contract_id');
+        $estimate_type_id = $this->request->getPost('estimate_type_id');
         $proposal_id = $this->request->getPost('proposal_id');
         $order_id = $this->request->getPost('order_id');
 
@@ -177,9 +210,11 @@ class Estimates extends Security_Controller {
 
         $main_estimate_id = "";
         if (($is_clone && $id) || $order_id || $contract_id || $proposal_id) {
+            $estimate_type_id = 2; //Revisão
             $main_estimate_id = $id; //store main estimate id to get items later
             $id = ""; //on cloning estimate, save as new
             //save discount when cloning
+            $estimate_data['estimate_type_id'] = $estimate_type_id;
             $estimate_data["discount_amount"] = $this->request->getPost('discount_amount') ? $this->request->getPost('discount_amount') : 0;
             $estimate_data["discount_amount_type"] = $this->request->getPost('discount_amount_type') ? $this->request->getPost('discount_amount_type') : "percentage";
             $estimate_data["discount_type"] = $this->request->getPost('discount_type') ? $this->request->getPost('discount_type') : "before_tax";
@@ -188,6 +223,12 @@ class Estimates extends Security_Controller {
         if (!$id) {
             $estimate_data["created_by"] = $this->login_user->id;
             $estimate_data["public_key"] = make_random_string();
+
+            //add default template
+            if (get_setting("default_estimate_template")) {
+                $Estimate_templates_model = model("App\Models\Estimate_templates_model");
+                $estimate_data["content"] = $Estimate_templates_model->get_one(get_setting("default_estimate_template"))->template;
+            }
         }
 
         $estimate_id = $this->Estimates_model->ci_save($estimate_data, $id);
@@ -387,7 +428,6 @@ class Estimates extends Security_Controller {
     }
 
     /* list of estimates, prepared for datatable  */
-
     function list_data() {
         $this->access_only_allowed_members();
 
@@ -456,9 +496,11 @@ class Estimates extends Security_Controller {
         $estimate_url = "";
         if ($this->login_user->user_type == "staff") {
             $estimate_url = anchor(get_uri("estimates/view/" . $data->id), get_estimate_id($data->id));
+            $estimate_url_code = anchor(get_uri("estimates/view/" . $data->id), $data->estimate_number);
         } else {
             //for client client
             $estimate_url = anchor(get_uri("estimates/preview/" . $data->id), get_estimate_id($data->id));
+            $estimate_url_code = anchor(get_uri("estimates/preview/" . $data->id), $data->estimate_number);
         }
 
         $client = anchor(get_uri("clients/view/" . $data->client_id), $data->company_name);
@@ -467,10 +509,12 @@ class Estimates extends Security_Controller {
         }
 
         $row_data = array(
+            $estimate_url_code,
             $estimate_url,
             $client,
             $data->estimate_date,
             format_to_date($data->estimate_date, false),
+            $data->estimate_type,
             to_currency($data->estimate_value, $data->currency_symbol),
             $this->_get_estimate_status_label($data),
         );
@@ -745,7 +789,7 @@ class Estimates extends Security_Controller {
         $items = $this->Invoice_items_model->get_item_suggestion($key);
 
         foreach ($items as $item) {
-            $suggestion[] = array("id" => $item->id, "text" => $item->title);
+            $suggestion[] = array("id" => $item->id, "text" => $item->title . ' - ' . $item->category_title);
         }
 
         $suggestion[] = array("id" => "+", "text" => "+ " . app_lang("create_new_item"));
@@ -764,7 +808,7 @@ class Estimates extends Security_Controller {
     }
 
     //view html is accessable to client only.
-    function preview($estimate_id = 0, $show_close_preview = false) {
+    function preview($estimate_id = 0, $show_close_preview = false,  $is_editor_preview = false) {
 
         $view_data = array();
 
@@ -789,14 +833,19 @@ class Estimates extends Security_Controller {
             $estimate_info = get_array_value($estimate_data, "estimate_info");
             $estimate_data['estimate_status_label'] = $this->_get_estimate_status_label($estimate_info);
 
-            $view_data['estimate_preview'] = prepare_estimate_pdf($estimate_data, "html");
+           // $view_data['estimate_preview'] = prepare_estimate_pdf($estimate_data, "html");
+            $view_data['estimate_preview'] = prepare_estimate_view($estimate_data);
 
             //show a back button
             $view_data['show_close_preview'] = $show_close_preview && $this->login_user->user_type === "staff" ? true : false;
 
             $view_data['estimate_id'] = $estimate_id;
-
-            return $this->template->rander("estimates/estimate_preview", $view_data);
+            if ($is_editor_preview) {
+                $view_data["is_editor_preview"] = clean_data($is_editor_preview);
+                return $this->template->view("estimates/estimate_preview", $view_data);
+            } else {
+                return $this->template->rander("estimates/estimate_preview", $view_data);
+            }
         } else {
             show_404();
         }
@@ -886,6 +935,7 @@ class Estimates extends Security_Controller {
             $email_template = $this->Email_templates_model->get_final_template("estimate_sent");
 
             $parser_data["ESTIMATE_ID"] = $estimate_info->id;
+            $parser_data["ESTIMATE_NUMBER"] = $estimate_info->esimate_number;
             $parser_data["PUBLIC_ESTIMATE_URL"] = get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key);
             $parser_data["CONTACT_FIRST_NAME"] = $contact_first_name;
             $parser_data["CONTACT_LAST_NAME"] = $contact_last_name;
@@ -1100,6 +1150,25 @@ class Estimates extends Security_Controller {
             }
         }
     }
+    
+    function save_view() {
+        $this->access_only_allowed_members();
+
+        $this->validate_submitted_data(array(
+            "id" => "required|numeric"
+        ));
+
+        $id = $this->request->getPost("id");
+
+        $estimate_data = array(
+            "content" => decode_ajax_post_data($this->request->getPost('view'))
+        );
+
+        $this->Estimates_model->ci_save($estimate_data, $id);
+
+        echo json_encode(array("success" => true, 'message' => app_lang('record_saved')));
+    }
+
 
     //print estimate
     function print_estimate($estimate_id = 0) {
@@ -1115,6 +1184,12 @@ class Estimates extends Security_Controller {
         } else {
             echo json_encode(array("success" => false, app_lang('error_occurred')));
         }
+    }
+
+    function editor($estimate_id = 0) {
+        validate_numeric_value($estimate_id);
+        $view_data['estimate_info'] = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
+        return $this->template->view("estimates/estimate_editor", $view_data);
     }
 
 }

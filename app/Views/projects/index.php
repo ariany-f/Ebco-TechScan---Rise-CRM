@@ -28,14 +28,21 @@
             optionVisibility = true;
         }
 
-        var selectOpenStatus = true, selectCompletedStatus = false, selectHoldStatus = false;
-<?php if (isset($status) && $status == "completed") { ?>
+        var selectNewStatus = true, selectOpenStatus = true, selectCompletedStatus = false, selectHoldStatus = false;
+<?php if (isset($status) && $status == "completed_project") { ?>
             selectOpenStatus = false;
             selectCompletedStatus = true;
+            selectNewStatus = false;
             selectHoldStatus = false;
-<?php } else if (isset($status) && $status == "hold") { ?>
+<?php } else if (isset($status) && $status == "open_project") { ?>
+            selectOpenStatus = true;
+            selectCompletedStatus = false;
+            selectNewStatus = false;
+            selectHoldStatus = false;
+<?php } else if (isset($status) && $status == "hold_project") { ?>
             selectOpenStatus = false;
             selectCompletedStatus = false;
+            selectNewStatus = false;
             selectHoldStatus = true;
 <?php } ?>
 
@@ -46,10 +53,11 @@
                     name: "status",
                     text: "<?php echo app_lang('status'); ?>",
                     options: [
-                        {text: '<?php echo app_lang("open") ?>', value: "open", isChecked: selectOpenStatus},
-                        {text: '<?php echo app_lang("completed") ?>', value: "completed", isChecked: selectCompletedStatus},
-                        {text: '<?php echo app_lang("hold") ?>', value: "hold", isChecked: selectHoldStatus},
-                        {text: '<?php echo app_lang("canceled") ?>', value: "canceled"}
+                        {text: '<?php echo app_lang("new_project") ?>', value: "new_project", isChecked: selectNewStatus},
+                        {text: '<?php echo app_lang("open_project") ?>', value: "open_project", isChecked: selectOpenStatus},
+                        {text: '<?php echo app_lang("completed_project") ?>', value: "completed_project", isChecked: selectCompletedStatus},
+                        {text: '<?php echo app_lang("hold_project") ?>', value: "hold_project", isChecked: selectHoldStatus},
+                        {text: '<?php echo app_lang("canceled_project") ?>', value: "canceled_project"}
                     ]
                 }
             ],
@@ -71,9 +79,8 @@
                 {title: '<?php echo app_lang("start_date") ?>', "class": "w10p", "iDataSort": 4},
                 {visible: false, searchable: false},
                 {title: '<?php echo app_lang("deadline") ?>', "class": "w10p", "iDataSort": 6},
-                {title: '<?php echo app_lang("progress") ?>', "class": "w10p"},
                 {title: '<?php echo app_lang("status") ?>', "class": "w10p"}
-<?php echo $custom_field_headers; ?>,
+                <?php echo $custom_field_headers; ?>,
                 {visible: optionVisibility, title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
             ],
             order: [[1, "desc"]],

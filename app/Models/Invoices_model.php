@@ -579,6 +579,16 @@ class Invoices_model extends Crud_model {
         WHERE $invoices_table.deleted=0 $where";
 
         return $this->db->query($sql)->getRow()->total;
+    }    
+
+    function get_rules($options = array()) {
+        $invoice_rules_table = $this->db->prefixTable('invoice_rules');
+
+        $sql = "SELECT $invoice_rules_table.id, $invoice_rules_table.title FROM $invoice_rules_table
+                        WHERE $invoice_rules_table.deleted=0 
+                        ORDER BY $invoice_rules_table.id DESC";
+
+        return $this->db->query($sql);
     }
 
 }

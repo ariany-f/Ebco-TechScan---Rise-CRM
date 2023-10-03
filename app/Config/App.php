@@ -15,7 +15,6 @@ class App extends BaseConfig {
 
     private function set_base_url() {
         if (!$this->baseURL) {
-
             $domain = $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
 
             $domain = preg_replace('/index.php.*/', '', $domain);
@@ -23,7 +22,14 @@ class App extends BaseConfig {
             if (!empty($_SERVER['HTTPS'])) {
                 $this->baseURL = 'https://' . $domain;
             } else {
-                $this->baseURL = 'http://' . $domain;
+                if($_SERVER['HTTP_HOST'] == 'uniebco.com.br')
+                {
+                    $this->baseURL = 'https://' . $domain;
+                }
+                else
+                {
+                    $this->baseURL = 'http://' . $domain;
+                }
             }
         }
     }
@@ -81,7 +87,7 @@ class App extends BaseConfig {
      *
      * @var string
      */
-    public $indexPage = 'index.php';
+    public $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -100,7 +106,7 @@ class App extends BaseConfig {
      *
      * @var string
      */
-    public $uriProtocol = 'REQUEST_URI';
+    public $uriProtocol = 'PATH_INFO';
 
     /**
      * --------------------------------------------------------------------------

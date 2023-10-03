@@ -37,11 +37,11 @@ class Email_templates extends Security_Controller {
                 "invoice_manual_payment_added" => array("INVOICE_ID", "PAYMENT_AMOUNT", "INVOICE_URL", "ADDED_BY", "PAYMENT_NOTE", "LOGO_URL", "SIGNATURE", "RECIPIENTS_EMAIL_ADDRESS"),
             ),
             "estimate" => array(
-                "estimate_sent" => array("ESTIMATE_ID", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "PUBLIC_ESTIMATE_URL", "RECIPIENTS_EMAIL_ADDRESS"),
-                "estimate_accepted" => array("ESTIMATE_ID", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
-                "estimate_rejected" => array("ESTIMATE_ID", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
+                "estimate_sent" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "PUBLIC_ESTIMATE_URL", "RECIPIENTS_EMAIL_ADDRESS"),
+                "estimate_accepted" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
+                "estimate_rejected" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
                 "estimate_request_received" => array("ESTIMATE_REQUEST_ID", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ESTIMATE_REQUEST_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
-                "estimate_commented" => array("ESTIMATE_ID", "USER_NAME", "COMMENT_CONTENT", "ESTIMATE_URL", "LOGO_URL", "SIGNATURE", "RECIPIENTS_EMAIL_ADDRESS"),
+                "estimate_commented" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "USER_NAME", "COMMENT_CONTENT", "ESTIMATE_URL", "LOGO_URL", "SIGNATURE", "RECIPIENTS_EMAIL_ADDRESS"),
             ),
             "contract" => array(
                 "contract_sent" => array("CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "CONTRACT_ID", "CONTRACT_URL", "PUBLIC_CONTRACT_URL", "PROJECT_TITLE", "SIGNATURE", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
@@ -50,8 +50,8 @@ class Email_templates extends Security_Controller {
             ),
             "proposal" => array(
                 "proposal_sent" => array("CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "PROPOSAL_ID", "PROPOSAL_URL", "PUBLIC_PROPOSAL_URL", "SIGNATURE", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
-                "proposal_accepted" => array("PROPOSAL_ID", "PROPOSAL_URL", "SIGNATURE", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS", "PUBLIC_PROPOSAL_URL"),
-                "proposal_rejected" => array("PROPOSAL_ID", "PROPOSAL_URL", "SIGNATURE", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS", "PUBLIC_PROPOSAL_URL"),
+                "proposal_accepted" => array("PROPOSAL_ID", "PROPOSAL_NUMBER", "PROPOSAL_URL", "SIGNATURE", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS", "PUBLIC_PROPOSAL_URL"),
+                "proposal_rejected" => array("PROPOSAL_ID", "PROPOSAL_NUMBER", "PROPOSAL_URL", "SIGNATURE", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS", "PUBLIC_PROPOSAL_URL"),
             ),
             "order" => array(
                 "new_order_received" => array("ORDER_ID", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ORDER_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),

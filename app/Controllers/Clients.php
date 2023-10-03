@@ -83,6 +83,8 @@ class Clients extends Security_Controller {
         //prepare groups dropdown list
         $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
 
+        $view_data['invoice_rules_dropdown'] = $this->_get_invoice_rules_dropdown_select2_data();
+        
         $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
 
         //get custom fields
@@ -112,6 +114,12 @@ class Clients extends Security_Controller {
 
         $data = array(
             "company_name" => $company_name,
+            "cnpj" => $this->request->getPost('cnpj'),
+            "limit_date_for_nota_fiscal" => $this->request->getPost('limit_date_for_nota_fiscal'),
+            "city_subscription" => $this->request->getPost('city_subscription'),
+            "state_subscription" => $this->request->getPost('state_subscription'),
+            "lead_interested" => $this->request->getPost('lead_interested'),
+            "invoice_rule_date" => $this->request->getPost('invoice_rule_date') ?? '',
             "type" => $this->request->getPost('account_type'),
             "address" => $this->request->getPost('address'),
             "city" => $this->request->getPost('city'),
@@ -126,6 +134,7 @@ class Clients extends Security_Controller {
 
         if ($this->login_user->user_type === "staff") {
             $data["group_ids"] = $this->request->getPost('group_ids') ? $this->request->getPost('group_ids') : "";
+            $data["invoice_rule_id"] = $this->request->getPost('invoice_rule_id') ? $this->request->getPost('invoice_rule_id') : "";
         }
 
 
@@ -206,6 +215,7 @@ class Clients extends Security_Controller {
             "custom_fields" => $custom_fields,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("clients", $this->login_user->is_admin, $this->login_user->user_type),
             "group_id" => $this->request->getPost("group_id"),
+            "invoice_rule_id" => $this->request->getPost("invoice_rule_id"),
             "show_own_clients_only_user_id" => $this->show_own_clients_only_user_id(),
             "quick_filter" => $this->request->getPost("quick_filter"),
             "created_by" => $this->request->getPost("created_by"),
@@ -278,7 +288,8 @@ class Clients extends Security_Controller {
         $row_data = array($data->id,
             anchor(get_uri("clients/view/" . $data->id), $data->company_name),
             $data->primary_contact ? $primary_contact : "",
-            $group_list,
+            //$group_list,
+            $data->limit_date_for_nota_fiscal,
             to_decimal_format($data->total_projects),
             to_currency($data->invoice_value, $data->currency_symbol),
             to_currency($data->payment_received, $data->currency_symbol),
@@ -873,6 +884,7 @@ class Clients extends Security_Controller {
 
             $view_data['model_info'] = $this->Clients_model->get_one($client_id);
             $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
+            $view_data['invoice_rules_dropdown'] = $this->_get_invoice_rules_dropdown_select2_data();
 
             $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("clients", $client_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 

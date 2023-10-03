@@ -35,6 +35,7 @@
             order: [[0, "desc"]],
             filterDropdown: [<?php echo $custom_field_filters; ?>],
             columns: [
+                {title: "<?php echo app_lang("estimate_number") ?>", "class": "text-center w20p"},
                 {title: "<?php echo app_lang("estimate") ?>", "class": "w25p"},
                 {visible: false, searchable: false},
                 {visible: false, searchable: false},

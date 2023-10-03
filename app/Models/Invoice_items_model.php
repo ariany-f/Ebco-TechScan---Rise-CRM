@@ -35,6 +35,7 @@ class Invoice_items_model extends Crud_model {
 
     function get_item_suggestion($keyword = "", $user_type = "") {
         $items_table = $this->db->prefixTable('items');
+        $item_categories_table = $this->db->prefixTable('item_categories');
 
         if ($keyword) {
             $keyword = $this->db->escapeLikeString($keyword);
@@ -45,9 +46,10 @@ class Invoice_items_model extends Crud_model {
             $where = " AND $items_table.show_in_client_portal=1";
         }
 
-        $sql = "SELECT $items_table.id, $items_table.title
+        $sql = "SELECT $items_table.id, $items_table.title, $item_categories_table.title as category_title
         FROM $items_table
-        WHERE $items_table.deleted=0  AND $items_table.title LIKE '%$keyword%' ESCAPE '!' $where
+        LEFT JOIN $item_categories_table ON $item_categories_table.id= $items_table.category_id
+        WHERE $items_table.deleted=0  AND ($items_table.title LIKE '%$keyword%' ESCAPE '!' OR CONCAT($items_table.title, ' - ',  $item_categories_table.title) LIKE '%$keyword%' ESCAPE '!' OR CONCAT($items_table.title, ' ' ,$item_categories_table.title) LIKE '%$keyword%' ESCAPE '!') $where
         LIMIT 10 
         ";
         return $this->db->query($sql)->getResult();

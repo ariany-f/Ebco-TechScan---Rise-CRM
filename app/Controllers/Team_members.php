@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 class Team_members extends Security_Controller {
 
+    protected $db;
+
     function __construct() {
         parent::__construct();
         $this->access_only_team_members();
@@ -110,6 +112,7 @@ class Team_members extends Security_Controller {
     /* save new member */
 
     function add_team_member() {
+        global $db;
         $this->access_only_admin_or_member_creator();
 
         //check duplicate email address, if found then show an error message
@@ -117,7 +120,7 @@ class Team_members extends Security_Controller {
             echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
             exit();
         }
-
+        
         $this->validate_submitted_data(array(
             "email" => "required|valid_email",
             "first_name" => "required",
@@ -194,6 +197,31 @@ class Team_members extends Security_Controller {
 
                 send_app_mail($this->request->getPost('email'), $subject, $message);
             }
+        }
+        
+
+        if (!$this->Users_model->aux_table_is_email_exists($this->request->getPost('email'))) {
+            
+            /** Adiciona na tabela geral de usuários também para que seja feito login diretamente por ela */
+            $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+            $user_data = array(
+                "user_email" => $this->request->getPost('email'),
+                "user_name" => $this->request->getPost('first_name') . '.' . $this->request->getPost('last_name'),
+                "user_firstname" => $this->request->getPost('first_name'),
+                "user_lastname" => $this->request->getPost('last_name'),
+                "user_gender" => 3,
+                "user_activated" => 1,
+                "user_started" => 1,
+                "user_language" => 'pt_BR'
+            );
+            if ($password) {
+                $user_data["user_password"] = password_hash($password, PASSWORD_DEFAULT);
+            }
+
+            $stmt = $connection->prepare("INSERT INTO users (user_email, user_name, user_firstname, user_lastname, user_gender, user_activated, user_started, user_language, user_password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssiiiss", $user_data['user_email'], $user_data['user_name'], $user_data['user_firstname'], $user_data['user_lastname'], $user_data['user_gender'], $user_data['user_activated'], $user_data['user_started'], $user_data['user_language'], $user_data['user_password']);
+            $stmt->execute();
+            $stmt->close();
         }
 
         if ($user_id) {

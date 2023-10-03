@@ -41,7 +41,7 @@
             {title: "<?php echo app_lang("id") ?>", "class": "text-center w50 all", order_by: "id"},
             {title: "<?php echo app_lang("name") ?>", "class": "all", order_by: "company_name"},
             {title: "<?php echo app_lang("primary_contact") ?>", order_by: "primary_contact"},
-            {title: "<?php echo app_lang("client_groups") ?>", order_by: "client_groups"},
+            {title: "<?php echo app_lang("limit_date_for_nota_fiscal") ?>", order_by: "limit_date_for_nota_fiscal"},
             {title: "<?php echo app_lang("projects") ?>"},
             {visible: showInvoiceInfo, searchable: showInvoiceInfo, title: "<?php echo app_lang("total_invoiced") ?>"},
             {visible: showInvoiceInfo, searchable: showInvoiceInfo, title: "<?php echo app_lang("payment_received") ?>"},

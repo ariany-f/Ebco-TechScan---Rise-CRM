@@ -116,6 +116,7 @@
                 "text" => app_lang("field_type_text"),
                 "textarea" => app_lang("field_type_textarea"),
                 "select" => app_lang("field_type_select"),
+                "checkbox" => app_lang("field_type_checkbox"),
                 "multi_select" => app_lang("field_type_multi_select"),
                 "email" => app_lang("email"),
                 "date" => app_lang("date"),

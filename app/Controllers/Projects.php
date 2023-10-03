@@ -423,7 +423,7 @@ class Projects extends Security_Controller {
             "project_type" => $project_type,
             "price" => unformat_currency($this->request->getPost('price')),
             "labels" => $this->request->getPost('labels'),
-            "status" => $status ? $status : "open",
+            "status" => $status ? $status : "new_project",
             "estimate_id" => $estimate_id,
             "order_id" => $order_id
         );
@@ -554,7 +554,7 @@ class Projects extends Security_Controller {
             "created_date" => $now,
             "created_by" => $this->login_user->id,
             "labels" => $this->request->getPost('labels'),
-            "status" => "open",
+            "status" => "new_project",
         );
 
         if (!$data["start_date"]) {
@@ -841,7 +841,7 @@ class Projects extends Security_Controller {
         $this->access_only_team_members();
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("projects", $this->login_user->is_admin, $this->login_user->user_type);
-
+       
         $statuses = $this->request->getPost('status') ? implode(",", $this->request->getPost('status')) : "";
 
         $options = array(
@@ -858,10 +858,12 @@ class Projects extends Security_Controller {
         }
 
         $list_data = $this->Projects_model->get_details($options)->getResult();
+        
         $result = array();
         foreach ($list_data as $data) {
             $result[] = $this->_make_row($data, $custom_fields);
         }
+        
         echo json_encode(array("data" => $result));
     }
 
@@ -954,9 +956,9 @@ class Projects extends Security_Controller {
 
         //has deadline? change the color of date based on status
         if (is_date_exists($data->deadline)) {
-            if ($progress !== 100 && $data->status === "open" && get_my_local_time("Y-m-d") > $data->deadline) {
+            if ($progress !== 100 && $data->status === "open_project" && get_my_local_time("Y-m-d") > $data->deadline) {
                 $dateline = "<span class='text-danger mr5'>" . $dateline . "</span> ";
-            } else if ($progress !== 100 && $data->status === "open" && get_my_local_time("Y-m-d") == $data->deadline) {
+            } else if ($progress !== 100 && $data->status === "open_project" && get_my_local_time("Y-m-d") == $data->deadline) {
                 $dateline = "<span class='text-warning mr5'>" . $dateline . "</span> ";
             }
         }
@@ -995,7 +997,6 @@ class Projects extends Security_Controller {
             $start_date,
             $data->deadline,
             $dateline,
-            $progress_bar,
             app_lang($data->status)
         );
 
@@ -2586,7 +2587,7 @@ class Projects extends Security_Controller {
             "priority_id" => $this->request->getPost('priority_id'),
             "deadline" => $this->request->getPost('deadline'),
             "search" => $this->request->getPost('search'),
-            "project_status" => "open",
+            "project_status" => "new_project",
             "unread_status_user_id" => $this->login_user->id,
             "show_assigned_tasks_only_user_id" => $this->show_assigned_tasks_only_user_id(),
             "quick_filter" => $this->request->getPost("quick_filter"),
@@ -3641,7 +3642,7 @@ class Projects extends Security_Controller {
             "priority_id" => $this->request->getPost('priority_id'),
             "deadline" => $this->request->getPost('deadline'),
             "custom_fields" => $custom_fields,
-            "project_status" => "open",
+            "project_status" => "new_project",
             "status_ids" => $status,
             "unread_status_user_id" => $this->login_user->id,
             "show_assigned_tasks_only_user_id" => $this->show_assigned_tasks_only_user_id(),
@@ -4576,7 +4577,7 @@ class Projects extends Security_Controller {
 
     //save project status
     function change_status($project_id, $status) {
-        if ($project_id && $this->can_create_projects() && ($status == "completed" || $status == "hold" || $status == "canceled" || $status == "open" )) {
+        if ($project_id && $this->can_create_projects() && ($status == "completed_project" || $status == "hold_project" || $status == "canceled_project" || $status == "open_project" || $status == "new_project" )) {
             validate_numeric_value($project_id);
             $status_data = array("status" => $status);
             $save_id = $this->Projects_model->ci_save($status_data, $project_id);
@@ -5095,7 +5096,7 @@ class Projects extends Security_Controller {
         $this->access_only_team_members();
 
         //only admin/ the user has permission to manage all projects, can see all projects, other team mebers can see only their own projects.
-        $options = array("status" => "open");
+        $options = array("status" => "new_project");
         if (!$this->can_manage_all_projects()) {
             $options["user_id"] = $this->login_user->id;
         }

@@ -9,6 +9,23 @@
 
         <div class="form-group">
             <div class="row">
+                <label for="proposal_number" class=" col-md-3"><?php echo app_lang('proposal_number'); ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "proposal_number",
+                        "name" => "proposal_number",
+                        "value" => $model_info->proposal_number ? process_images_from_content($model_info->proposal_number, false) : "",
+                        "class" => "form-control",
+                        "placeholder" => app_lang('proposal_number'),
+                        "data-rich-text-editor" => true
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
                 <label for="proposal_date" class=" col-md-3"><?php echo app_lang('proposal_date'); ?></label>
                 <div class="col-md-9">
                     <?php
@@ -50,7 +67,7 @@
         <?php if (count($companies_dropdown) > 1) { ?>
             <div class="form-group">
                 <div class="row">
-                    <label for="company_id" class=" col-md-3"><?php echo app_lang('company'); ?></label>
+                    <label for="company_id" class=" col-md-3"><?php echo app_lang('company_owner'); ?></label>
                     <div class="col-md-9">
                         <?php
                         echo form_input(array(
@@ -102,7 +119,7 @@
         </div>
         <div class="form-group">
             <div class="row">
-                <label for="proposal_note" class=" col-md-3"><?php echo app_lang('note'); ?></label>
+                <label for="proposal_note" class=" col-md-3"><?php echo app_lang('note') . ' (Ex: ' . app_lang('payment_conditions') . ', ' . app_lang('term') . ')' ; ?></label>
                 <div class=" col-md-9">
                     <?php
                     echo form_textarea(array(

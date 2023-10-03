@@ -30,11 +30,11 @@
             source: ' <?php echo_uri("company/list_data") ?>',
             columns: [
                 {title: '<?php echo app_lang("name"); ?>'},
+                {title: '<?php echo app_lang("cnpj"); ?>'},
                 {title: '<?php echo app_lang("address"); ?> '},
                 {title: '<?php echo app_lang("phone"); ?> '},
                 {title: '<?php echo app_lang("email"); ?> '},
                 {title: '<?php echo app_lang("website"); ?> '},
-                {title: '<?php echo app_lang("vat_number"); ?> '},
                 {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
             ]
         });

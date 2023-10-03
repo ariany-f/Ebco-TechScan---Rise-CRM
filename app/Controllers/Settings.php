@@ -797,13 +797,15 @@ class Settings extends Security_Controller {
 
     function estimates() {
         $estimate_info = $this->Estimates_model->get_estimate_last_id();
-        $view_data["last_id"] = $estimate_info;
+        $view_data["last_id"] = $estimate_info; 
+        $Estimate_templates_model = model("App\Models\Estimate_templates_model");
+        $view_data['estimate_templates_dropdown'] = array("" => "-") + $Estimate_templates_model->get_dropdown_list(array("title"), "id");
 
         return $this->template->rander("settings/estimates", $view_data);
     }
 
     function save_estimate_settings() {
-        $settings = array("estimate_prefix", "estimate_color", "estimate_footer", "send_estimate_bcc_to", "initial_number_of_the_estimate", "create_new_projects_automatically_when_estimates_gets_accepted", "enable_comments_on_estimates", "show_most_recent_estimate_comments_at_the_top", "add_signature_option_on_accepting_estimate");
+        $settings = array("estimate_prefix", "estimate_color", "estimate_footer", "send_estimate_bcc_to", "initial_number_of_the_estimate", "create_new_projects_automatically_when_estimates_gets_accepted", "enable_comments_on_estimates", "show_most_recent_estimate_comments_at_the_top", "add_signature_option_on_accepting_estimate", "default_estimate_template");
         $reload_page = false;
 
         foreach ($settings as $setting) {

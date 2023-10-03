@@ -251,6 +251,7 @@ class Left_menu {
             $permissions = $this->ci->login_user->permissions;
 
             $access_expense = get_array_value($permissions, "expense");
+            $access_company = get_array_value($permissions, "company");
             $access_invoice = get_array_value($permissions, "invoice");
             $access_ticket = get_array_value($permissions, "ticket");
             $access_client = get_array_value($permissions, "client");
@@ -280,6 +281,10 @@ class Left_menu {
                 $sidebar_menu["clients"] = array("name" => "clients", "url" => "clients", "class" => "briefcase");
             }
 
+
+            if ($this->ci->login_user->is_admin || $access_company) {
+                $sidebar_menu["company"] = array("name" => "company_coligada", "url" => "company", "class" => "list");
+            }
 
             if ($this->ci->login_user->is_admin || !get_array_value($this->ci->login_user->permissions, "do_not_show_projects")) {
                 $sidebar_menu["projects"] = array("name" => "projects", "url" => "projects/all_projects", "class" => "grid");
@@ -321,6 +326,7 @@ class Left_menu {
             }
 
             if (get_setting("module_contract") && ($this->ci->login_user->is_admin || $access_contract)) {
+                $sales_submenu["projects"] = array("name" => "All", "url" => "projects/all_projects", "class" => "grid");
                 $sales_submenu["contracts"] = array("name" => "contracts", "url" => "contracts", "class" => "book-open");
             }
 
@@ -515,6 +521,7 @@ class Left_menu {
 
             if (get_setting("module_contract") && !in_array("contracts", $hidden_menu)) {
                 $sidebar_menu[] = array("name" => "contracts", "url" => "contracts", "class" => "book-open");
+                $sidebar_menu[] = array("name" => "projects", "url" => "projects/all_projects", "class" => "grid");
             }
 
             if (get_setting("module_proposal") && !in_array("proposals", $hidden_menu)) {

@@ -168,9 +168,9 @@ class Items extends Security_Controller {
 
         return array(
             modal_anchor(get_uri("items/view"), $show_in_client_portal_icon . $data->title, array("title" => app_lang("item_details"), "data-post-id" => $data->id)),
-            nl2br($data->description ? $data->description : ""),
+          //  nl2br($data->description ? $data->description : ""),
             $data->category_title ? $data->category_title : "-",
-            $type,
+          //  $type,
             to_decimal_format($data->rate),
             modal_anchor(get_uri("items/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_item'), "data-post-id" => $data->id))
             . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("items/delete"), "data-action" => "delete"))

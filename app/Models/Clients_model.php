@@ -20,6 +20,7 @@ class Clients_model extends Crud_model {
         $invoice_items_table = $this->db->prefixTable('invoice_items');
         $taxes_table = $this->db->prefixTable('taxes');
         $client_groups_table = $this->db->prefixTable('client_groups');
+        $invoice_rules_table = $this->db->prefixTable('invoice_rules');
         $lead_status_table = $this->db->prefixTable('lead_status');
         $estimates_table = $this->db->prefixTable('estimates');
         $estimate_requests_table = $this->db->prefixTable('estimate_requests');
@@ -76,6 +77,12 @@ class Clients_model extends Crud_model {
             $where .= " AND FIND_IN_SET('$group_id', $clients_table.group_ids)";
         }
 
+        
+        $invoice_rule_id = $this->_get_clean_value($options, "invoice_rule_id");
+        if ($invoice_rule_id) {
+            $where .= " AND FIND_IN_SET('$invoice_rule_id', $clients_table.invoice_rule_id)";
+        }
+
         $quick_filter = $this->_get_clean_value($options, "quick_filter");
         if ($quick_filter) {
             $where .= $this->make_quick_filter_query($quick_filter, $clients_table, $projects_table, $invoices_table, $taxes_table, $invoice_payments_table, $invoice_items_table, $estimates_table, $estimate_requests_table, $tickets_table, $orders_table, $proposals_table);
@@ -92,6 +99,10 @@ class Clients_model extends Crud_model {
 
         $client_groups = $this->_get_clean_value($options, "client_groups");
         $where .= $this->prepare_allowed_client_groups_query($clients_table, $client_groups);
+
+        
+        $invoice_rules = $this->_get_clean_value($options, "invoice_rules");
+        $where .= $this->prepare_allowed_invoice_rules_query($clients_table, $invoice_rules);
 
         //prepare custom fild binding query
         $custom_fields = get_array_value($options, "custom_fields");
@@ -125,7 +136,8 @@ class Clients_model extends Crud_model {
             "status" => "lead_status_title",
             "owner_name" => "owner_details.owner_name",
             "primary_contact" => "primary_contact",
-            "client_groups" => "client_groups"
+            "client_groups" => "client_groups",
+            "invoice_rules" => "invoice_rules"
         );
 
         $order_by = get_array_value($available_order_by_list, $this->_get_clean_value($options, "order_by"));
@@ -161,6 +173,7 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT SQL_CALC_FOUND_ROWS $clients_table.*, CONCAT($users_table.first_name, ' ', $users_table.last_name) AS primary_contact, $users_table.id AS primary_contact_id, $users_table.image AS contact_avatar,  project_table.total_projects, $payment_value_select AS payment_received $select_custom_fieds,
                 IF((($invoice_value_select > $payment_value_select) AND ($invoice_value_select - $payment_value_select) <0.05), $payment_value_select, $invoice_value_select) AS invoice_value,
+                (SELECT GROUP_CONCAT($invoice_rules_table.title) FROM $invoice_rules_table WHERE FIND_IN_SET($invoice_rules_table.id, $clients_table.invoice_rule_id)) AS invoice_rule_id,
                 (SELECT GROUP_CONCAT($client_groups_table.title) FROM $client_groups_table WHERE FIND_IN_SET($client_groups_table.id, $clients_table.group_ids)) AS client_groups, $lead_status_table.title AS lead_status_title,  $lead_status_table.color AS lead_status_color,
                 owner_details.owner_name, owner_details.owner_avatar
         FROM $clients_table
@@ -199,14 +212,16 @@ class Clients_model extends Crud_model {
     private function make_quick_filter_query($filter, $clients_table, $projects_table, $invoices_table, $taxes_table, $invoice_payments_table, $invoice_items_table, $estimates_table, $estimate_requests_table, $tickets_table, $orders_table, $proposals_table) {
         $query = "";
 
-        if ($filter == "has_open_projects" || $filter == "has_completed_projects" || $filter == "has_any_hold_projects" || $filter == "has_canceled_projects") {
-            $status = "open";
+        if ($filter == "has_open_projects" || $filter == "has_completed_projects" || $filter == "has_any_hold_projects" || $filter == "has_canceled_projects" || $filter == "has_new_projects") {
+            $status = "open_project";
             if ($filter == "has_completed_projects") {
-                $status = "completed";
+                $status = "completed_project";
             } else if ($filter == "has_any_hold_projects") {
-                $status = "hold";
+                $status = "hold_project";
+            } else if ($filter == "has_new_projects") {
+                $status = "new_project";
             } else if ($filter == "has_canceled_projects") {
-                $status = "canceled";
+                $status = "canceled_project";
             }
 
             $query = " AND $clients_table.id IN(SELECT $projects_table.client_id FROM $projects_table WHERE $projects_table.deleted=0 AND $projects_table.project_type='client_project' AND $projects_table.status='$status') ";
@@ -401,6 +416,58 @@ class Clients_model extends Crud_model {
         LEFT JOIN $users_table ON $users_table.id = $clients_table.owner_id AND $users_table.deleted=0 AND $users_table.user_type='staff' 
         WHERE $clients_table.deleted=0 AND $clients_table.is_lead=1 $where $custom_fields_where
         ORDER BY new_sort ASC";
+
+        return $this->db->query($sql);
+    }
+    
+
+    function get_proposals_kanban_details($options = array()) {
+       
+        $proposals_table = $this->db->prefixTable('proposals');
+        
+        // $users_table = $this->db->prefixTable('users');
+        // $events_table = $this->db->prefixTable('events');
+        // $notes_table = $this->db->prefixTable('notes');
+        // $estimates_table = $this->db->prefixTable('estimates');
+        // $general_files_table = $this->db->prefixTable('general_files');
+        // $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+
+        $where = "";
+
+        $status = $this->_get_clean_value($options, "status");
+        if ($status) {
+            $where .= " AND $proposals_table.status='$status'";
+        }
+
+        // $search = get_array_value($options, "search");
+        // if ($search) {
+        //     $search = $this->db->escapeLikeString($search);
+        //     $where .= " AND $clients_table.company_name LIKE '%$search%' ESCAPE '!'";
+        // }
+
+        $custom_field_filter = get_array_value($options, "custom_field_filter");
+        $custom_field_query_info = $this->prepare_custom_field_query_string("proposals", "", $proposals_table, $custom_field_filter);
+        $custom_fields_where = get_array_value($custom_field_query_info, "where_string");
+
+        //$users_where = "$users_table.client_id=$clients_table.id AND $users_table.deleted=0 AND $users_table.user_type='lead'";
+
+        $this->db->query('SET SQL_BIG_SELECTS=1');
+
+        $sql = "SELECT $proposals_table.id, $proposals_table.status,
+                -- (SELECT $users_table.image FROM $users_table WHERE $users_where AND $users_table.is_primary_contact=1) AS primary_contact_avatar,
+                -- (SELECT COUNT($users_table.id) FROM $users_table WHERE $users_where) AS total_contacts_count,
+                -- (SELECT COUNT($events_table.id) FROM $events_table WHERE $events_table.deleted=0 AND $events_table.client_id=$clients_table.id) AS total_events_count,
+                -- (SELECT COUNT($notes_table.id) FROM $notes_table WHERE $notes_table.deleted=0 AND $notes_table.client_id=$clients_table.id) AS total_notes_count,
+                -- (SELECT COUNT($estimates_table.id) FROM $estimates_table WHERE $estimates_table.deleted=0 AND $estimates_table.client_id=$clients_table.id) AS total_estimates_count,
+                -- (SELECT COUNT($general_files_table.id) FROM $general_files_table WHERE $general_files_table.deleted=0 AND $general_files_table.client_id=$clients_table.id) AS total_files_count,
+                -- (SELECT COUNT($estimate_requests_table.id) FROM $estimate_requests_table WHERE $estimate_requests_table.deleted=0 AND $estimate_requests_table.client_id=$clients_table.id) AS total_estimate_requests_count,
+                -- $lead_source_table.title AS lead_source_title,
+                -- CONCAT($users_table.first_name, ' ', $users_table.last_name) AS owner_name
+        FROM $proposals_table 
+        -- LEFT JOIN $lead_source_table ON $clients_table.lead_source_id = $lead_source_table.id 
+        -- LEFT JOIN $users_table ON $users_table.id = $clients_table.owner_id AND $users_table.deleted=0 AND $users_table.user_type='staff' 
+        WHERE $where $custom_fields_where
+        ORDER BY id ASC";
 
         return $this->db->query($sql);
     }

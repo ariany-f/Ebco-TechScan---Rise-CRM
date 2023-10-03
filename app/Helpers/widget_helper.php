@@ -593,8 +593,8 @@ if (!function_exists('count_project_status_widget')) {
         }
 
         $info = $ci->Projects_model->count_project_status($options);
-        $view_data["project_open"] = $info->open;
-        $view_data["project_completed"] = $info->completed;
+        $view_data["project_open"] = $info->open_project;
+        $view_data["project_completed"] = $info->completed_project;
         $template = new Template();
         return $template->view("projects/widgets/project_status_widget", $view_data);
     }
@@ -814,7 +814,7 @@ if (!function_exists('open_projects_widget')) {
             );
         }
 
-        $view_data["project_open"] = $ci->Projects_model->count_project_status($options)->open;
+        $view_data["project_open"] = $ci->Projects_model->count_project_status($options)->open_project;
         $template = new Template();
         return $template->view("projects/widgets/open_projects_widget", $view_data);
     }
@@ -843,7 +843,7 @@ if (!function_exists('completed_projects_widget')) {
             );
         }
 
-        $view_data["project_completed"] = $ci->Projects_model->count_project_status($options)->completed;
+        $view_data["project_completed"] = $ci->Projects_model->count_project_status($options)->completed_project;
         $template = new Template();
         return $template->view("projects/widgets/completed_projects_widget", $view_data);
     }
@@ -894,7 +894,7 @@ if (!function_exists('my_open_projects_widget')) {
         $ci = new Security_Controller(false);
 
         $options = array(
-            "statuses" => "open"
+            "statuses" => "open_project"
         );
 
         if ($ci->login_user->user_type == "client") {
@@ -1301,6 +1301,7 @@ if (!function_exists('client_projects_widget')) {
         $Clients_model = model("App\Models\Clients_model");
 
         $view_data["clients_has_open_projects"] = $Clients_model->count_total_clients(array("filter" => "has_open_projects", "show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups));
+        $view_data["clients_has_new_projects"] = $Clients_model->count_total_clients(array("filter" => "has_new_projects", "show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups));
         $view_data["clients_has_completed_projects"] = $Clients_model->count_total_clients(array("filter" => "has_completed_projects", "show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups));
         $view_data["clients_has_any_hold_projects"] = $Clients_model->count_total_clients(array("filter" => "has_any_hold_projects", "show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups));
         $view_data["clients_has_canceled_projects"] = $Clients_model->count_total_clients(array("filter" => "has_canceled_projects", "show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups));

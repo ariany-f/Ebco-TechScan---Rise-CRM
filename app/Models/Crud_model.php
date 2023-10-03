@@ -423,6 +423,29 @@ class Crud_model extends Model {
         return $where;
     }
 
+    
+    protected function prepare_allowed_invoice_rules_query($clients_table, $invoice_rules = "") {
+        $where = "";
+
+        if ($invoice_rules && count($invoice_rules)) {
+            $invoice_rules_where = "";
+            foreach ($invoice_rules as $invoice_rule) {
+                if ($invoice_rules_where) {
+                    $invoice_rules_where .= " OR ";
+                }
+
+                $invoice_rules_where .= " FIND_IN_SET('$invoice_rule', $clients_table.invoice_rule_id)";
+            }
+
+            if ($invoice_rules_where) {
+                $where .= " AND ($invoice_rules_where) ";
+            }
+        }
+
+        return $where;
+    }
+
+
     protected function _get_clean_value($options, $key) {
 
         $value = get_array_value($options, $key);

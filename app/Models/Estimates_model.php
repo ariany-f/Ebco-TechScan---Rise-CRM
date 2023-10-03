@@ -15,6 +15,7 @@ class Estimates_model extends Crud_model {
         $estimates_table = $this->db->prefixTable('estimates');
         $clients_table = $this->db->prefixTable('clients');
         $taxes_table = $this->db->prefixTable('taxes');
+        $estimate_type_table = $this->db->prefixTable('estimate_type');
         $estimate_items_table = $this->db->prefixTable('estimate_items');
         $projects_table = $this->db->prefixTable('projects');
         $users_table = $this->db->prefixTable('users');
@@ -79,11 +80,12 @@ class Estimates_model extends Crud_model {
         $join_custom_fieds = get_array_value($custom_field_query_info, "join_string");
         $custom_fields_where = get_array_value($custom_field_query_info, "where_string");
 
-        $sql = "SELECT $estimates_table.*, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title as project_title, $clients_table.is_lead,
+        $sql = "SELECT $estimates_table.*, $estimate_type_table.title AS estimate_type, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title as project_title, $clients_table.is_lead,
            CONCAT($users_table.first_name, ' ',$users_table.last_name) AS signer_name, $users_table.email AS signer_email,
            $estimate_value_calculation AS estimate_value, tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2 $select_custom_fieds
         FROM $estimates_table
         LEFT JOIN $clients_table ON $clients_table.id= $estimates_table.client_id
+        LEFT JOIN $estimate_type_table ON $estimate_type_table.id= $estimates_table.estimate_type_id
         LEFT JOIN $projects_table ON $projects_table.id= $estimates_table.project_id
         LEFT JOIN $users_table ON $users_table.id= $estimates_table.accepted_by
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $estimates_table.tax_id

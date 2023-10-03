@@ -152,7 +152,7 @@
                     <label for="status" class=" col-md-3"><?php echo app_lang('status'); ?></label>
                     <div class=" col-md-9">
                         <?php
-                        echo form_dropdown("status", array("open" => app_lang("open"), "completed" => app_lang("completed"), "hold" => app_lang("hold"), "canceled" => app_lang("canceled")), array($model_info->status), "class='select2'");
+                        echo form_dropdown("status", array("new_project" => app_lang("new_project"), "open_project" => app_lang("open_project"), "completed_project" => app_lang("completed_project"), "hold_project" => app_lang("hold_project"), "canceled_project" => app_lang("canceled_project")), array($model_info->status), "class='select2'");
                         ?>
                     </div>
                 </div>

@@ -19,6 +19,59 @@
         </div>
     </div>
 </div>
+
+
+<div class="form-group">
+    <div class="row">
+        <label for="cnpj" class=" col-md-3"><?php echo app_lang('cnpj'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "cnpj",
+                "name" => "cnpj",
+                "value" => $model_info->cnpj,
+                "class" => "form-control",
+                "placeholder" => app_lang('cnpj'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <label for="state_subscription" class=" col-md-3"><?php echo app_lang('state_subscription'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "state_subscription",
+                "name" => "state_subscription",
+                "value" => $model_info->state_subscription,
+                "class" => "form-control",
+                "placeholder" => app_lang('state_subscription'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <label for="city_subscription" class=" col-md-3"><?php echo app_lang('city_subscription'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "city_subscription",
+                "name" => "city_subscription",
+                "value" => $model_info->city_subscription,
+                "class" => "form-control",
+                "placeholder" => app_lang('city_subscription'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
 <div class="form-group">
     <div class="row">
         <label for="lead_status_id" class="<?php echo $label_column; ?>"><?php echo app_lang('status'); ?></label>
@@ -51,6 +104,23 @@
         </div>
     </div>
 </div>
+<div class="form-group">
+    <div class="row">
+        <label for="lead_interested" class=" col-md-3"><?php echo app_lang('lead_interested'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_textarea(array(
+                "id" => "lead_interested",
+                "name" => "lead_interested",
+                "value" => $model_info->lead_interested,
+                "class" => "form-control",
+                "placeholder" => app_lang('lead_interested'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
 <div class="form-group">
     <div class="row">
         <label for="lead_source_id" class="<?php echo $label_column; ?>"><?php echo app_lang('source'); ?></label>
@@ -175,38 +245,6 @@
                 "value" => $model_info->website,
                 "class" => "form-control",
                 "placeholder" => app_lang('website')
-            ));
-            ?>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <div class="row">
-        <label for="vat_number" class="<?php echo $label_column; ?>"><?php echo app_lang('vat_number'); ?></label>
-        <div class="<?php echo $field_column; ?>">
-            <?php
-            echo form_input(array(
-                "id" => "vat_number",
-                "name" => "vat_number",
-                "value" => $model_info->vat_number,
-                "class" => "form-control",
-                "placeholder" => app_lang('vat_number')
-            ));
-            ?>
-        </div>
-    </div>
-</div>
-<div class="form-group">
-    <div class="row">
-        <label for="gst_number" class="<?php echo $label_column; ?>"><?php echo app_lang('gst_number'); ?></label>
-        <div class="<?php echo $field_column; ?>">
-            <?php
-            echo form_input(array(
-                "id" => "gst_number",
-                "name" => "gst_number",
-                "value" => $model_info->gst_number,
-                "class" => "form-control",
-                "placeholder" => app_lang('gst_number')
             ));
             ?>
         </div>

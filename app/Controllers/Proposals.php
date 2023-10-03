@@ -131,7 +131,8 @@ class Proposals extends Security_Controller {
             "tax_id" => $this->request->getPost('tax_id') ? $this->request->getPost('tax_id') : 0,
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
             "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
-            "note" => $this->request->getPost('proposal_note')
+            "note" => $this->request->getPost('proposal_note'),
+            'proposal_number' => $this->request->getPost('proposal_number')
         );
 
         //save random code for new proposal
@@ -324,6 +325,7 @@ class Proposals extends Security_Controller {
         }
 
         $row_data = array(
+            $data->proposal_number,
             $proposal_url,
             $client,
             $data->proposal_date,
@@ -612,7 +614,7 @@ class Proposals extends Security_Controller {
         $items = $this->Invoice_items_model->get_item_suggestion($key);
 
         foreach ($items as $item) {
-            $suggestion[] = array("id" => $item->id, "text" => $item->title);
+            $suggestion[] = array("id" => $item->id, "text" => $item->title . ' - ' . $item->category_title);
         }
 
         $suggestion[] = array("id" => "+", "text" => "+ " . app_lang("create_new_item"));
@@ -728,6 +730,7 @@ class Proposals extends Security_Controller {
             $email_template = $this->Email_templates_model->get_final_template("proposal_sent");
 
             $parser_data["PROPOSAL_ID"] = $proposal_info->id;
+            $parser_data["PROPOSAL_NUMBER"] = $proposal_info->proposal_number;
             $parser_data["CONTACT_FIRST_NAME"] = $contact_first_name;
             $parser_data["CONTACT_LAST_NAME"] = $contact_last_name;
             $parser_data["PROPOSAL_URL"] = get_uri("proposals/preview/" . $proposal_info->id);
@@ -744,6 +747,77 @@ class Proposals extends Security_Controller {
         } else {
             show_404();
         }
+    }
+
+    function all_proposals_kanban() {
+       
+        $this->access_only_allowed_members();
+        $this->check_module_availability("module_proposal");
+
+        $view_data['owners_dropdown'] = $this->_get_proposal_owners_dropdown("filter");
+        $view_data["custom_field_filters"] = $this->Custom_fields_model->get_custom_field_filters("proposals", $this->login_user->is_admin, $this->login_user->user_type);
+       
+        return $this->template->rander("proposals/kanban/all_proposals", $view_data);
+    }
+    
+
+    function save_proposal_sort_and_status() {
+        $this->access_only_allowed_members();
+        $this->check_module_availability("module_proposal");
+
+        $this->validate_submitted_data(array(
+            "id" => "required|numeric"
+        ));
+
+        $id = $this->request->getPost('id');
+
+        $proposal_status_id = $this->request->getPost('proposal_status_id');
+        $data = array(
+            "sort" => $this->request->getPost('sort')
+        );
+
+        if ($proposal_status_id) {
+            $data["proposal_status_id"] = $proposal_status_id;
+        }
+
+        $this->Clients_model->ci_save($data, $id);
+    }
+
+    function all_proposals_kanban_data() {
+        $this->access_only_allowed_members();
+        $this->check_module_availability("module_proposal");
+        $show_own_proposals_only_user_id = $this->show_own_proposals_only_user_id();
+
+        $options = array(
+            "status" => $this->request->getPost('status'),
+            "owner_id" => $show_own_proposals_only_user_id ? $show_own_proposals_only_user_id : $this->request->getPost('owner_id'),
+            "search" => $this->request->getPost('search'),
+            "custom_field_filter" => $this->prepare_custom_field_filter_values("proposals", $this->login_user->is_admin, $this->login_user->user_type)
+        );
+
+        $view_data["proposals"] = $this->Clients_model->get_proposals_kanban_details($options)->getResult();
+        $statuses = $this->Proposal_status_model->get_details();
+        $view_data["total_columns"] = $statuses->resultID->num_rows;
+        $view_data["columns"] = $statuses->getResult();
+
+        return $this->template->view('proposals/kanban/kanban_view', $view_data);
+    }
+    
+    //get owners dropdown
+    //owner will be team member
+    private function _get_proposal_owners_dropdown($view_type = "") {
+        $team_members = $this->Users_model->get_all_where(array("user_type" => "staff", "deleted" => 0, "status" => "active"))->getResult();
+        $team_members_dropdown = array();
+
+        if ($view_type == "filter") {
+            $team_members_dropdown = array(array("id" => "", "text" => "- " . app_lang("owner") . " -"));
+        }
+
+        foreach ($team_members as $member) {
+            $team_members_dropdown[] = array("id" => $member->id, "text" => $member->first_name . " " . $member->last_name);
+        }
+
+        return $team_members_dropdown;
     }
 
     function send_proposal() {

@@ -98,10 +98,23 @@ class Users_model extends Crud_model {
     }
 
     function sign_out() {
+        // echo '<pre>';
+        // print_r($_COOKIE);
+        // print_r($_SESSION);die;
         try {
             app_hooks()->do_action('app_hook_before_signout');
         } catch (\Exception $ex) {
             log_message('error', '[ERROR] {exception}', ['exception' => $ex]);
+        }
+
+        if (isset($_SERVER['HTTP_COOKIE'])) {
+            $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
+            foreach($cookies as $cookie) {
+                $parts = explode('=', $cookie);
+                $name = trim($parts[0]);
+                setcookie($name, '', time()-1000);
+                setcookie($name, '', time()-1000, '/');
+            }
         }
 
         $session = \Config\Services::session();
@@ -282,6 +295,17 @@ class Users_model extends Crud_model {
         } else {
             return false;
         }
+    }
+
+    function aux_table_is_email_exists($email) {
+        $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $stmt = $connection->prepare("SELECT * FROM users WHERE user_email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt_result = $stmt->get_result();
+        $stmt->close();
+        $row = $stmt_result->fetch_array(MYSQLI_ASSOC);
+        return $row;
     }
 
     function get_job_info($user_id) {

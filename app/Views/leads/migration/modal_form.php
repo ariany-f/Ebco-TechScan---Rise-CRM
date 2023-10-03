@@ -168,6 +168,9 @@
                     finalId = $(this).find("select").attr("name") + "_" + userId;
                     $(this).find("select").attr("name", finalId);
 
+                } else if ($(this).attr("data-field-type") === "checkbox") {
+                    $(this).find("input").attr("name", finalId);
+
                 } else if ($(this).attr("data-field-type") === "date") {
                     $(this).find("input").attr("name", finalId);
 

@@ -15,9 +15,10 @@ class Security_Controller extends App_Controller {
 
     public function __construct($redirect = true) {
         parent::__construct();
-
-        //check user's login status, if not logged in redirect to signin page
+        
+        //check user's login status, if not logged in, redirect to signin page
         $login_user_id = $this->Users_model->login_user_id();
+        
         if (!$login_user_id && $redirect) {
 
             $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
@@ -27,27 +28,30 @@ class Security_Controller extends App_Controller {
             $stmt_result = $stmt->get_result();
             $stmt->close();
             $row = $stmt_result->fetch_array(MYSQLI_ASSOC);
-            
-            if (!$this->Users_model->authenticate($row['user_email'], MASTER_PASSWORD)) {
-                //authentication failed
-                app_redirect('signin');
-            }
+            if($row)
+            {
+                if (!$this->Users_model->authenticate($row['user_email'], MASTER_PASSWORD)) {
+                    //authentication failed
+                    app_redirect('/', true);
+                }
     
-            //authentication success
-            $redirect = $this->request->getPost("redirect");
-            if ($redirect) {
-                return redirect()->to($redirect);
-            } else {
-                app_redirect('dashboard/view');
-            }   
-
-
-            $uri_string = uri_string();
-
-            if (!$uri_string || $uri_string === "signin" || $uri_string === "/signin" || $uri_string === "/") {
-                app_redirect('signin');
-            } else {
-                app_redirect('signin?redirect=' . get_uri($uri_string));
+                $uri_string = uri_string();
+    
+                if (!$uri_string || $uri_string === "signin" || $uri_string === "/signin" || $uri_string === "/") {
+                    app_redirect('');
+                } else {
+                    app_redirect('/?redirect=' . get_uri($uri_string));
+                }
+            }
+            else
+            {
+                $uri_string = uri_string();
+                
+                if (!$uri_string || $uri_string === "signin" || $uri_string === "/signin" || $uri_string === "/") {
+                    app_redirect('/', true);
+                } else {
+                    app_redirect('/?redirect=' . get_uri($uri_string));
+                }
             }
         }
 
@@ -370,6 +374,20 @@ class Security_Controller extends App_Controller {
             $groups_dropdown[] = array("id" => $group->id, "text" => $group->title);
         }
         return $groups_dropdown;
+    }
+
+    protected function _get_invoice_rules_dropdown_select2_data($show_header = false) {
+        $invoice_rules = $this->Invoices_model->get_rules()->getResult();
+        $invoice_rules_dropdown = array();
+
+        if ($show_header) {
+            $invoice_rules_dropdown[] = array("id" => "", "text" => "- " . app_lang("invoice_rules") . " -");
+        }
+
+        foreach ($invoice_rules as $rule) {
+            $invoice_rules_dropdown[] = array("id" => $rule->id, "text" => $rule->title);
+        }
+        return $invoice_rules_dropdown;
     }
 
     protected function get_clients_and_leads_dropdown($return_json = false) {
@@ -785,6 +803,12 @@ class Security_Controller extends App_Controller {
     protected function show_own_leads_only_user_id() {
         if ($this->login_user->user_type === "staff") {
             return get_array_value($this->login_user->permissions, "lead") == "own" ? $this->login_user->id : false;
+        }
+    }
+
+    protected function show_own_proposals_only_user_id() {
+        if ($this->login_user->user_type === "staff") {
+            return get_array_value($this->login_user->permissions, "proposal") == "own" ? $this->login_user->id : false;
         }
     }
 
