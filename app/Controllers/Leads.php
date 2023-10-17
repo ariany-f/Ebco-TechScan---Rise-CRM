@@ -1346,8 +1346,6 @@ class Leads extends Security_Controller {
             "company_name",
             "status",
             "source",
-            "cnpj",
-            "lead_interested",
             "contact_first_name",
             "contact_last_name",
             "contact_email",
@@ -1357,12 +1355,11 @@ class Leads extends Security_Controller {
             "zip",
             "country",
             "phone",
-            "city_subscription",
-            "state_subscription",
             "website",
-            "vat_number",
-            "currency",
-            "currency_symbol"
+            "cnpj",
+            "inscricao_estadual",
+            "inscricao_municipal",
+            "interesse_do_cliente"
         );
     }
 
