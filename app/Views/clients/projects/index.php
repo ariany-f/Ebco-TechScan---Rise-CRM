@@ -103,7 +103,6 @@ if (isset($page_type) && $page_type === 'dashboard') {
                 {title: '<?php echo app_lang("start_date") ?>', "class": "w10p", "iDataSort": 4},
                 {visible: false, searchable: false},
                 {title: '<?php echo app_lang("deadline") ?>', "class": "w10p", "iDataSort": 6},
-                {title: '<?php echo app_lang("progress") ?>', "class": "w15p"},
                 {title: '<?php echo app_lang("status") ?>', "class": "w10p"}
 <?php echo $custom_field_headers; ?>,
                 {visible: optionVisibility, title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
