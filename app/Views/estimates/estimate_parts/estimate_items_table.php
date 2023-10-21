@@ -44,11 +44,10 @@ $total_after_discount_row = '<tr>
                             $file_name = get_array_value($file, "file_name");
     
                             $options = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-minus mr10 float-start"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>';
-                            //$options = anchor(get_uri("estimates/download_file/" . $file_name), $svg, array("title" => app_lang("download")));
-    
+
                             if (is_viewable_image_file($file_name)) {
                                 $thumbnail = get_source_url_of_file($file, $timeline_file_path, "thumbnail");
-                                $estimate_file = "<a href=\"".get_uri("estimates/download_file/" . $file_name)."\" title=\"".app_lang("download")."\"><div class=\"col-md-6 col-sm-6 pr0 saved-file-item-container\"><div style=\"height: 15vh;width: 100px;background-size: contain;background-repeat:no-repeat;background-image: url(../../$source_path)\" class\"edit-image-file mb15\" ></div></div></a>";
+                                $estimate_file = "<a href=\"".get_uri("estimates/download_file/" . $file_name)."\" title=\"".app_lang("download")."\"><div class=\"col-md-6 col-sm-6 pr0 saved-file-item-container\"><div style=\"height: 15vh;width: 100px;background-size: contain;background-repeat:no-repeat;background-image: url(". base_url() ."/$source_path)\" class\"edit-image-file mb15\" ></div></div></a>";
                             } else {
                                 $estimate_file = "<div class=\"box saved-file-item-container\"><a title=\"".app_lang("download")."\" href=\"".get_uri("estimates/download_file/" . $file_name)."\"><div class=\"box-content w80p pt5 pb5\">" . $options . remove_file_prefix($file_name) . "</div></a></div>";
                             }
