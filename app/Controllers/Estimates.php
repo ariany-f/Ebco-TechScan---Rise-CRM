@@ -167,7 +167,6 @@ class Estimates extends Security_Controller {
     }
 
     /* add, edit or clone an estimate */
-
     function save() {
         $this->access_only_allowed_members();
 
@@ -240,7 +239,7 @@ class Estimates extends Security_Controller {
                 save_custom_fields("estimates", $estimate_id, 1, "staff"); //we have to keep this regarding as an admin user because non-admin user also can acquire the access to clone a estimate
 
                 $estimate_items = $this->Estimate_items_model->get_all_where(array("estimate_id" => $main_estimate_id, "deleted" => 0))->getResult();
-
+                
                 foreach ($estimate_items as $estimate_item) {
                     //prepare new estimate item data
                     $estimate_item_data = (array) $estimate_item;
@@ -746,7 +745,6 @@ class Estimates extends Security_Controller {
     }
 
     /* list of estimate items, prepared for datatable  */
-
     function item_list_data($estimate_id = 0) {
         validate_numeric_value($estimate_id);
         $this->access_only_allowed_members();
@@ -761,7 +759,6 @@ class Estimates extends Security_Controller {
     }
 
     /* prepare a row of estimate item list table */
-
     private function _make_item_row($data) {
         $item = "<div class='item-row strong mb5' data-id='$data->id'><div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div> $data->title</div>";
         if ($data->description) {
@@ -819,7 +816,6 @@ class Estimates extends Security_Controller {
 
             $estimate_data = get_estimate_making_data($estimate_id);
             $this->_check_estimate_access_permission($estimate_data);
-
             $sort_as_decending = get_setting("show_most_recent_estimate_comments_at_the_top");
 
             $comments_options = array(
@@ -831,6 +827,7 @@ class Estimates extends Security_Controller {
 
             //get the label of the estimate
             $estimate_info = get_array_value($estimate_data, "estimate_info");
+            
             $estimate_data['estimate_status_label'] = $this->_get_estimate_status_label($estimate_info);
 
            // $view_data['estimate_preview'] = prepare_estimate_pdf($estimate_data, "html");
@@ -840,6 +837,7 @@ class Estimates extends Security_Controller {
             $view_data['show_close_preview'] = $show_close_preview && $this->login_user->user_type === "staff" ? true : false;
 
             $view_data['estimate_id'] = $estimate_id;
+            
             if ($is_editor_preview) {
                 $view_data["is_editor_preview"] = clean_data($is_editor_preview);
                 return $this->template->view("estimates/estimate_preview", $view_data);
@@ -1103,6 +1101,11 @@ class Estimates extends Security_Controller {
                 delete_file_from_directory($source_path);
             }
         }
+    }
+
+    function download_file($file_data) {
+        $dw = serialize(array(array("file_name" => $file_data)));
+        return $this->download_app_files(get_setting("timeline_file_path"), $dw);
     }
 
     /* download files by zip */

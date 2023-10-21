@@ -2387,12 +2387,17 @@ $lang["estimate_number"] = "Código da proposta";
 $lang["company_coligada"] = "Coligadas";
 $lang["order_number"] = "Order number";
 
+$lang['sellers_overview'] = 'Ranking Vendedores';
+$lang['total_sells'] = 'Total Vendido';
+
+$lang['termometer_proposals'] = 'Termômetro das propostas';
+
 $lang["client_can_access_notes"] = "Client can access notes?";
 
 $lang["my_tasks_overview"] = "My Tasks Overview";
 
 $lang["leads_overview"] = "Leads Overview";
-$lang["converted_to_client"] = "Converted to client";
+$lang["converted_to_client"] = "Convertido para cliente";
 
 $lang["remember_to_add_this_urls_in_authorized_redirect_uri"] = "Remember to add this urls in Authorized redirect uri";
 

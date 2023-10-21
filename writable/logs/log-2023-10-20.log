@@ -1,0 +1,8 @@
+CRITICAL - 2023-10-20 22:50:14 --> Argument 1 passed to CodeIgniter\View\Parser::renderString() must be of the type string, null given, called in E:\httpdocs\www\crm\app\Helpers\general_helper.php on line 2487
+in SYSTEMPATH\View\Parser.php on line 152.
+ 1 APPPATH\Helpers\general_helper.php(2487): CodeIgniter\View\Parser->renderString(null)
+ 2 APPPATH\Controllers\Estimates.php(834): prepare_estimate_view([...])
+ 3 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->preview('9', '0', '1')
+ 4 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

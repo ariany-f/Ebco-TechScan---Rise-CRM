@@ -21,6 +21,7 @@ class Estimate extends Security_Controller {
 
         //check public key
         $estimate_info = $this->Estimates_model->get_one($estimate_id);
+        
         if ($estimate_info->public_key !== $public_key) {
             show_404();
         }

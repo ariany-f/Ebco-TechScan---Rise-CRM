@@ -552,13 +552,14 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT COUNT($clients_table.id) AS total
         FROM $clients_table 
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=1 $where";
+        WHERE $clients_table.deleted=0 AND $clients_table.lead_status_id <> 6 AND $clients_table.is_lead=1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
     function get_lead_statistics($options = array()) {
         $clients_table = $this->db->prefixTable('clients');
         $lead_status_table = $this->db->prefixTable('lead_status');
+        $projects_table = $this->db->prefixTable('projects');
 
         try {
             $this->db->query("SET sql_mode = ''");
@@ -583,9 +584,17 @@ class Clients_model extends Crud_model {
         GROUP BY $clients_table.lead_status_id
         ORDER BY $lead_status_table.sort ASC";
 
+        $total_sells = "SELECT SUM($projects_table.price) AS total, $clients_table.lead_status_id, $clients_table.currency_symbol
+        FROM $projects_table
+        INNER JOIN $clients_table ON $clients_table.id = $projects_table.client_id
+        LEFT JOIN $lead_status_table ON $lead_status_table.id = $clients_table.lead_status_id
+        WHERE $clients_table.deleted=0 $where";
+
         $info = new \stdClass();
         $info->converted_to_client = $this->db->query($converted_to_client)->getRow()->total;
         $info->lead_statuses = $this->db->query($lead_statuses)->getResult();
+      //  $total_sells_result = $this->db->query($total_sells)->getRow();
+        //$info->total_sells = to_currency($total_sells_result->total, $total_sells_result->currency_symbol);
 
         return $info;
     }

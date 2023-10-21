@@ -21,11 +21,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div><?php echo app_lang("total_leads") . ": "; ?> <span class="strong"><?php echo $total_leads; ?></span></div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div><?php echo app_lang("converted_to_client") . ": "; ?> <span class="strong"><?php echo $converted_to_client; ?></span></div>
+            </div>
+            <div class="col-md-4">
+                <div><?php echo app_lang("total_sells") . ": "; ?> <span class="strong"><?php echo $total_sells; ?></span></div>
             </div>
         </div>
     </div>

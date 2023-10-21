@@ -190,11 +190,14 @@ class Items extends Security_Controller {
             exit();
         }
 
-        if (is_image_file($file_name)) {
-            echo json_encode(array("success" => true));
-        } else {
-            echo json_encode(array("success" => false, 'message' => app_lang('please_upload_valid_image_files')));
-        }
+        echo json_encode(array("success" => true));
+
+        /** Valida se está subindo uma imagem nos itens do serviço/produto */
+        // if (is_image_file($file_name)) {
+        //     echo json_encode(array("success" => true));
+        // } else {
+        //     echo json_encode(array("success" => false, 'message' => app_lang('please_upload_valid_image_files')));
+        // }
     }
 
     function view() {

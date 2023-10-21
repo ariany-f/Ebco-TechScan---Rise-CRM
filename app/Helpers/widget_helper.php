@@ -1746,9 +1746,71 @@ if (!function_exists('leads_overview_widget')) {
         $view_data["lead_statuses"] = $ci->Clients_model->get_lead_statistics($options)->lead_statuses;
         $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options);
         $view_data["converted_to_client"] = $ci->Clients_model->get_lead_statistics($options)->converted_to_client;
+        $view_data["total_sells"] = $ci->Clients_model->get_lead_statistics($options)->total_sells;
 
         $template = new Template();
         return $template->view("leads/leads_overview_widget", $view_data);
+    }
+
+}
+
+/**
+ * get sellers overview widget
+ * @param string $type
+ * 
+ * @return html
+ */
+if (!function_exists('sellers_overview_widget')) {
+
+    function sellers_overview_widget() {
+        $ci = new Security_Controller(false);
+        $permissions = $ci->login_user->permissions;
+
+        $options["role_id"] = 6;
+
+        if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
+            $options["show_own_leads_only_user_id"] = false;
+        } else if (get_array_value($permissions, "lead") == "own") {
+            $options["show_own_leads_only_user_id"] = $ci->login_user->id;
+        }
+
+        $view_data["team_members"] = $ci->Users_model->get_sellers( $options['role_id'], $options['show_own_leads_only_user_id'] )->getResult();
+
+        $template = new Template();
+        return $template->view("leads/sellers_overview_widget", $view_data);
+    }
+
+}
+
+/**
+ * get termometer proposals widget
+ * @param string $type
+ * 
+ * @return html
+ */
+if (!function_exists('termometer_proposals_widget')) {
+
+    function termometer_proposals_widget() {
+        $ci = new Security_Controller(false);
+        $permissions = $ci->login_user->permissions;
+
+        if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
+            $show_own_clients_only_user_id = false;
+        } else if (get_array_value($permissions, "lead") == "own") {
+            $show_own_clients_only_user_id = $ci->login_user->id;
+        }
+
+        $custom_fields = $ci->Custom_fields_model->get_available_fields_for_table("estimates", $ci->login_user->is_admin, $ci->login_user->user_type);
+
+        $options = array(
+            "show_own_estimates_only_user_id" => $show_own_clients_only_user_id,
+            "custom_fields" => $custom_fields
+        );
+
+        $view_data["termometer"] = $ci->Estimates_model->get_details($options)->getResult();
+
+        $template = new Template();
+        return $template->view("leads/termometer_proposals_widget", $view_data);
     }
 
 }

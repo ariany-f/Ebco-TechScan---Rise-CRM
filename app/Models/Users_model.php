@@ -384,6 +384,42 @@ class Users_model extends Crud_model {
         WHERE $users_table.deleted=0 AND $users_table.status='active' $where
         ORDER BY $users_table.user_type, $users_table.first_name ASC";
         return $this->db->query($sql);
+    }    
+
+    function get_sellers($role_id = null, $show_own_leads_only_user_id = false) {
+
+        $users_table = $this->db->prefixTable('users');
+        $clients_table = $this->db->prefixTable('clients');
+        $projects_table = $this->db->prefixTable('projects');
+
+        $where = "";
+        
+        if ($role_id) {
+            $where .= " AND $users_table.role_id='$role_id'";
+        }
+
+        if ($show_own_leads_only_user_id) {
+            $where .= " AND $clients_table.owner_id=$show_own_leads_only_user_id";
+        }
+
+        $sql = "SELECT 
+                    $users_table.id,
+                    $users_table.first_name, 
+                    $users_table.last_name, 
+                    COALESCE(SUM($projects_table.price), 0) AS total_sells, 
+                    COALESCE(COUNT($clients_table.id), 0) AS total_clients, 
+                    $users_table.user_type, 
+                    $users_table.image,  
+                    $users_table.job_title, 
+                    $users_table.last_online
+        FROM $projects_table
+        INNER JOIN $clients_table ON $clients_table.id = $projects_table.client_id
+        INNER JOIN $users_table ON $users_table.id = $clients_table.owner_id
+        WHERE $users_table.deleted=0 AND $users_table.status='active' $where
+        GROUP BY $users_table.id
+        ORDER BY SUM($projects_table.price) DESC";
+        
+        return $this->db->query($sql);
     }
 
     /* return comma separated list of user names */

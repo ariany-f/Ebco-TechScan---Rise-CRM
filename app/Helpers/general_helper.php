@@ -2296,6 +2296,7 @@ if (!function_exists('prepare_proposal_view')) {
             $parser_data["PROPOSAL_TO_INFO"] = view("proposals/proposal_parts/proposal_to", $view_data);
             $parser_data["PROPOSAL_TO_COMPANY_NAME"] = $client_info->company_name;
             $parser_data["PROPOSAL_TO_COMPANY_CNPJ"] = $client_info->cnpj;
+            $parser_data["ESTIMATE_TO_COMPANY_EMAIL"] = $client_info->email;
             $parser_data["PROPOSAL_TO_ADDRESS"] = $client_info->address;
             $parser_data["PROPOSAL_TO_CITY"] = $client_info->city;
             $parser_data["PROPOSAL_TO_STATE"] = $client_info->state;
@@ -2420,7 +2421,7 @@ if (!function_exists('prepare_estimate_view')) {
     function prepare_estimate_view($estimate_data) {
         if ($estimate_data) {
             $estimate_info = get_array_value($estimate_data, "estimate_info");
-
+            
             $parser_data = array();
 
             $parser_data["ESTIMATE_ID"] = get_estimate_id($estimate_info->id);
@@ -2454,7 +2455,7 @@ if (!function_exists('prepare_estimate_view')) {
             $parser_data["COMPANY_PHONE"] = $company_info->phone;
             $parser_data["COMPANY_EMAIL"] = $company_info->email;
             $parser_data["COMPANY_WEBSITE"] = $company_info->website;
-            $parser_data["COMPANY_IMAGE_URL"] = get_company_logo($company_info->id, "proposal");
+            $parser_data["COMPANY_IMAGE_URL"] = get_company_logo($company_info->id, "estimate");
 
             $client_info = get_array_value($estimate_data, "client_info");
             $view_data["client_info"] = $client_info;
@@ -2516,6 +2517,7 @@ if (!function_exists('get_available_estimate_variables')) {
             "ESTIMATE_TO_INFO",
             "ESTIMATE_TO_COMPANY_NAME",
             "ESTIMATE_TO_COMPANY_CNPJ",
+            "ESTIMATE_TO_COMPANY_EMAIL",
             "ESTIMATE_TO_ADDRESS",
             "ESTIMATE_TO_CITY",
             "ESTIMATE_TO_STATE",
@@ -2971,6 +2973,28 @@ if (!function_exists('get_company_logo')) {
         $Company_model = model('App\Models\Company_model');
         $company_info = $Company_model->get_one($company_id);
         $only_file_path = get_setting('only_file_path');
+
+        if($type == 'estimate')
+        {
+            if (isset($company_info->logo) && $company_info->logo) {
+                $file = unserialize($company_info->logo);
+                if (is_array($file)) {
+                    $file = get_array_value($file, 0);
+
+                    return '<img class="max-logo-size" src="'. get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path) .'" alt="..." />';
+
+                }
+            } else {
+                $logo = $type . "_logo";
+                if (!get_setting($logo)) {
+                    $logo = "invoice_logo";
+                }
+    
+                return '<img class="max-logo-size" src="'. get_file_from_setting($logo, $only_file_path) .'" alt="..." />';
+    
+
+            }
+        }
 
         if($type == 'proposal')
         {

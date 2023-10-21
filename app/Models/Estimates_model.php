@@ -19,6 +19,7 @@ class Estimates_model extends Crud_model {
         $estimate_items_table = $this->db->prefixTable('estimate_items');
         $projects_table = $this->db->prefixTable('projects');
         $users_table = $this->db->prefixTable('users');
+        $items_table = $this->db->prefixTable('items');
 
         $where = "";
         $id = $this->_get_clean_value($options, "id");
@@ -80,17 +81,18 @@ class Estimates_model extends Crud_model {
         $join_custom_fieds = get_array_value($custom_field_query_info, "join_string");
         $custom_fields_where = get_array_value($custom_field_query_info, "where_string");
 
-        $sql = "SELECT $estimates_table.*, $estimate_type_table.title AS estimate_type, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title as project_title, $clients_table.is_lead,
+        $sql = "SELECT $estimates_table.*, $estimate_type_table.title AS estimate_type, client_contact.id AS contact_id, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title as project_title, $clients_table.is_lead,
            CONCAT($users_table.first_name, ' ',$users_table.last_name) AS signer_name, $users_table.email AS signer_email,
            $estimate_value_calculation AS estimate_value, tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2 $select_custom_fieds
         FROM $estimates_table
-        LEFT JOIN $clients_table ON $clients_table.id= $estimates_table.client_id
+        LEFT JOIN $clients_table ON $clients_table.id= $estimates_table.client_id        
+        LEFT JOIN $users_table AS client_contact ON client_contact.client_id = $clients_table.id AND client_contact.deleted=0 AND client_contact.is_primary_contact=1 
         LEFT JOIN $estimate_type_table ON $estimate_type_table.id= $estimates_table.estimate_type_id
         LEFT JOIN $projects_table ON $projects_table.id= $estimates_table.project_id
         LEFT JOIN $users_table ON $users_table.id= $estimates_table.accepted_by
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $estimates_table.tax_id
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $estimates_table.tax_id2 
-        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table WHERE deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
+        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value, $items_table.files AS estimate_files FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
         $join_custom_fieds
         WHERE $estimates_table.deleted=0 $where $custom_fields_where";
         return $this->db->query($sql);
