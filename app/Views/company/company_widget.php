@@ -8,7 +8,7 @@ $company_address = nl2br($company_info->address ? $company_info->address : "");
 <?php } ?>
 
 <?php if ($company_info->cnpj) { ?>
-        <br /><?php echo app_lang("cnpj") . ": " . $company_info->cnpj; ?>
+        <?php echo app_lang("cnpj") . ": " . $company_info->cnpj; ?> <br />
     <?php } ?>
 <div style="line-height: 3px;"> </div>
 <span class="invoice-meta text-default" style="font-size: 90%; color: #666;"><?php

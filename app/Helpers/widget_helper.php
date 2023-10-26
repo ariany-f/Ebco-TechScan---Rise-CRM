@@ -1420,6 +1420,33 @@ if (!function_exists('company_widget')) {
 
 }
 
+if (!function_exists('company_contact_widget')) {
+
+    function company_contact_widget($company_id = 0, $bill_from = "") {
+        $options = array("is_default" => true);
+        if ($company_id) {
+            $options = array("id" => $company_id);
+        }
+
+        $options["deleted"] = 0;
+
+        $Company_model = model('App\Models\Company_model');
+        $company_info = $Company_model->get_one_where($options);
+
+        //show default company when any specific company isn't exists
+        if ($company_id && !$company_info->id) {
+            $options = array("is_default" => true);
+            $company_info = $Company_model->get_one_where($options);
+        }
+
+        $view_data["company_info"] = $company_info;
+        $view_data["bill_from"] = $bill_from;
+
+        return view("company/company_contact_widget", $view_data);
+    }
+
+}
+
 /**
  * get projects overview widget
  * @param integer $user_id

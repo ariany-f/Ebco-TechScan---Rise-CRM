@@ -1,1 +1,32 @@
 /*Write your custom css in this file.*/
+
+@font-face {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Barlow'), local('Barlow'), url('fonts/barlow/BarlowCondensed-Regular.ttf') format('ttf');
+  }
+  @font-face {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 800;
+    src: local('Barlow ExtraBold'), local('Barlow-ExtraBold'), url('fonts/barlow/BarlowCondensed-ExtraBold.ttf') format('ttf');
+  }
+  @font-face {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Barlow Bold'), local('Barlow-Bold'), url('fonts/barlow/BarlowCondensed-Bold.ttf') format('ttf');
+  }
+  @font-face {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 100;
+    src: local('Barlow Thin'), local('Barlow-Thin'), url('fonts/barlow/BarlowCondensed-Thin.ttf') format('ttf');
+  }
+  @font-face {
+    font-family: 'Barlow';
+    font-style: normal;
+    font-weight: 200;
+    src: local('Barlow Light'), local('Barlow-Light'), url('fonts/barlow/BarlowCondensed-Light.ttf') format('ttf');
+  }

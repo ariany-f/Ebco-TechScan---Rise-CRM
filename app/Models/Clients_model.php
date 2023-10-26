@@ -593,8 +593,8 @@ class Clients_model extends Crud_model {
         $info = new \stdClass();
         $info->converted_to_client = $this->db->query($converted_to_client)->getRow()->total;
         $info->lead_statuses = $this->db->query($lead_statuses)->getResult();
-      //  $total_sells_result = $this->db->query($total_sells)->getRow();
-        //$info->total_sells = to_currency($total_sells_result->total, $total_sells_result->currency_symbol);
+        $total_sells_result = $this->db->query($total_sells)->getRow();
+        $info->total_sells = to_currency($total_sells_result->total, $total_sells_result->currency_symbol);
 
         return $info;
     }

@@ -1051,7 +1051,7 @@ if (!function_exists('get_estimate_number')) {
     function get_estimate_number($estimate_number) {
         $prefix = get_setting("estimate_prefix");
         $prefix = $prefix ? $prefix : strtoupper(app_lang("proposal")) . " #";
-        return $prefix . $estimate_number;
+        return $estimate_number;
     }
 
 }
