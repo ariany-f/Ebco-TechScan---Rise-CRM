@@ -216,6 +216,7 @@ class Dashboard extends Security_Controller {
         if ($show_lead && ($this->login_user->is_admin || $access_leads->access_type)) {
             $widget["total_leads"] = true;
             $widget["leads_overview"] = true;
+            $widget["leads_sources"] = true;
             $widget["sellers_overview"] = true;
             $widget["termometer_proposals"] = true;
         }
@@ -873,6 +874,7 @@ class Dashboard extends Security_Controller {
                 "invoice_overview",
                 "next_reminder",
                 "leads_overview",
+                "leads_sources",
                 "sellers_overview",
                 "termometer_proposals",
                 "my_tasks_overview",
@@ -1194,6 +1196,8 @@ class Dashboard extends Security_Controller {
                 return sellers_overview_widget();
             } else if ($widget == "leads_overview") {
                 return leads_overview_widget();
+            } else if ($widget == "leads_sources") {
+                return leads_sources_widget();
             } else if ($widget == "termometer_proposals") {
                 return termometer_proposals_widget();
             } else if ($widget == "my_tasks_overview") {

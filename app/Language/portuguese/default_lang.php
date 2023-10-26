@@ -2261,7 +2261,7 @@ $lang["this_year"] = "Este ano";
 $lang["last_year"] = "Ano passado";
 $lang["last_12_months"] = "Últimos 12 meses";
 
-$lang["estimate_sent_statistics"] = "estatísticas de propostas enviadas";
+$lang["estimate_sent_statistics"] = "Estatísticas de propostas enviadas";
 
 $lang["title_language_key"] = "Chave do idioma do título";
 $lang["placeholder_language_key"] = "Chave de idioma do espaço reservado";
@@ -2387,6 +2387,7 @@ $lang["cancel_subscription"] = "Cancel subscription";
 $lang["invoice_number"] = "Invoice number";
 $lang["estimate_number"] = "Código da proposta";
 $lang["company_coligada"] = "Coligadas";
+$lang["lead_sources"] = "Origens de Lead";
 $lang["order_number"] = "Order number";
 
 $lang['sellers_overview'] = 'Ranking Vendedores';
@@ -2398,6 +2399,8 @@ $lang["client_can_access_notes"] = "Client can access notes?";
 
 $lang["my_tasks_overview"] = "My Tasks Overview";
 
+$lang["leads_source"] = "Leads por Origem";
+$lang["leads_sources"] = "Leads por Origem";
 $lang["leads_overview"] = "Leads Overview";
 $lang["converted_to_client"] = "Convertido para cliente";
 

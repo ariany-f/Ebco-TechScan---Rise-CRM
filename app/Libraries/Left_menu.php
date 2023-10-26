@@ -263,7 +263,7 @@ class Left_menu {
             $access_subscription = get_array_value($permissions, "subscription");
             $access_proposal = get_array_value($permissions, "proposal");
             $access_order = get_array_value($permissions, "order");
-            $access_items = ($this->ci->login_user->is_admin || $access_invoice || $access_estimate);
+            $access_items = ($this->ci->login_user->is_admin);
 
             $client_message_users = get_setting("client_message_users");
             $client_message_users_array = explode(",", $client_message_users);
@@ -283,8 +283,13 @@ class Left_menu {
 
 
             if ($this->ci->login_user->is_admin || $access_company) {
-                $sidebar_menu["company"] = array("name" => "company_coligada", "url" => "company", "class" => "list");
+                $sidebar_menu["company"] = array("name" => "company_coligada", "url" => "company", "class" => "coffee");
             }
+
+            if ($this->ci->login_user->is_admin || $access_lead) {
+                $sidebar_menu["lead_sources"] = array("name" => "lead_sources", "url" => "lead_status", "class" => "book-open");
+            }
+
 
             if ($this->ci->login_user->is_admin || !get_array_value($this->ci->login_user->permissions, "do_not_show_projects")) {
                 $sidebar_menu["projects"] = array("name" => "projects", "url" => "projects/all_projects", "class" => "grid");
@@ -325,8 +330,12 @@ class Left_menu {
                 $sales_submenu["items"] = array("name" => "items", "url" => "items", "class" => "list");
             }
 
-            if (get_setting("module_contract") && ($this->ci->login_user->is_admin || $access_contract)) {
+            
+            if (get_setting("module_project") || !get_array_value($this->ci->login_user->permissions, "do_not_show_projects")) {
                 $sales_submenu["projects"] = array("name" => "All", "url" => "projects/all_projects", "class" => "grid");
+            }
+
+            if (get_setting("module_contract") && ($this->ci->login_user->is_admin || $access_contract)) {
                 $sales_submenu["contracts"] = array("name" => "contracts", "url" => "contracts", "class" => "book-open");
             }
 
@@ -572,7 +581,7 @@ class Left_menu {
 
             $sidebar_menu = app_hooks()->apply_filters('app_filter_client_left_menu', $sidebar_menu);
         }
-
+        
         return $this->position_items_for_default_left_menu($sidebar_menu);
     }
 

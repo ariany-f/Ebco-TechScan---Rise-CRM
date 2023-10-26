@@ -1771,12 +1771,43 @@ if (!function_exists('leads_overview_widget')) {
         }
 
         $view_data["lead_statuses"] = $ci->Clients_model->get_lead_statistics($options)->lead_statuses;
+        $view_data["client_statuses"] = $ci->Clients_model->get_lead_statistics($options)->client_statuses;
         $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options);
         $view_data["converted_to_client"] = $ci->Clients_model->get_lead_statistics($options)->converted_to_client;
         $view_data["total_sells"] = $ci->Clients_model->get_lead_statistics($options)->total_sells;
 
         $template = new Template();
         return $template->view("leads/leads_overview_widget", $view_data);
+    }
+
+}
+
+
+/**
+ * get total leads sources overview widget
+ * @param string $type
+ * 
+ * @return html
+ */
+if (!function_exists('leads_sources_widget')) {
+
+    function leads_sources_widget() {
+        $ci = new Security_Controller(false);
+        $permissions = $ci->login_user->permissions;
+
+        if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
+            $options = array();
+        } else if (get_array_value($permissions, "lead") == "own") {
+            $options["show_own_leads_only_user_id"] = $ci->login_user->id;
+        }
+
+        $view_data["lead_sources"] = $ci->Clients_model->get_lead_sources($options)->lead_sources;
+        $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options);
+        $view_data["converted_to_client"] = $ci->Clients_model->get_lead_sources($options)->converted_to_client;
+        $view_data["total_sells"] = $ci->Clients_model->get_lead_sources($options)->total_sells;
+
+        $template = new Template();
+        return $template->view("leads/leads_sources_widget", $view_data);
     }
 
 }
@@ -1834,8 +1865,18 @@ if (!function_exists('termometer_proposals_widget')) {
             "custom_fields" => $custom_fields
         );
 
-        $view_data["termometer"] = $ci->Estimates_model->get_details($options)->getResult();
-
+        $termometro_categorias = [];
+        $result["termometer"] = $ci->Estimates_model->get_details($options)->getResult();
+        foreach($result['termometer'] as $k => $term)
+        {
+            $termometro_categorias[$term->cfv_1] = [
+                'title' => $term->cfv_1,
+                'total' => isset($termometro_categorias[$term->cfv_1]) ? ($termometro_categorias[$term->cfv_1]['total'] + 1) : 1,
+                'color' => ($term->cfv_1 == 'Fria') ? '#2d9cdb' : (($term->cfv_1 == 'Morna') ? '#f1c40f' : (($term->cfv_1 == 'Quente') ? '#f5325c' : '#01B393'))
+            ];
+        }
+        
+        $view_data["termometer"] = $termometro_categorias;
         $template = new Template();
         return $template->view("leads/termometer_proposals_widget", $view_data);
     }

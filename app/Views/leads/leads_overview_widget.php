@@ -11,9 +11,17 @@
                 <?php
                 foreach ($lead_statuses as $lead_status) {
                     ?>
-                    <div class="pb-2">
+                    <div class="pb-2" style="display: flex;gap: 15px;">
                         <div class="color-tag border-circle me-3 wh10" style="background-color: <?php echo $lead_status->color; ?>;"></div><?php echo $lead_status->title; ?>
-                        <span class="strong float-end" style="color: <?php echo $lead_status->color; ?>"><?php echo $lead_status->total; ?></span>
+                        <span class="strong" style="color: <?php echo $lead_status->color; ?>"><?php echo $lead_status->total; ?></span><?php echo to_currency($lead_status->projects_total, "R$ "); ?>
+                    </div>
+                    <?php
+                }
+                foreach ($client_statuses as $lead_status) {
+                    ?>
+                    <div class="pb-2" style="display: flex;gap: 15px;">
+                        <div class="color-tag border-circle me-3 wh10" style="background-color: <?php echo $lead_status->color; ?>;"></div><?php echo $lead_status->title; ?>
+                        <span class="strong" style="color: <?php echo $lead_status->color; ?>"><?php echo $lead_status->total; ?></span><?php echo to_currency($lead_status->projects_total, "R$ "); ?>
                     </div>
                     <?php
                 }
@@ -49,6 +57,7 @@ foreach ($lead_statuses as $lead_status) {
     var labels = <?php echo json_encode($lead_status_title) ?>;
     var leadStatusData = <?php echo json_encode($lead_status_data) ?>;
     var leadStatusColor = <?php echo json_encode($lead_status_color) ?>;
+    
     var leadsOverviewChart = document.getElementById("leads-overview-chart");
     new Chart(leadsOverviewChart, {
         type: 'doughnut',

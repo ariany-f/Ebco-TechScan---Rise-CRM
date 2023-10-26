@@ -7,37 +7,63 @@
             <div class="col-md-6">
                 <canvas id="termometer-proposals-chart" style="width: 100%; height: 160px;"></canvas>
             </div>
+            <div class="col-md-6 pl20 <?php echo count($termometer) > 8 ? "" : "pt-4"; ?>">
+                <?php
+                foreach ($termometer as $term) {
+                    ?>
+                    <div class="pb-2" style="display: flex;gap: 15px;">
+                        <div class="color-tag border-circle me-3 wh10"></div><?php echo ((!empty($term['title'])) ? $term['title'] : 'Sem Classificação'); ?>
+                        <span class="strong" ><?php echo $term['total']; ?></span>
+                    </div>
+                    <?php
+                }
+                ?>
+            </div>
         </div>
     </div>
 </div>
 
 <?php
-$lead_status_title = array();
-$lead_status_data = array();
-foreach ($lead_statuses as $lead_status) {
-    $lead_status_title[] = $lead_status->title;
-    $lead_status_data[] = $lead_status->total;
+$termometer_title = array();
+$termometer_data = array();
+$termometer_color = array();
+foreach ($termometer as $term) {
+    $termometer_title[] = ((!empty($term['title'])) ? $term['title'] : 'Sem Classificação');
+    $termometer_data[] = $term['total'];
+    $termometer_color[] = $term['color'];
 }
 ?>
 <script>
-    //for leads status chart
-    var labels = <?php echo json_encode($lead_status_title) ?>;
-    var leadStatusData = <?php echo json_encode($lead_status_data) ?>;
-    var leadsOverviewChart = document.getElementById("termometer-proposals-chart");
-    new Chart(leadsOverviewChart, {
-        type: 'doughnut',
+
+    //for termometer chart
+    var labels = <?php echo json_encode($termometer_title) ?>;
+    var termometerData = <?php echo json_encode($termometer_data) ?>;
+    var termometerColor = <?php echo json_encode($termometer_color) ?>;
+    var termometerChart = document.getElementById("termometer-proposals-chart");
+    
+    new Chart(termometerChart, {
+        type: 'bar',
         data: {
-            labels: ['Quente', 'frio', 'morno'],
+            labels: labels,
             datasets: [
                 {
-                    data: leadStatusData,
+                    data: termometerData,
+                    backgroundColor: termometerColor,
                     borderWidth: 0
                 }]
         },
         options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        callback: function(value) {if (value % 1 === 0) {return value;}}
+                    }
+                }]
+            },
             responsive: true,
-            maintainAspectRatio: false,
-            cutoutPercentage: 87,
+          //  maintainAspectRatio: false,
+           // cutoutPercentage: 87,
             tooltips: {
                 callbacks: {
                     title: function (tooltipItem, data) {
@@ -48,8 +74,7 @@ foreach ($lead_statuses as $lead_status) {
                     },
                     afterLabel: function (tooltipItem, data) {
                         var dataset = data['datasets'][0];
-                        var percent = dataset["_meta"][Object.keys(dataset["_meta"])[0]]['cfv_1'];
-                        return percent;
+                        return dataset['data'][tooltipItem['index']];
                     }
                 }
             },
@@ -63,7 +88,7 @@ foreach ($lead_statuses as $lead_status) {
     });
 
     $(document).ready(function () {
-        initScrollbar('#termometer-proposals-widget', {
+        initScrollbar('#termometer_proposals_widget', {
             setHeight: 327
         });
     });
