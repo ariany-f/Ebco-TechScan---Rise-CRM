@@ -1775,7 +1775,7 @@ if (!function_exists('leads_overview_widget')) {
         $queries = array();
         parse_str($_SERVER['QUERY_STRING'], $queries);
 
-        if(!empty($queries)) {
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
@@ -1810,11 +1810,21 @@ if (!function_exists('leads_sources_widget')) {
         } else if (get_array_value($permissions, "lead") == "own") {
             $options["show_own_leads_only_user_id"] = $ci->login_user->id;
         }
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
 
-        $view_data["lead_sources"] = $ci->Clients_model->get_lead_sources($options)->lead_sources;
-        $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options);
-        $view_data["converted_to_client"] = $ci->Clients_model->get_lead_sources($options)->converted_to_client;
-        $view_data["total_sells"] = $ci->Clients_model->get_lead_sources($options)->total_sells;
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["lead_sources"] = $ci->Clients_model->get_lead_sources($options, $date_start, $date_end)->lead_sources;
+        $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options, $date_start, $date_end);
+        $view_data["converted_to_client"] = $ci->Clients_model->get_lead_sources($options, $date_start, $date_end)->converted_to_client;
+        $view_data["total_sells"] = $ci->Clients_model->get_lead_sources($options, $date_start, $date_end)->total_sells;
 
         $template = new Template();
         return $template->view("leads/leads_sources_widget", $view_data);
@@ -1846,7 +1856,7 @@ if (!function_exists('sellers_overview_widget')) {
         $queries = array();
         parse_str($_SERVER['QUERY_STRING'], $queries);
 
-        if(!empty($queries)) {
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
@@ -1882,16 +1892,14 @@ if (!function_exists('termometer_proposals_widget')) {
         $options = array(
             "show_own_estimates_only_user_id" => $show_own_clients_only_user_id,
             "custom_fields" => $custom_fields
-        );
-
-        
+        );        
         
         $date_start = null;
         $date_end = null;
         $queries = array();
         parse_str($_SERVER['QUERY_STRING'], $queries);
 
-        if(!empty($queries)) {
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }

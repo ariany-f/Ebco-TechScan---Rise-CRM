@@ -616,7 +616,7 @@ class Clients_model extends Crud_model {
     }
 
 
-    function get_lead_sources($options = array()) {
+    function get_lead_sources($options = array(), $date_start = null, $date_end = null) {
         $clients_table = $this->db->prefixTable('clients');
         $lead_status_table = $this->db->prefixTable('lead_status');
         $lead_source_table = $this->db->prefixTable('lead_source');
@@ -633,9 +633,15 @@ class Clients_model extends Crud_model {
         if ($show_own_leads_only_user_id) {
             $where .= " AND ($clients_table.owner_id=$show_own_leads_only_user_id)";
         }
+
+        if($date_start and $date_end)
+        {
+            $where .= " AND $projects_table.created_date BETWEEN '$date_start' and '$date_end'";
+        }
         
         $converted_to_client = "SELECT COUNT($clients_table.id) AS total
         FROM $clients_table
+        LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
         WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND $clients_table.lead_status_id!=0 $where";
 
         $lead_sources = "SELECT COUNT(DISTINCT $clients_table.id) AS total, $clients_table.lead_source_id, COALESCE($lead_source_table.title, 'Outros') AS title, SUM($projects_table.price) AS projects_total
