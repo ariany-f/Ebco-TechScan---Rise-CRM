@@ -64,6 +64,7 @@
         "assets/bootstrap/css/bootstrap.min.css",
         "assets/js/select2/select2.css", //don't combine this css because of the images path
         "assets/js/select2/select2-bootstrap.min.css",
+        "assets/css/daterangepicker.css",
         "assets/css/app.all.css",
     );
 

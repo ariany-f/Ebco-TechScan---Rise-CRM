@@ -42,32 +42,71 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
         </span>
 
         <span class="float-end" id="dashboards-color-tags">
-            <?php
-            echo anchor(get_uri("dashboard"), "<span class='clickable p10 mr5 inline-block'><span style='background-color: #fff' class='color-tag $selected_dashboard'  title='" . app_lang("default_dashboard") . "'></span></span>");
+            <div style="display: flex;">
+                <!-- Filtro para Datas dos gráficos -->
+                <div class="row" style="align-items: center;">
+                    <label for="daterange" class="col-md-2">Filtrar Datas </label>
+                    <div class="col-md-6">
+                        <input class="form-control" type="text" name="daterange" id="date_range" value="" />
+                        <input type="hidden" id="date_start" value="">
+                        <input type="hidden" id="date_end" value="">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" id="clean-filter" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle icon-16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Limpar Filtro</button>
+                    </div>
+                </div>
+                <?php
+                    echo anchor(get_uri("dashboard"), "<span class='clickable p10 mr5 inline-block'><span style='background-color: #fff' class='color-tag $selected_dashboard'  title='" . app_lang("default_dashboard") . "'></span></span>");
 
-            if ($dashboards) {
-                foreach ($dashboards as $dashboard) {
-                    $selected_dashboard = "";
+                    if ($dashboards) {
+                        foreach ($dashboards as $dashboard) {
+                            $selected_dashboard = "";
 
-                    if ($dashboard_type == "custom") {
-                        if ($dashboard_info->id == $dashboard->id) {
-                            $selected_dashboard = "border-circle";
+                            if ($dashboard_type == "custom") {
+                                if ($dashboard_info->id == $dashboard->id) {
+                                    $selected_dashboard = "border-circle";
+                                }
+                            }
+
+                            $color = $dashboard->color ? $dashboard->color : "#83c340";
+
+                            echo anchor(get_uri("dashboard/view/" . $dashboard->id), "<span class='clickable p10 mr5 inline-block'><span style='background-color: $color' class='color-tag $selected_dashboard' title='$dashboard->title'></span></span>");
                         }
                     }
-
-                    $color = $dashboard->color ? $dashboard->color : "#83c340";
-
-                    echo anchor(get_uri("dashboard/view/" . $dashboard->id), "<span class='clickable p10 mr5 inline-block'><span style='background-color: $color' class='color-tag $selected_dashboard' title='$dashboard->title'></span></span>");
-                }
-            }
-            ?>
-        </span>
-
+                ?>
+            </span>
+        </div>
     </div>
 </div>
-
 <script>
     $(document).ready(function () {
+        let params = (new URL(document.location)).searchParams;
+        if(params.size > 0)
+        {
+            let date_start = params.get("date_start");
+            let date_end = params.get("date_end");
+        
+            $('input[name="daterange"]').attr('value', date_start.replace('-', '/')+' - '+date_end.replace('-', '/'));
+
+            $("#date_start").attr('value', date_start);
+            $("#date_end").attr('value', date_end);
+        }
+        $('.tqm-events-filter__button--date').on('cancel.daterangepicker', function(ev, picker) {
+            $('input[name="daterange"]').val('');
+            window.location.href =
+                    "https://" +
+                    window.location.host +
+                    window.location.pathname;
+        });
+
+        $("#clean-filter").on('click', function() {
+            $('input[name="daterange"]').val('');
+            window.location.href =
+                    "https://" +
+                    window.location.host +
+                    window.location.pathname;
+        })
+
         //modify design for mobile devices
         if (isMobile()) {
             var $dashboardTags = $("#dashboards-color-tags"),
@@ -86,5 +125,25 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
             $dashboardDropdown.prepend(liDom);
             $("#color-tags-container-for-mobile").html($dashboardTagsClone);
         }
+        
+        $(function() {
+            // Filtro para Datas dos gráficos
+            $('input[name="daterange"]').daterangepicker({
+                opens: 'left'
+            }, function(start, end, label) {
+                var date_start = start.format('DD-MM-YYYY');
+                var date_end = end.format('DD-MM-YYYY');
+                var params = [
+                    "date_start="+date_start,
+                    "date_end=" + date_end
+                ];
+
+                window.location.href =
+                    "https://" +
+                    window.location.host +
+                    window.location.pathname +
+                    '?' + params.join('&');
+            });
+        });
     });
 </script>

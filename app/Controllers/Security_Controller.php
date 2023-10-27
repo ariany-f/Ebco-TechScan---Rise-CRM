@@ -396,7 +396,7 @@ class Security_Controller extends App_Controller {
         $clients = $this->Clients_model->get_all_where(array("deleted" => 0), 0, 0, "is_lead")->getResult();
 
         foreach ($clients as $client) {
-            $company_name = $client->is_lead ? app_lang("lead") . ": " . $client->company_name : $client->company_name;
+            $company_name = $client->is_lead ? (($client->lead_status_id==1) ? app_lang("lead") . ": " : app_lang("prospect") . ": ") . $client->company_name : $client->company_name;
 
             $clients_dropdown[$client->id] = $company_name;
             $clients_json_dropdown[] = array("id" => $client->id, "text" => $company_name);

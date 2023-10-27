@@ -13,7 +13,7 @@
                     ?>
                     <div class="pb-2" style="display: flex;gap: 15px;">
                         <div class="color-tag border-circle me-3 wh10" style="background-color: <?php echo $lead_status->color; ?>;"></div><?php echo $lead_status->title; ?>
-                        <span class="strong" style="color: <?php echo $lead_status->color; ?>"><?php echo $lead_status->total; ?></span><?php echo to_currency($lead_status->projects_total, "R$ "); ?>
+                        <span class="strong" style="color: <?php echo $lead_status->color; ?>"><?php echo $lead_status->total; ?></span><?php echo (( $lead_status->title !== 'Lead') ? to_currency($lead_status->projects_total, "R$ ") : "<i data-feather='slash' class='icon-16'></i>"); ?>
                     </div>
                     <?php
                 }

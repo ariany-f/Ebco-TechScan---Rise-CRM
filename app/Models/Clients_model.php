@@ -556,7 +556,7 @@ class Clients_model extends Crud_model {
         return $this->db->query($sql)->getRow()->total;
     }
 
-    function get_lead_statistics($options = array()) {
+    function get_lead_statistics($options = array(), $date_start = null, $date_end = null) {
         $clients_table = $this->db->prefixTable('clients');
         $lead_status_table = $this->db->prefixTable('lead_status');
         $projects_table = $this->db->prefixTable('projects');
@@ -573,8 +573,16 @@ class Clients_model extends Crud_model {
             $where .= " AND ($clients_table.owner_id=$show_own_leads_only_user_id)";
         }
         
+
+        if($date_start and $date_end)
+        {
+            $where .= " AND $projects_table.created_date BETWEEN '$date_start' and '$date_end'";
+        }
+
+        
         $converted_to_client = "SELECT COUNT($clients_table.id) AS total
         FROM $clients_table
+        LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
         WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND $clients_table.lead_status_id!=0 $where";
 
         $lead_statuses = "SELECT COUNT(DISTINCT $clients_table.id) AS total, $clients_table.lead_status_id, $lead_status_table.title, $lead_status_table.color, SUM($projects_table.price) AS projects_total

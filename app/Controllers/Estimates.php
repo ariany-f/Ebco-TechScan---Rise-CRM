@@ -232,6 +232,15 @@ class Estimates extends Security_Controller {
 
         $estimate_id = $this->Estimates_model->ci_save($estimate_data, $id);
         if ($estimate_id) {
+            
+
+            // Altera lead para prospect em caso de ser lead
+            $client = $this->Clients_model->get_one($client_id);
+            if($client->lead_status_id == 1)
+            {
+                $data["lead_status_id"] = 2;
+                $this->Clients_model->ci_save($data, $client_id);
+            }
 
             if ($is_clone && $main_estimate_id) {
                 //add estimate items

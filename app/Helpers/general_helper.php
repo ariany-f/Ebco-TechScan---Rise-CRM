@@ -2484,7 +2484,7 @@ if (!function_exists('prepare_estimate_view')) {
 
             $parser = \Config\Services::parser();
             $content = remove_custom_field_titles_from_variables($estimate_info->content);
-            $estimate_view = $parser->setData($parser_data)->renderString($content);
+            $estimate_view = $parser->setData($parser_data)->renderString($content ?? '<br/><br/><br/>Volte para a aba "Editor de Propostas" e selecione um modelo de proposta para começar');
             $estimate_view = htmlspecialchars_decode($estimate_view);
             $estimate_view = process_images_from_content($estimate_view);
 

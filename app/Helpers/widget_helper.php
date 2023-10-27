@@ -1769,12 +1769,22 @@ if (!function_exists('leads_overview_widget')) {
         } else if (get_array_value($permissions, "lead") == "own") {
             $options["show_own_leads_only_user_id"] = $ci->login_user->id;
         }
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
 
-        $view_data["lead_statuses"] = $ci->Clients_model->get_lead_statistics($options)->lead_statuses;
-        $view_data["client_statuses"] = $ci->Clients_model->get_lead_statistics($options)->client_statuses;
-        $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options);
-        $view_data["converted_to_client"] = $ci->Clients_model->get_lead_statistics($options)->converted_to_client;
-        $view_data["total_sells"] = $ci->Clients_model->get_lead_statistics($options)->total_sells;
+        if(!empty($queries)) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["lead_statuses"] = $ci->Clients_model->get_lead_statistics($options, $date_start, $date_end)->lead_statuses;
+        $view_data["client_statuses"] = $ci->Clients_model->get_lead_statistics($options, $date_start, $date_end)->client_statuses;
+        $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options, $date_start, $date_end);
+        $view_data["converted_to_client"] = $ci->Clients_model->get_lead_statistics($options, $date_start, $date_end)->converted_to_client;
+        $view_data["total_sells"] = $ci->Clients_model->get_lead_statistics($options, $date_start, $date_end)->total_sells;
 
         $template = new Template();
         return $template->view("leads/leads_overview_widget", $view_data);
@@ -1823,6 +1833,8 @@ if (!function_exists('sellers_overview_widget')) {
     function sellers_overview_widget() {
         $ci = new Security_Controller(false);
         $permissions = $ci->login_user->permissions;
+        $date_start = null;
+        $date_end = null;
 
         $options["role_id"] = 6;
 
@@ -1831,8 +1843,15 @@ if (!function_exists('sellers_overview_widget')) {
         } else if (get_array_value($permissions, "lead") == "own") {
             $options["show_own_leads_only_user_id"] = $ci->login_user->id;
         }
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
 
-        $view_data["team_members"] = $ci->Users_model->get_sellers( $options['role_id'], $options['show_own_leads_only_user_id'] )->getResult();
+        if(!empty($queries)) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["team_members"] = $ci->Users_model->get_sellers( $options['role_id'], $options['show_own_leads_only_user_id'], $date_start, $date_end )->getResult();
 
         $template = new Template();
         return $template->view("leads/sellers_overview_widget", $view_data);
@@ -1864,6 +1883,20 @@ if (!function_exists('termometer_proposals_widget')) {
             "show_own_estimates_only_user_id" => $show_own_clients_only_user_id,
             "custom_fields" => $custom_fields
         );
+
+        
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if(!empty($queries)) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+        $options['start_date'] = $date_start;
+        $options['end_date'] = $date_end;
 
         $termometro_categorias = [];
         $result["termometer"] = $ci->Estimates_model->get_details($options)->getResult();

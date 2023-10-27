@@ -386,7 +386,7 @@ class Users_model extends Crud_model {
         return $this->db->query($sql);
     }    
 
-    function get_sellers($role_id = null, $show_own_leads_only_user_id = false) {
+    function get_sellers($role_id = null, $show_own_leads_only_user_id = false, $date_start = null, $date_end = null) {
 
         $users_table = $this->db->prefixTable('users');
         $clients_table = $this->db->prefixTable('clients');
@@ -400,6 +400,11 @@ class Users_model extends Crud_model {
 
         if ($show_own_leads_only_user_id) {
             $where .= " AND $clients_table.owner_id=$show_own_leads_only_user_id";
+        }
+
+        if($date_start and $date_end)
+        {
+            $where .= " AND $projects_table.created_date BETWEEN '$date_start' and '$date_end'";
         }
 
         $sql = "SELECT 
