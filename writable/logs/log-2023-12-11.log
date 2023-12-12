@@ -1,0 +1,32 @@
+CRITICAL - 2023-12-11 22:16:44 --> Object of class stdClass could not be converted to string
+in APPPATH\Models\Crud_model.php on line 345.
+ 1 APPPATH\Models\Clients_model.php(110): App\Models\Crud_model->prepare_custom_field_query_string('clients', null, 'crm_clients', [...])
+ 2 APPPATH\Helpers\general_helper.php(1149): App\Models\Clients_model->get_details([...])
+ 3 APPPATH\Controllers\Estimates.php(569): get_estimate_making_data('25')
+ 4 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->view('25')
+ 5 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 6 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2023-12-11 22:19:22 --> Undefined variable: proposal_data
+in APPPATH\Helpers\general_helper.php on line 2503.
+ 1 APPPATH\Helpers\general_helper.php(2503): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: proposal_data', 'APPPATH\\Helpers\\general_helper.php', 2503, [...])
+ 2 APPPATH\Controllers\Estimates.php(848): prepare_estimate_view([...])
+ 3 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->preview('25', '0', '1')
+ 4 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2023-12-11 22:24:48 --> Cannot redeclare App\Models\Clients_model::is_duplicate_company_name()
+in APPPATH\Models\Clients_model.php on line 363.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+CRITICAL - 2023-12-11 22:24:49 --> Cannot redeclare App\Models\Clients_model::is_duplicate_company_name()
+in APPPATH\Models\Clients_model.php on line 363.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+CRITICAL - 2023-12-11 22:24:51 --> Cannot redeclare App\Models\Clients_model::is_duplicate_company_name()
+in APPPATH\Models\Clients_model.php on line 363.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+CRITICAL - 2023-12-11 22:24:51 --> Cannot redeclare App\Models\Clients_model::is_duplicate_company_name()
+in APPPATH\Models\Clients_model.php on line 363.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+CRITICAL - 2023-12-11 22:24:52 --> Cannot redeclare App\Models\Clients_model::is_duplicate_company_name()
+in APPPATH\Models\Clients_model.php on line 363.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
