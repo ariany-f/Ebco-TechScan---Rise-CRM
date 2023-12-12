@@ -142,7 +142,6 @@ class Clients extends Security_Controller {
             $data["created_date"] = get_current_utc_time();
         }
 
-
         if ($this->login_user->is_admin) {
             $data["currency_symbol"] = $this->request->getPost('currency_symbol') ? $this->request->getPost('currency_symbol') : "";
             $data["currency"] = $this->request->getPost('currency') ? $this->request->getPost('currency') : "";
@@ -161,6 +160,12 @@ class Clients extends Security_Controller {
 
         //check duplicate company name, if found then show an error message
         if (get_setting("disallow_duplicate_client_company_name") == "1" && $this->Clients_model->is_duplicate_company_name($data["company_name"], $client_id)) {
+            echo json_encode(array("success" => false, 'message' => app_lang("account_already_exists_for_your_company_name")));
+            exit();
+        }
+        
+        //check duplicate cnpj, if found then show an error message
+        if ($this->Clients_model->is_duplicate_cnpj($data["cnpj"], $client_id)) {
             echo json_encode(array("success" => false, 'message' => app_lang("account_already_exists_for_your_company_name")));
             exit();
         }

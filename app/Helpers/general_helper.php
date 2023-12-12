@@ -1135,6 +1135,19 @@ if (!function_exists('get_estimate_making_data')) {
         if ($estimate_info) {
             $data['estimate_info'] = $estimate_info;
             $data['client_info'] = $ci->Clients_model->get_one($data['estimate_info']->client_id);
+            $custom_fields = $ci->Custom_fields_model->get_available_fields_for_table("clients", 1, 'admin');
+            $options = array(
+                "id" =>  $data['client_info']->id,
+                "custom_fields" => $custom_fields
+            );
+            $data['client_custom_fields'] = $ci->Clients_model->get_details($options)->getRow();
+            $custom_fields = $ci->Custom_fields_model->get_available_fields_for_table("leads", 1, 'admin');
+            $options = array(
+                "id" =>  $data['client_info']->id,
+                "custom_fields" => $custom_fields,
+                "leads_only" => 1
+            );
+            $data['lead_custom_fields'] = $ci->Clients_model->get_details($options)->getRow();
             $data['client_primary_contact_info'] = $ci->Clients_model->get_primary_contact($data['estimate_info']->client_id, true);
             $data['estimate_items'] = $ci->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
             $data["estimate_total_summary"] = $ci->Estimates_model->get_estimate_total_summary($estimate_id);
@@ -2299,11 +2312,14 @@ if (!function_exists('prepare_proposal_view')) {
 
             $client_info = get_array_value($proposal_data, "client_info");
             $client_contact_info = get_array_value($proposal_data, "client_primary_contact_info");
+            $client_custom_fields = get_array_value($proposal_data, "client_custom_fields");
+            $lead_custom_fields = get_array_value($proposal_data, "lead_custom_fields");
             $view_data["client_info"] = $client_info;
             $view_data["client_primary_contact_info"] = $client_contact_info;
             $view_data["is_preview"] = true;
             $parser_data["PROPOSAL_TO_INFO"] = view("proposals/proposal_parts/proposal_to", $view_data);
             $parser_data["PROPOSAL_TO_COMPANY_NAME"] = $client_info->company_name;
+            $parser_data["PROPOSAL_TO_COMPANY_FANTASY_NAME"] = (!empty($client_custom_fields->cfv_10 ) ? $client_custom_fields->cfv_10 : (!empty($lead_custom_fields->cfv_11 ) ? $lead_custom_fields->cfv_11 : $client_info->company_name));
             $parser_data["PROPOSAL_TO_COMPANY_CNPJ"] = $client_info->cnpj;
             $parser_data["PROPOSAL_TO_COMPANY_STATE_SUBSCRIPTION"] = $client_info->state_subscription;
             $parser_data["PROPOSAL_TO_COMPANY_EMAIL"] = $client_contact_info->email;
@@ -2361,6 +2377,7 @@ if (!function_exists('get_available_proposal_variables')) {
             /* proposal to info */
             "PROPOSAL_TO_INFO",
             "PROPOSAL_TO_COMPANY_NAME",
+            "PROPOSAL_TO_COMPANY_FANTASY_NAME",
             "PROPOSAL_TO_COMPANY_CNPJ",
             "PROPOSAL_TO_ADDRESS",
             "PROPOSAL_TO_CITY",
@@ -2482,11 +2499,13 @@ if (!function_exists('prepare_estimate_view')) {
 
             $client_info = get_array_value($estimate_data, "client_info");
             $client_contact_info = get_array_value($estimate_data, "client_primary_contact_info");
-            $view_data["client_info"] = $client_info;
+            $client_custom_fields = get_array_value($estimate_data, "client_custom_fields");
+            $lead_custom_fields = get_array_value($estimate_data, "lead_custom_fields");
             $view_data["client_contact_info"] = $client_contact_info;
             $view_data["is_preview"] = true;
             $parser_data["ESTIMATE_TO_INFO"] = view("estimates/estimate_parts/estimate_to", $view_data);
             $parser_data["ESTIMATE_TO_COMPANY_NAME"] = $client_info->company_name;
+            $parser_data["ESTIMATE_TO_COMPANY_FANTASY_NAME"] = (!empty($client_custom_fields->cfv_10 ) ? $client_custom_fields->cfv_10 : (!empty($lead_custom_fields->cfv_11 ) ? $lead_custom_fields->cfv_11 : $client_info->company_name));
             $parser_data["ESTIMATE_TO_COMPANY_EMAIL"] = $client_contact_info->email ?? '';
             $parser_data["ESTIMATE_TO_COMPANY_CNPJ"] = $client_info->cnpj;
             $parser_data["ESTIMATE_TO_COMPANY_STATE_SUBSCRIPTION"] = $client_info->state_subscription;
@@ -2551,6 +2570,7 @@ if (!function_exists('get_available_estimate_variables')) {
             /* proposal to info */
             "ESTIMATE_TO_INFO",
             "ESTIMATE_TO_COMPANY_NAME",
+            "ESTIMATE_TO_COMPANY_FANTASY_NAME",
             "ESTIMATE_TO_COMPANY_CNPJ",
             "ESTIMATE_TO_COMPANY_STATE_SUBSCRIPTION",
             "ESTIMATE_TO_COMPANY_EMAIL",

@@ -1,8 +1,3 @@
-<style type="text/css">
-@media print {
-    body {-webkit-print-color-adjust: exact;}
-}
-</style>
 <div id="page-content" class="clearfix">
     <div style="max-width: 1000px; margin: auto;">
         <div class="page-title clearfix mt25">

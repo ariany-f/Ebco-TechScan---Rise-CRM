@@ -1,8 +1,3 @@
-<style type="text/css">
-@media print {
-    body {-webkit-print-color-adjust: exact;}
-}
-</style>
 <div class="box h-100">
     <div class="box-content">
         <div id="estimate-preview-content" class="page-wrapper clearfix">
