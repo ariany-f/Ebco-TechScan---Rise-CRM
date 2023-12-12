@@ -17,7 +17,7 @@
         </li>
         <?php if ($login_user->user_type === "staff" && $project_info->project_type === "client_project") { ?>
             <li class="list-group-item border-top">
-                <?php echo app_lang("client"); ?>: <?php echo anchor(get_uri("clients/view/" . $project_info->client_id), $project_info->company_name); ?>
+                <?php echo app_lang("client"); ?>: <?php echo anchor(get_uri("clients/view/" . $project_info->client_id), ($project_info->company_name ?? '')); ?>
             </li>
         <?php } else { ?>
             <li class="list-group-item border-top">

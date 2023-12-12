@@ -2,6 +2,11 @@
 
 namespace App\Controllers;
 
+use App\Libraries\Mpdf;
+use App\Libraries\Pdf;
+use DOMDocument;
+use DOMXPath;
+
 class Estimates extends Security_Controller {
 
     function __construct() {
@@ -858,7 +863,7 @@ class Estimates extends Security_Controller {
         }
     }
 
-    function download_pdf($estimate_id = 0, $mode = "download") {
+    function download_pdf($estimate_id = 0, $mode = "download", $estimate_public_id = 0) {
         if ($estimate_id) {
             validate_numeric_value($estimate_id);
             $this->can_access_this_estimate($estimate_id);
@@ -942,7 +947,7 @@ class Estimates extends Security_Controller {
             $email_template = $this->Email_templates_model->get_final_template("estimate_sent");
 
             $parser_data["ESTIMATE_ID"] = $estimate_info->id;
-            $parser_data["ESTIMATE_NUMBER"] = $estimate_info->esimate_number;
+            $parser_data["ESTIMATE_NUMBER"] = $estimate_info->estimate_number;
             $parser_data["PUBLIC_ESTIMATE_URL"] = get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key);
             $parser_data["CONTACT_FIRST_NAME"] = $contact_first_name;
             $parser_data["CONTACT_LAST_NAME"] = $contact_last_name;
@@ -1183,7 +1188,7 @@ class Estimates extends Security_Controller {
 
 
     //print estimate
-    function print_estimate($estimate_id = 0) {
+    function print_estimate($estimate_id = 0, $estimate_public_id = 0) {
         if ($estimate_id) {
             validate_numeric_value($estimate_id);
             $view_data = get_estimate_making_data($estimate_id);
@@ -1192,7 +1197,16 @@ class Estimates extends Security_Controller {
 
             $view_data['estimate_preview'] = prepare_estimate_pdf($view_data, "html");
 
-            echo json_encode(array("success" => true, "print_view" => $this->template->view("estimates/print_estimate", $view_data)));
+            // Pegar da previa e exibir no pdf ao imprimir pdf
+            $html = file_get_contents("https://uniebco.com.br/crm/estimate/preview/" . $estimate_id . "/" . $estimate_public_id);
+            $myVar = htmlspecialchars($html, ENT_QUOTES);
+            $primeiroCorte = substr($myVar, 9150, -1);
+            $segundoCorte = substr($primeiroCorte, 0, -1900);
+
+            //$view_data['estimate_preview'] = html_entity_decode($segundoCorte, ENT_QUOTES);
+            $view_data['estimate_preview'] = $html;
+
+            echo json_encode(array("success" => true, "print_view" => $view_data['estimate_preview']));
         } else {
             echo json_encode(array("success" => false, app_lang('error_occurred')));
         }
@@ -1203,7 +1217,6 @@ class Estimates extends Security_Controller {
         $view_data['estimate_info'] = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
         return $this->template->view("estimates/estimate_editor", $view_data);
     }
-
 }
 
 /* End of file estimates.php */

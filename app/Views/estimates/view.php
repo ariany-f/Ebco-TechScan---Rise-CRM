@@ -1,3 +1,8 @@
+<style type="text/css">
+@media print {
+    body {-webkit-print-color-adjust: exact;}
+}
+</style>
 <div id="page-content" class="clearfix">
     <div style="max-width: 1000px; margin: auto;">
         <div class="page-title clearfix mt25">
@@ -8,11 +13,12 @@
                         <i data-feather="tool" class="icon-16"></i> <?php echo app_lang('actions'); ?>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li role="presentation"><?php echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id), "<i data-feather='download' class='icon-16'></i> " . app_lang('download_pdf'), array("title" => app_lang('download_pdf'), "class" => "dropdown-item")); ?> </li>
-                        <li role="presentation"><?php echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id . "/view"), "<i data-feather='file-text' class='icon-16'></i> " . app_lang('view_pdf'), array("title" => app_lang('view_pdf'), "target" => "_blank", "class" => "dropdown-item")); ?> </li>
+                        <!-- <li role="presentation"><?php //echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id), "<i data-feather='download' class='icon-16'></i> " . app_lang('download_pdf'), array("title" => app_lang('download_pdf'), "class" => "dropdown-item")); ?> </li> -->
+                        <!-- <li role="presentation"><?php //echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id . "/view"), "<i data-feather='file-text' class='icon-16'></i> " . app_lang('view_pdf'), array("title" => app_lang('view_pdf'), "target" => "_blank", "class" => "dropdown-item")); ?> </li> -->
                         <li role="presentation"><?php echo anchor(get_uri("estimates/preview/" . $estimate_info->id . "/1"), "<i data-feather='search' class='icon-16'></i> " . app_lang('estimate_preview'), array("title" => app_lang('estimate_preview'), "target" => "_blank", "class" => "dropdown-item")); ?> </li>
                         <li role="presentation"><?php echo anchor(get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key), "<i data-feather='external-link' class='icon-16'></i> " . app_lang('estimate') . " " . app_lang("url"), array("target" => "_blank", "class" => "dropdown-item")); ?> </li>
-                        <li role="presentation"><?php echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('print_estimate'), array('title' => app_lang('print_estimate'), 'id' => 'print-estimate-btn', "class" => "dropdown-item")); ?> </li>
+                        <!-- <li role="presentation"><?php //echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('print_estimate'), array('title' => app_lang('print_estimate'), 'id' => 'print-estimate-btn', "class" => "dropdown-item")); ?> </li> -->
+                        <li role="presentation"><?php echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('download_pdf'), array('title' => app_lang('download_pdf'), 'id' => 'print-estimate-btn', "class" => "dropdown-item")); ?> </li>
                         <li role="presentation" class="dropdown-divider"></li>
                         <li role="presentation"><?php echo modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i> " . app_lang('edit_estimate'), array("title" => app_lang('edit_estimate'), "data-post-id" => $estimate_info->id, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
                         <li role="presentation"><?php echo modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='copy' class='icon-16'></i> " . app_lang('clone_estimate'), array("data-post-is_clone" => true, "data-post-id" => $estimate_info->id, "title" => app_lang('clone_estimate'), "class" => "dropdown-item")); ?></li>
@@ -252,11 +258,14 @@
             appLoader.show();
 
             $.ajax({
-                url: "<?php echo get_uri('estimates/print_estimate/' . $estimate_info->id) ?>",
+                url: "<?php echo get_uri('estimates/print_estimate/' . $estimate_info->id . '/' . $estimate_info->public_key) ?>",
                 dataType: 'json',
                 success: function (result) {
                     if (result.success) {
-                        document.body.innerHTML = result.print_view; //add estimate's print view to the page
+                        let div = result.print_view;
+                        document.body.innerHTML = div; //add estimate's print view to the page
+                        let noButtonsDiv = document.body.getElementsByClassName('invoice-preview-container')[0].innerHTML;
+                        document.body.innerHTML = noButtonsDiv;
                         $("html").css({"overflow": "visible"});
 
                         setTimeout(function () {

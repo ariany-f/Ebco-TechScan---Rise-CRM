@@ -1,0 +1,36 @@
+CRITICAL - 2023-12-07 17:44:59 --> Undefined index: Mão de Obra 16 HORAS 7 DIAS NA SEMANA SEM PARADAS PARA REFEIÇÕES
+in APPPATH\Views\estimates\estimate_parts\estimate_items_table.php on line 268.
+ 1 APPPATH\Views\estimates\estimate_parts\estimate_items_table.php(268): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined index: Mão de Obra 16 HORAS 7 DIAS NA SEMANA SEM PARADAS PARA REFEIÇÕES', 'APPPATH\\Views\\estimates\\estimate_parts\\estimate_items_table.php', 268, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\estimate_parts\\estimate_items_table.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/estimate_parts/estimate_items_table', [], true)
+ 5 APPPATH\Helpers\general_helper.php(2453): view('estimates/estimate_parts/estimate_items_table', [...])
+ 6 APPPATH\Controllers\Estimates.php(848): prepare_estimate_view([...])
+ 7 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->preview('23', '0', '1')
+ 8 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2023-12-07 17:45:09 --> Undefined index: Mão de Obra 16 HORAS 7 DIAS NA SEMANA SEM PARADAS PARA REFEIÇÕES
+in APPPATH\Views\estimates\estimate_parts\estimate_items_table.php on line 268.
+ 1 APPPATH\Views\estimates\estimate_parts\estimate_items_table.php(268): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined index: Mão de Obra 16 HORAS 7 DIAS NA SEMANA SEM PARADAS PARA REFEIÇÕES', 'APPPATH\\Views\\estimates\\estimate_parts\\estimate_items_table.php', 268, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\estimate_parts\\estimate_items_table.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/estimate_parts/estimate_items_table', [], true)
+ 5 APPPATH\Helpers\general_helper.php(2453): view('estimates/estimate_parts/estimate_items_table', [...])
+ 6 APPPATH\Controllers\Estimates.php(848): prepare_estimate_view([...])
+ 7 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->preview('23', '0', '1')
+ 8 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2023-12-07 17:46:12 --> Undefined index: Mão de Obra 16 HORAS 7 DIAS NA SEMANA SEM PARADAS PARA REFEIÇÕES
+in APPPATH\Views\estimates\estimate_parts\estimate_items_table.php on line 268.
+ 1 APPPATH\Views\estimates\estimate_parts\estimate_items_table.php(268): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined index: Mão de Obra 16 HORAS 7 DIAS NA SEMANA SEM PARADAS PARA REFEIÇÕES', 'APPPATH\\Views\\estimates\\estimate_parts\\estimate_items_table.php', 268, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\estimate_parts\\estimate_items_table.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/estimate_parts/estimate_items_table', [], true)
+ 5 APPPATH\Helpers\general_helper.php(2453): view('estimates/estimate_parts/estimate_items_table', [...])
+ 6 APPPATH\Controllers\Estimates.php(848): prepare_estimate_view([...])
+ 7 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->preview('23', '0', '1')
+ 8 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

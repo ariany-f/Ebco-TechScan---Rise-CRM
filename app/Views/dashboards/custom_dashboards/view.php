@@ -4,6 +4,9 @@
     if (count($dashboards)) {
         echo view("dashboards/dashboard_header");
     }
+    else{
+        echo view("dashboards/unique_dashboard_header");
+    }
     ?>
 
     <div class="clearfix row">

@@ -1,0 +1,196 @@
+ERROR - 2023-12-05 07:32:44 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to mail.uniebco.com.br:587 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('mail.uniebco.co...', '587', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Helpers\general_helper.php(668): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\app\Controllers\Team_members.php(198): send_app_mail('marcio@ebco.com...', 'Login details', '<div style="bac...')
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Team_members->add_team_member()
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Team_members))
+#9 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#11 {main}
+ERROR - 2023-12-05 07:32:44 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2023-12-05 07:32:44 --> 
+CRITICAL - 2023-12-05 07:32:44 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 5 Dec 2023 07:32:39 -0600
+From: &quot;uniebco@uniebco.com.br&quot; &lt;renato.lacava@ebco.com.br&gt;
+Return-Path: &lt;renato.lacava@ebco.com.br&gt;
+To: marcio@ebco.com.br
+Subject: =?UTF-8?Q?Login=20details?=
+Reply-To: &lt;renato.lacava@ebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: renato.lacava@ebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;656f2677e1a4d6.73744829@ebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_656f2677e1a580.02844933&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_656f2677e1a580.02844933
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Login Details Hello Marcio Azevedo,An account has been created for you.
+Please use the following info to login your dashboard: Dashboard
+URL:&amp;nbsp;https://uniebco.com.br/crm/ Email: marcio@ebco.com.br
+Password:&amp;nbsp;ebco@1234 Powered By: fairsketch
+
+
+--B_ALT_656f2677e1a580.02844933
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+&lt;div style=3D&quot;background-color: #eeeeef; padding: 50px 0; &quot;&gt;&lt;div style=3D&quot;m=
+ax-width:640px; margin:0 auto; &quot;&gt; &lt;div style=3D&quot;color: #fff; text-align: ce=
+nter; background-color:#33333e; padding: 30px; border-top-left-radius: 3px;=
+ border-top-right-radius: 3px; margin: 0;&quot;&gt;  &lt;h1&gt;Login Details&lt;/h1&gt;&lt;/div&gt;&lt;d=
+iv style=3D&quot;padding: 20px; background-color: rgb(255, 255, 255);&quot;&gt;         =
+   &lt;p style=3D&quot;color: rgb(85, 85, 85); font-size: 14px;&quot;&gt; Hello Marcio Azev=
+edo,&lt;br&gt;&lt;br&gt;An account has been created for you.&lt;/p&gt;            &lt;p style=3D=
+&quot;color: rgb(85, 85, 85); font-size: 14px;&quot;&gt; Please use the following info t=
+o login your dashboard:&lt;/p&gt;            &lt;hr&gt;            &lt;p style=3D&quot;color: r=
+gb(85, 85, 85); font-size: 14px;&quot;&gt;Dashboard URL:&amp;nbsp;&lt;a href=3D&quot;https://un=
+iebco.com.br/crm/&quot; target=3D&quot;_blank&quot;&gt;https://uniebco.com.br/crm/&lt;/a&gt;&lt;/p&gt;   =
+         &lt;p style=3D&quot;color: rgb(85, 85, 85); font-size: 14px;&quot;&gt;&lt;/p&gt;        =
+    &lt;p style=3D&quot;&quot;&gt;&lt;span style=3D&quot;color: rgb(85, 85, 85); font-size: 14px; l=
+ine-height: 20px;&quot;&gt;Email: marcio@ebco.com.br&lt;/span&gt;&lt;br&gt;&lt;/p&gt;            &lt;p s=
+tyle=3D&quot;&quot;&gt;&lt;span style=3D&quot;color: rgb(85, 85, 85); font-size: 14px; line-heig=
+ht: 20px;&quot;&gt;Password:&amp;nbsp;ebco@1234&lt;/span&gt;&lt;/p&gt;            &lt;p style=3D&quot;color=
+: rgb(85, 85, 85);&quot;&gt;&lt;br&gt;&lt;/p&gt;            &lt;p style=3D&quot;color: rgb(85, 85, 85);=
+ font-size: 14px;&quot;&gt;Powered By: &lt;a href=3D&quot;http://fairsketch.com/&quot; target=3D=
+&quot;_blank&quot;&gt;fairsketch &lt;/a&gt;&lt;/p&gt;        &lt;/div&gt;    &lt;/div&gt;&lt;/div&gt;
+
+--B_ALT_656f2677e1a580.02844933--</pre>
+in APPPATH\Helpers\general_helper.php on line 673.
+ 1 APPPATH\Controllers\Team_members.php(198): send_app_mail('marcio@ebco.com.br', 'Login details', '<div style="background-color: #eeeeef; padding: 50px 0; "><div style="max-width:640px; margin:0 auto; "> <div style="color: #fff; text-align: center; background-color:#33333e; padding: 30px; border-top-left-radius: 3px; border-top-right-radius: 3px; margin: 0;">  <h1>Login Details</h1></div><div style="padding: 20px; background-color: rgb(255, 255, 255);">            <p style="color: rgb(85, 85, 85); font-size: 14px;"> Hello Marcio Azevedo,<br><br>An account has been created for you.</p>            <p style="color: rgb(85, 85, 85); font-size: 14px;"> Please use the following info to login your dashboard:</p>            <hr>            <p style="color: rgb(85, 85, 85); font-size: 14px;">Dashboard URL:&nbsp;<a href="https://uniebco.com.br/crm/" target="_blank">https://uniebco.com.br/crm/</a></p>            <p style="color: rgb(85, 85, 85); font-size: 14px;"></p>            <p style=""><span style="color: rgb(85, 85, 85); font-size: 14px; line-height: 20px;">Email: marcio@ebco.com.br</span><br></p>            <p style=""><span style="color: rgb(85, 85, 85); font-size: 14px; line-height: 20px;">Password:&nbsp;ebco@1234</span></p>            <p style="color: rgb(85, 85, 85);"><br></p>            <p style="color: rgb(85, 85, 85); font-size: 14px;">Powered By: <a href="http://fairsketch.com/" target="_blank">fairsketch </a></p>        </div>    </div></div>')
+ 2 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Team_members->add_team_member()
+ 3 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Team_members))
+ 4 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+ERROR - 2023-12-05 07:50:40 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to mail.uniebco.com.br:587 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('mail.uniebco.co...', '587', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Helpers\general_helper.php(668): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\app\Controllers\Team_members.php(198): send_app_mail('eduardo.brito@e...', 'Login details', '<div style="bac...')
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Team_members->add_team_member()
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Team_members))
+#9 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#11 {main}
+ERROR - 2023-12-05 07:50:40 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2023-12-05 07:50:40 --> 
+CRITICAL - 2023-12-05 07:50:40 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 5 Dec 2023 07:50:35 -0600
+From: &quot;uniebco@uniebco.com.br&quot; &lt;renato.lacava@ebco.com.br&gt;
+Return-Path: &lt;renato.lacava@ebco.com.br&gt;
+To: eduardo.brito@ebco.com.br
+Subject: =?UTF-8?Q?Login=20details?=
+Reply-To: &lt;renato.lacava@ebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: renato.lacava@ebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;656f2aab3b1174.43195996@ebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_656f2aab3b1212.01419112&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_656f2aab3b1212.01419112
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Login Details Hello Eduardo Brito,An account has been created for you.
+Please use the following info to login your dashboard: Dashboard
+URL:&amp;nbsp;https://uniebco.com.br/crm/ Email: eduardo.brito@ebco.com.br
+Password:&amp;nbsp;ebco@1234 Powered By: fairsketch
+
+
+--B_ALT_656f2aab3b1212.01419112
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+&lt;div style=3D&quot;background-color: #eeeeef; padding: 50px 0; &quot;&gt;&lt;div style=3D&quot;m=
+ax-width:640px; margin:0 auto; &quot;&gt; &lt;div style=3D&quot;color: #fff; text-align: ce=
+nter; background-color:#33333e; padding: 30px; border-top-left-radius: 3px;=
+ border-top-right-radius: 3px; margin: 0;&quot;&gt;  &lt;h1&gt;Login Details&lt;/h1&gt;&lt;/div&gt;&lt;d=
+iv style=3D&quot;padding: 20px; background-color: rgb(255, 255, 255);&quot;&gt;         =
+   &lt;p style=3D&quot;color: rgb(85, 85, 85); font-size: 14px;&quot;&gt; Hello Eduardo Bri=
+to,&lt;br&gt;&lt;br&gt;An account has been created for you.&lt;/p&gt;            &lt;p style=3D&quot;=
+color: rgb(85, 85, 85); font-size: 14px;&quot;&gt; Please use the following info to=
+ login your dashboard:&lt;/p&gt;            &lt;hr&gt;            &lt;p style=3D&quot;color: rg=
+b(85, 85, 85); font-size: 14px;&quot;&gt;Dashboard URL:&amp;nbsp;&lt;a href=3D&quot;https://uni=
+ebco.com.br/crm/&quot; target=3D&quot;_blank&quot;&gt;https://uniebco.com.br/crm/&lt;/a&gt;&lt;/p&gt;    =
+        &lt;p style=3D&quot;color: rgb(85, 85, 85); font-size: 14px;&quot;&gt;&lt;/p&gt;         =
+   &lt;p style=3D&quot;&quot;&gt;&lt;span style=3D&quot;color: rgb(85, 85, 85); font-size: 14px; li=
+ne-height: 20px;&quot;&gt;Email: eduardo.brito@ebco.com.br&lt;/span&gt;&lt;br&gt;&lt;/p&gt;          =
+  &lt;p style=3D&quot;&quot;&gt;&lt;span style=3D&quot;color: rgb(85, 85, 85); font-size: 14px; lin=
+e-height: 20px;&quot;&gt;Password:&amp;nbsp;ebco@1234&lt;/span&gt;&lt;/p&gt;            &lt;p style=3D=
+&quot;color: rgb(85, 85, 85);&quot;&gt;&lt;br&gt;&lt;/p&gt;            &lt;p style=3D&quot;color: rgb(85, 85=
+, 85); font-size: 14px;&quot;&gt;Powered By: &lt;a href=3D&quot;http://fairsketch.com/&quot; tar=
+get=3D&quot;_blank&quot;&gt;fairsketch &lt;/a&gt;&lt;/p&gt;        &lt;/div&gt;    &lt;/div&gt;&lt;/div&gt;
+
+--B_ALT_656f2aab3b1212.01419112--</pre>
+in APPPATH\Helpers\general_helper.php on line 673.
+ 1 APPPATH\Controllers\Team_members.php(198): send_app_mail('eduardo.brito@ebco.com.br', 'Login details', '<div style="background-color: #eeeeef; padding: 50px 0; "><div style="max-width:640px; margin:0 auto; "> <div style="color: #fff; text-align: center; background-color:#33333e; padding: 30px; border-top-left-radius: 3px; border-top-right-radius: 3px; margin: 0;">  <h1>Login Details</h1></div><div style="padding: 20px; background-color: rgb(255, 255, 255);">            <p style="color: rgb(85, 85, 85); font-size: 14px;"> Hello Eduardo Brito,<br><br>An account has been created for you.</p>            <p style="color: rgb(85, 85, 85); font-size: 14px;"> Please use the following info to login your dashboard:</p>            <hr>            <p style="color: rgb(85, 85, 85); font-size: 14px;">Dashboard URL:&nbsp;<a href="https://uniebco.com.br/crm/" target="_blank">https://uniebco.com.br/crm/</a></p>            <p style="color: rgb(85, 85, 85); font-size: 14px;"></p>            <p style=""><span style="color: rgb(85, 85, 85); font-size: 14px; line-height: 20px;">Email: eduardo.brito@ebco.com.br</span><br></p>            <p style=""><span style="color: rgb(85, 85, 85); font-size: 14px; line-height: 20px;">Password:&nbsp;ebco@1234</span></p>            <p style="color: rgb(85, 85, 85);"><br></p>            <p style="color: rgb(85, 85, 85); font-size: 14px;">Powered By: <a href="http://fairsketch.com/" target="_blank">fairsketch </a></p>        </div>    </div></div>')
+ 2 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Team_members->add_team_member()
+ 3 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Team_members))
+ 4 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2023-12-05 07:57:01 --> Undefined property: stdClass::$is_admin
+in APPPATH\Controllers\Security_Controller.php on line 98.
+ 1 APPPATH\Controllers\Security_Controller.php(98): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined property: stdClass::$is_admin', 'APPPATH\\Controllers\\Security_Controller.php', 98, [...])
+ 2 APPPATH\Controllers\Security_Controller.php(80): App\Controllers\Security_Controller->get_access_info('message_permission')
+ 3 APPPATH\Controllers\Messages.php(9): App\Controllers\Security_Controller->init_permission_checker('message_permission')
+ 4 SYSTEMPATH\CodeIgniter.php(906): App\Controllers\Messages->__construct()
+ 5 SYSTEMPATH\CodeIgniter.php(490): CodeIgniter\CodeIgniter->createController()
+ 6 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+ERROR - 2023-12-05 11:54:47 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'GROUP BY crm_users.id' at line 10 in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('SELECT SQL_CALC...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SQL_CALC...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SQL_CALC...')
+#3 E:\httpdocs\www\crm\app\Models\Users_model.php(264): CodeIgniter\Database\BaseConnection->query('SELECT SQL_CALC...')
+#4 E:\httpdocs\www\crm\app\Controllers\Team_members.php(325): App\Models\Users_model->get_details(Array)
+#5 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Team_members->list_data()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Team_members))
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2023-12-05 11:54:47 --> You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'GROUP BY crm_users.id' at line 10
+in SYSTEMPATH\Database\BaseConnection.php on line 645.
+ 1 APPPATH\Models\Users_model.php(264): CodeIgniter\Database\BaseConnection->query('SELECT SQL_CALC_FOUND_ROWS crm_users.*, crm_roles.title AS role_title,
+            crm_team_member_job_info.date_of_hire, crm_team_member_job_info.salary, crm_general_files.file_name AS signature_file, crm_team_member_job_info.salary_term 
+        FROM crm_users
+        LEFT JOIN crm_team_member_job_info ON crm_team_member_job_info.user_id=crm_users.id
+        LEFT JOIN crm_general_files ON crm_general_files.user_id = crm_users.id
+        LEFT JOIN crm_clients ON crm_clients.id=crm_users.client_id
+        LEFT JOIN crm_roles ON crm_roles.id=crm_users.role_id
+            
+        WHERE crm_users.deleted=0  AND crm_users.status=\'active\' AND crm_users.user_type=\'staff\' 
+        ORDER BY crm_users.first_name GROUP BY crm_users.id ')
+ 2 APPPATH\Controllers\Team_members.php(325): App\Models\Users_model->get_details([...])
+ 3 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Team_members->list_data()
+ 4 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Team_members))
+ 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

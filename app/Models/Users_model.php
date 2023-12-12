@@ -251,13 +251,14 @@ class Users_model extends Crud_model {
 
         //prepare full query string
         $sql = "SELECT SQL_CALC_FOUND_ROWS $users_table.*, $roles_table.title AS role_title,
-            $team_member_job_info_table.date_of_hire, $team_member_job_info_table.salary, $team_member_job_info_table.salary_term $select_custom_fieds
+            $team_member_job_info_table.date_of_hire, $team_member_job_info_table.salary, crm_general_files.file_name AS signature_file, $team_member_job_info_table.salary_term $select_custom_fieds
         FROM $users_table
         LEFT JOIN $team_member_job_info_table ON $team_member_job_info_table.user_id=$users_table.id
+        LEFT JOIN crm_general_files ON crm_general_files.user_id = $users_table.id
         LEFT JOIN $clients_table ON $clients_table.id=$users_table.client_id
         LEFT JOIN $roles_table ON $roles_table.id=$users_table.role_id
         $join_custom_fieds    
-        WHERE $users_table.deleted=0 $where $custom_fields_where
+        WHERE $users_table.deleted=0 $where $custom_fields_where GROUP BY $users_table.id
         $order $limit_offset";
 
         $raw_query = $this->db->query($sql);

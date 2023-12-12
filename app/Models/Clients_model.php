@@ -171,7 +171,7 @@ class Clients_model extends Crud_model {
         }
 
 
-        $sql = "SELECT SQL_CALC_FOUND_ROWS $clients_table.*, CONCAT($users_table.first_name, ' ', $users_table.last_name) AS primary_contact, $users_table.id AS primary_contact_id, $users_table.image AS contact_avatar,  project_table.total_projects, $payment_value_select AS payment_received $select_custom_fieds,
+        $sql = "SELECT SQL_CALC_FOUND_ROWS $clients_table.*, CONCAT($users_table.first_name, ' ', $users_table.last_name) AS primary_contact, $users_table.email AS primary_contact_email, $users_table.id AS primary_contact_id, $users_table.image AS contact_avatar,  project_table.total_projects, $payment_value_select AS payment_received $select_custom_fieds,
                 IF((($invoice_value_select > $payment_value_select) AND ($invoice_value_select - $payment_value_select) <0.05), $payment_value_select, $invoice_value_select) AS invoice_value,
                 (SELECT GROUP_CONCAT($invoice_rules_table.title) FROM $invoice_rules_table WHERE FIND_IN_SET($invoice_rules_table.id, $clients_table.invoice_rule_id)) AS invoice_rule_id,
                 (SELECT GROUP_CONCAT($client_groups_table.title) FROM $client_groups_table WHERE FIND_IN_SET($client_groups_table.id, $clients_table.group_ids)) AS client_groups, $lead_status_table.title AS lead_status_title,  $lead_status_table.color AS lead_status_color,
@@ -281,7 +281,7 @@ class Clients_model extends Crud_model {
     function get_primary_contact($client_id = 0, $info = false) {
         $users_table = $this->db->prefixTable('users');
 
-        $sql = "SELECT $users_table.id, $users_table.first_name, $users_table.last_name
+        $sql = "SELECT $users_table.id, $users_table.email, $users_table.first_name, $users_table.last_name
         FROM $users_table
         WHERE $users_table.deleted=0 AND $users_table.client_id=$client_id AND $users_table.is_primary_contact=1";
         $result = $this->db->query($sql);
@@ -419,7 +419,6 @@ class Clients_model extends Crud_model {
 
         return $this->db->query($sql);
     }
-    
 
     function get_proposals_kanban_details($options = array()) {
        
@@ -591,7 +590,7 @@ class Clients_model extends Crud_model {
         LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
         WHERE $clients_table.deleted=0 AND $clients_table.is_lead=1 $where
         GROUP BY $clients_table.lead_status_id
-        ORDER BY $lead_status_table.sort ASC";
+        ORDER BY total DESC";
 
         $client_statuses = "SELECT COUNT($clients_table.id) AS total, 10 AS lead_status_id, 'Convertido a Cliente' AS 'title', 'navy' AS color, SUM($projects_table.price) AS projects_total
         FROM $clients_table
@@ -614,8 +613,6 @@ class Clients_model extends Crud_model {
 
         return $info;
     }
-
-
     function get_lead_sources($options = array(), $date_start = null, $date_end = null) {
         $clients_table = $this->db->prefixTable('clients');
         $lead_status_table = $this->db->prefixTable('lead_status');

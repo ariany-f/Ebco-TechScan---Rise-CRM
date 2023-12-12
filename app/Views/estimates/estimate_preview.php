@@ -1,3 +1,8 @@
+<style type="text/css">
+@media print {
+    body {-webkit-print-color-adjust: exact;}
+}
+</style>
 <div class="box h-100">
     <div class="box-content">
         <div id="estimate-preview-content" class="page-wrapper clearfix">
@@ -116,11 +121,14 @@
             appLoader.show();
 
             $.ajax({
-                url: "<?php echo get_uri('estimates/print_estimate/' . $estimate_info->id) ?>",
+                url: "<?php echo get_uri('estimates/print_estimate/' . $estimate_info->id.'/'.$estimate_info->public_key) ?>",
                 dataType: 'json',
                 success: function (result) {
                     if (result.success) {
-                        document.body.innerHTML = result.print_view; //add estimate's print view to the page
+                        let div = result.print_view;
+                        document.body.innerHTML = div; //add estimate's print view to the page
+                        let noButtonsDiv = document.body.getElementsByClassName('invoice-preview-container')[0].innerHTML;
+                        document.body.innerHTML = noButtonsDiv;
                         $("html").css({"overflow": "visible"});
 
                         setTimeout(function () {

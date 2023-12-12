@@ -1135,6 +1135,7 @@ if (!function_exists('get_estimate_making_data')) {
         if ($estimate_info) {
             $data['estimate_info'] = $estimate_info;
             $data['client_info'] = $ci->Clients_model->get_one($data['estimate_info']->client_id);
+            $data['client_primary_contact_info'] = $ci->Clients_model->get_primary_contact($data['estimate_info']->client_id, true);
             $data['estimate_items'] = $ci->Estimate_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
             $data["estimate_total_summary"] = $ci->Estimates_model->get_estimate_total_summary($estimate_id);
             $data['estimate_status_label'] = get_estimate_status_label($estimate_info);
@@ -1160,6 +1161,7 @@ if (!function_exists('get_contract_making_data')) {
         if ($contract_info) {
             $data['contract_info'] = $contract_info;
             $data['client_info'] = $ci->Clients_model->get_one($data['contract_info']->client_id);
+            $data['client_primary_contact_info'] = $ci->Clients_model->get_primary_contact($data['contract_info']->client_id, true);
             $data['contract_items'] = $ci->Contract_items_model->get_details(array("contract_id" => $contract_id))->getResult();
             $data["contract_total_summary"] = $ci->Contracts_model->get_contract_total_summary($contract_id);
 
@@ -1184,6 +1186,7 @@ if (!function_exists('get_proposal_making_data')) {
         if ($proposal_info) {
             $data['proposal_info'] = $proposal_info;
             $data['client_info'] = $ci->Clients_model->get_one($data['proposal_info']->client_id);
+            $data['client_primary_contact_info'] = $ci->Clients_model->get_primary_contact($data['proposal_info']->client_id, true);
             $data['proposal_items'] = $ci->Proposal_items_model->get_details(array("proposal_id" => $proposal_id))->getResult();
             $data["proposal_total_summary"] = $ci->Proposals_model->get_proposal_total_summary($proposal_id);
 
@@ -2061,6 +2064,7 @@ if (!function_exists('prepare_contract_view')) {
             $parser_data["COMPANY_PHONE"] = $company_info->phone;
             $parser_data["COMPANY_EMAIL"] = $company_info->email;
             $parser_data["COMPANY_WEBSITE"] = $company_info->website;
+            $parser_data["COMPANY_IMAGE_URL_BIG"] = get_company_logo($company_info->id, "proposal", '100%');
             $parser_data["COMPANY_IMAGE_URL"] = get_company_logo($company_info->id, "proposal");
 
             $client_info = get_array_value($contract_data, "client_info");
@@ -2069,6 +2073,7 @@ if (!function_exists('prepare_contract_view')) {
             $parser_data["CONTRACT_TO_INFO"] = view("contracts/contract_parts/contract_to", $view_data);
             $parser_data["CONTRACT_TO_COMPANY_NAME"] = $client_info->company_name;
             $parser_data["CONTRACT_TO_COMPANY_CNPJ"] = $client_info->cnpj;
+            $parset_data["ESTIMATE_TO_COMPANY_STATE_SUBSCRIPTION"] = $client_info->state_subscription;
             $parser_data["CONTRACT_TO_ADDRESS"] = $client_info->address;
             $parser_data["CONTRACT_TO_CITY"] = $client_info->city;
             $parser_data["CONTRACT_TO_STATE"] = $client_info->state;
@@ -2154,6 +2159,7 @@ if (!function_exists('get_available_contract_variables')) {
             "COMPANY_EMAIL",
             "COMPANY_WEBSITE",
             "COMPANY_IMAGE_URL",
+            "COMPANY_IMAGE_URL_BIG",
             /* contract to info */
             "CONTRACT_TO_INFO",
             "CONTRACT_TO_COMPANY_NAME",
@@ -2288,15 +2294,19 @@ if (!function_exists('prepare_proposal_view')) {
             $parser_data["COMPANY_PHONE"] = $company_info->phone;
             $parser_data["COMPANY_EMAIL"] = $company_info->email;
             $parser_data["COMPANY_WEBSITE"] = $company_info->website;
+            $parser_data["COMPANY_IMAGE_URL_BIG"] = get_company_logo($company_info->id, "proposal", '100%');
             $parser_data["COMPANY_IMAGE_URL"] = get_company_logo($company_info->id, "proposal");
 
             $client_info = get_array_value($proposal_data, "client_info");
+            $client_contact_info = get_array_value($proposal_data, "client_primary_contact_info");
             $view_data["client_info"] = $client_info;
+            $view_data["client_primary_contact_info"] = $client_contact_info;
             $view_data["is_preview"] = true;
             $parser_data["PROPOSAL_TO_INFO"] = view("proposals/proposal_parts/proposal_to", $view_data);
             $parser_data["PROPOSAL_TO_COMPANY_NAME"] = $client_info->company_name;
             $parser_data["PROPOSAL_TO_COMPANY_CNPJ"] = $client_info->cnpj;
-            $parser_data["ESTIMATE_TO_COMPANY_EMAIL"] = $client_info->email;
+            $parser_data["PROPOSAL_TO_COMPANY_STATE_SUBSCRIPTION"] = $client_info->state_subscription;
+            $parser_data["PROPOSAL_TO_COMPANY_EMAIL"] = $client_contact_info->email;
             $parser_data["PROPOSAL_TO_ADDRESS"] = $client_info->address;
             $parser_data["PROPOSAL_TO_CITY"] = $client_info->city;
             $parser_data["PROPOSAL_TO_STATE"] = $client_info->state;
@@ -2347,6 +2357,7 @@ if (!function_exists('get_available_proposal_variables')) {
             "COMPANY_EMAIL",
             "COMPANY_WEBSITE",
             "COMPANY_IMAGE_URL",
+            "COMPANY_IMAGE_URL_BIG",
             /* proposal to info */
             "PROPOSAL_TO_INFO",
             "PROPOSAL_TO_COMPANY_NAME",
@@ -2424,8 +2435,19 @@ if (!function_exists('prepare_estimate_view')) {
             
             $parser_data = array();
 
+            $Users_model = model('App\Models\Users_Model');
+            $login_user = $Users_model->get_details(["id" => $estimate_info->created_by])->getRow();
+
             $parser_data["ESTIMATE_ID"] = get_estimate_id($estimate_info->id);
             $parser_data["ESTIMATE_NUMBER"] = get_estimate_number($estimate_info->estimate_number);
+            
+            $parser_data['USER_ID'] = $estimate_info->created_by;
+            $parser_data['USER_NAME'] = $login_user->first_name . ' ' . $login_user->last_name;
+            $parser_data['USER_EMAIL'] = $login_user->email;
+            $parser_data['USER_SIGNATURE_FILE'] = $login_user->signature_file;
+            $parser_data['USER_PHONE'] = $login_user->phone;
+            $parser_data['USER_ALTERNATIVE_PHONE'] = $login_user->alternative_phone;
+
             $parser_data["ESTIMATE_DATE"] = format_to_date($estimate_info->estimate_date, false);
             $parser_data["ESTIMATE_EXPIRY_DATE"] = format_to_date($estimate_info->valid_until, false);
             $parser_data["ESTIMATE_ITEMS"] = view("estimates/estimate_parts/estimate_items_table", $estimate_data);
@@ -2455,14 +2477,19 @@ if (!function_exists('prepare_estimate_view')) {
             $parser_data["COMPANY_PHONE"] = $company_info->phone;
             $parser_data["COMPANY_EMAIL"] = $company_info->email;
             $parser_data["COMPANY_WEBSITE"] = $company_info->website;
+            $parser_data["COMPANY_IMAGE_URL_BIG"] = get_company_logo($company_info->id, "estimate", '100%');
             $parser_data["COMPANY_IMAGE_URL"] = get_company_logo($company_info->id, "estimate");
 
             $client_info = get_array_value($estimate_data, "client_info");
+            $client_contact_info = get_array_value($estimate_data, "client_primary_contact_info");
             $view_data["client_info"] = $client_info;
+            $view_data["client_contact_info"] = $client_contact_info;
             $view_data["is_preview"] = true;
             $parser_data["ESTIMATE_TO_INFO"] = view("estimates/estimate_parts/estimate_to", $view_data);
             $parser_data["ESTIMATE_TO_COMPANY_NAME"] = $client_info->company_name;
+            $parser_data["ESTIMATE_TO_COMPANY_EMAIL"] = $client_contact_info->email ?? '';
             $parser_data["ESTIMATE_TO_COMPANY_CNPJ"] = $client_info->cnpj;
+            $parser_data["ESTIMATE_TO_COMPANY_STATE_SUBSCRIPTION"] = $client_info->state_subscription;
             $parser_data["ESTIMATE_TO_ADDRESS"] = $client_info->address;
             $parser_data["ESTIMATE_TO_CITY"] = $client_info->city;
             $parser_data["ESTIMATE_TO_STATE"] = $client_info->state;
@@ -2505,6 +2532,13 @@ if (!function_exists('get_available_estimate_variables')) {
             "ESTIMATE_ITEMS",
             "ESTIMATE_NOTE",
             "APP_TITLE",
+            /* USER LOGGED INFO */
+            "USER_ID",
+            "USER_NAME",
+            "USER_EMAIL",
+            "USER_SIGNATURE_FILE",
+            "USER_PHONE",
+            "USER_ALTERNATIVE_PHONE",
             /* company info */
             "COMPANY_INFO",
             "COMPANY_NAME",
@@ -2513,10 +2547,12 @@ if (!function_exists('get_available_estimate_variables')) {
             "COMPANY_EMAIL",
             "COMPANY_WEBSITE",
             "COMPANY_IMAGE_URL",
+            "COMPANY_IMAGE_URL_BIG",
             /* proposal to info */
             "ESTIMATE_TO_INFO",
             "ESTIMATE_TO_COMPANY_NAME",
             "ESTIMATE_TO_COMPANY_CNPJ",
+            "ESTIMATE_TO_COMPANY_STATE_SUBSCRIPTION",
             "ESTIMATE_TO_COMPANY_EMAIL",
             "ESTIMATE_TO_ADDRESS",
             "ESTIMATE_TO_CITY",
@@ -2969,7 +3005,7 @@ if (!function_exists('get_subscription_type_label')) {
  */
 if (!function_exists('get_company_logo')) {
 
-    function get_company_logo($company_id, $type = "") {
+    function get_company_logo($company_id, $type = "", $size = "300px") {
         $Company_model = model('App\Models\Company_model');
         $company_info = $Company_model->get_one($company_id);
         $only_file_path = get_setting('only_file_path');
@@ -2981,7 +3017,7 @@ if (!function_exists('get_company_logo')) {
                 if (is_array($file)) {
                     $file = get_array_value($file, 0);
 
-                    return '<img class="max-logo-size" src="'. get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path) .'" alt="..." />';
+                    return '<img style="max-width: '.$size.';" class="max-logo-size" src="'. get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path) .'" alt="..." />';
 
                 }
             } else {
@@ -2990,7 +3026,7 @@ if (!function_exists('get_company_logo')) {
                     $logo = "invoice_logo";
                 }
     
-                return '<img class="max-logo-size" src="'. get_file_from_setting($logo, $only_file_path) .'" alt="..." />';
+                return '<img style="max-width: '.$size.';" class="max-logo-size" src="'. get_file_from_setting($logo, $only_file_path) .'" alt="..." />';
     
 
             }
