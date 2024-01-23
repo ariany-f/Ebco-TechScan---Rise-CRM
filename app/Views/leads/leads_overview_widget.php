@@ -8,16 +8,8 @@
                 <!-- <canvas id="leads-overview-chart" style="width: 100%; height: 160px;"></canvas> -->
                 <div id='funnelChart' style="width: 100%; height: 400px;"></div>
             </div>
-            <div class="col-md-5 pl20 <?php echo count($lead_statuses) > 8 ? "" : "pt-4"; ?>">
+            <div class="col-md-5 pl20 <?php echo count($lead_statuses) > 8 ? "" : "pt-4"; ?>" style="display: flex;flex-direction: column;justify-content: center;">
                 <?php
-                foreach ($client_statuses as $lead_status) {
-                    ?>
-                        <div class="pb-2" style="display: flex;gap: 15px;">
-                            <div class="color-tag border-circle me-3 wh10" style="background-color: <?php echo $lead_status->color; ?>;"></div><?php echo $lead_status->title; ?>
-                            <span class="strong" style="color: <?php echo $lead_status->color; ?>"><?php echo $lead_status->total; ?></span><?php echo to_currency($lead_status->projects_total, "R$ "); ?>
-                        </div>
-                    <?php
-                    }
                 foreach ($lead_statuses as $lead_status) {
                 ?>
                     <div class="pb-2" style="display: flex;gap: 15px;">
@@ -26,6 +18,14 @@
                     </div>
                 <?php
                 }
+                foreach ($client_statuses as $lead_status) {
+                    ?>
+                        <div class="pb-2" style="display: flex;gap: 15px;">
+                            <div class="color-tag border-circle me-3 wh10" style="background-color: <?php echo $lead_status->color; ?>;"></div><?php echo $lead_status->title; ?>
+                            <span class="strong" style="color: <?php echo $lead_status->color; ?>"><?php echo $lead_status->total; ?></span><?php echo to_currency($lead_status->projects_total, "R$ "); ?>
+                        </div>
+                    <?php
+                    }
                 ?>
             </div>
         </div>
@@ -49,15 +49,15 @@ $lead_status_title = array();
 $lead_status_data = array();
 $lead_status_color = array();
 
-foreach ($client_statuses as $client_status) {
-    $lead_status_title[] = $client_status->title;
-    $lead_status_data[] = $client_status->total;
-    $lead_status_color[] = $client_status->color;
-}
 foreach ($lead_statuses as $lead_status) {
     $lead_status_title[] = $lead_status->title;
     $lead_status_data[] = $lead_status->total;
     $lead_status_color[] = $lead_status->color;
+}
+foreach ($client_statuses as $client_status) {
+    $lead_status_title[] = $client_status->title;
+    $lead_status_data[] = $client_status->total;
+    $lead_status_color[] = $client_status->color;
 }
 ?>
 <script>
@@ -67,24 +67,38 @@ foreach ($lead_statuses as $lead_status) {
     var leadStatusColor = <?php echo json_encode($lead_status_color) ?>;
 
 
+    // var gd = document.getElementById('funnelChart');
+    // var data = [{
+    //     type: 'funnel',
+    //     y: labels,
+    //     x: leadStatusData,
+    //     hoverinfo: 'percent total+x', opacity: 0.65, marker: {
+    //         color: leadStatusColor,
+    //         line: {"width": leadStatusData, color: ["3E4E88", "606470", "3E4E88", "606470", "3E4E88"]}
+    //     },
+    //     connector: {line: {color: "royalblue", dash: "dot", width: 3}}}];
+
+    // var layout = {
+    //     margin: {
+    //         l: 200
+    //     },
+    //     width: 650,
+    //     height: 400
+    // }
+
+    // Plotly.newPlot('funnelChart', data, layout);
+
     var gd = document.getElementById('funnelChart');
     var data = [{
-        type: 'funnel',
-        y: labels,
+        type: 'funnel', 
+        y: labels, 
         x: leadStatusData,
-        hoverinfo: 'percent total+x', opacity: 0.65, marker: {
-            color: leadStatusColor,
-            line: {"width": leadStatusData, color: ["3E4E88", "606470", "3E4E88", "606470", "3E4E88"]}
-        },
-        connector: {line: {color: "royalblue", dash: "dot", width: 3}}}];
+        hoverinfo: 'x+percent total', opacity: 0.9, marker: {
+            color: leadStatusColor
+        }
+    }];
 
-    var layout = {
-        margin: {
-            l: 150
-        },
-        width: 600,
-        height: 400
-    }
+    var layout = {margin: {l: 180}, width:600, height: 400}
 
     Plotly.newPlot('funnelChart', data, layout);
 

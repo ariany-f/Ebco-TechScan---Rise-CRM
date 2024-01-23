@@ -22,7 +22,7 @@ class App extends BaseConfig {
             if (!empty($_SERVER['HTTPS'])) {
                 $this->baseURL = 'https://' . $domain;
             } else {
-                if($_SERVER['HTTP_HOST'] == 'uniebco.com.br')
+                if($_SERVER['HTTP_HOST'] == 'uniebco.com.br' OR $_SERVER['HTTP_HOST'] == 'www.uniebco.com.br')
                 {
                     $this->baseURL = 'https://' . $domain;
                 }

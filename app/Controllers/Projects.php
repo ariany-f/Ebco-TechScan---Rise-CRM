@@ -841,7 +841,7 @@ class Projects extends Security_Controller {
         $this->access_only_team_members();
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("projects", $this->login_user->is_admin, $this->login_user->user_type);
-       
+        
         $statuses = $this->request->getPost('status') ? implode(",", $this->request->getPost('status')) : "";
 
         $options = array(

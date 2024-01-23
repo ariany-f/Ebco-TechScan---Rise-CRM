@@ -200,7 +200,7 @@ class Estimates_model extends Crud_model {
             LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage FROM $taxes_table) AS tax_table ON tax_table.id = $estimates_table.tax_id
             LEFT JOIN (SELECT $taxes_table.id, $taxes_table.percentage FROM $taxes_table) AS tax_table2 ON tax_table2.id = $estimates_table.tax_id2
             LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table WHERE deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
-            WHERE $estimates_table.deleted=0 AND $estimates_table.status='sent' $where AND YEAR($estimates_table.valid_until)=$year $estimate_where) as details_table
+            WHERE $estimates_table.deleted=0 AND ($estimates_table.status <> 'accepted' AND $estimates_table.status <> 'rejected' ) $where AND YEAR($estimates_table.valid_until)=$year $estimate_where) as details_table
             GROUP BY  MONTH(valid_until)";
 
         $info->estimates = $this->db->query($estimates)->getResult();

@@ -263,7 +263,7 @@ class Left_menu {
             $access_subscription = get_array_value($permissions, "subscription");
             $access_proposal = get_array_value($permissions, "proposal");
             $access_order = get_array_value($permissions, "order");
-            $access_items = ($this->ci->login_user->is_admin);
+            $access_items = 1;//($this->ci->login_user->is_admin);
 
             $client_message_users = get_setting("client_message_users");
             $client_message_users_array = explode(",", $client_message_users);

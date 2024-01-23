@@ -32,7 +32,7 @@
         <?php } ?>
 
         <div class="table-responsive" id="client-projects-list">
-            <table id="project-table" class="display" width="100%">            
+            <table id="project-table" class="display" width="100%">
             </table>
         </div>
     </div>

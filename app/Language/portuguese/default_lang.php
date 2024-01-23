@@ -67,7 +67,7 @@ $lang["income_vs_expenses"] = "Rendimento vs Despesas";
 $lang["title"] = "Título";
 $lang["reset"] = "Resetar";
 $lang["share_with"] = "Compartilhar com";
-$lang["company_name"] = "Razão Social";
+$lang["company_name"] = "Nome Fantasia";
 $lang["state_subscription"] = "Inscrição Estadual";
 $lang["inscricao_estadual"] = "Inscricao Estadual";
 $lang["inscricao_municipal"] = "Inscricao Municipal";
@@ -2393,6 +2393,7 @@ $lang["lead_sources"] = "Origens de Lead";
 $lang["order_number"] = "Order number";
 
 $lang['sellers_overview'] = 'Ranking Vendedores';
+$lang['sellers_leads_overview'] = 'Ranking Propostas Vendedores';
 $lang['total_sells'] = 'Total Vendido';
 
 $lang['termometer_proposals'] = 'Termômetro das propostas';

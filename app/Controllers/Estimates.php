@@ -698,6 +698,7 @@ class Estimates extends Security_Controller {
         if ($add_new_item_to_library) {
             $library_item_data = array(
                 "title" => $estimate_item_title,
+                "category_id" => 22,
                 "description" => $this->request->getPost('estimate_item_description'),
                 "unit_type" => $this->request->getPost('estimate_unit_type'),
                 "rate" => unformat_currency($this->request->getPost('estimate_item_rate'))
@@ -774,7 +775,7 @@ class Estimates extends Security_Controller {
 
     /* prepare a row of estimate item list table */
     private function _make_item_row($data) {
-        $item = "<div class='item-row strong mb5' data-id='$data->id'><div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div> $data->title</div>";
+        $item = "<div class='item-row strong mb5' data-id='$data->id'><div class='float-start move-icon'><i data-feather='menu' class='icon-16'></i></div> $data->title - $data->category</div>";
         if ($data->description) {
             $item .= "<span class='text-wrap' style='margin-left:25px'>" . nl2br($data->description) . "</span>";
         }
@@ -948,6 +949,7 @@ class Estimates extends Security_Controller {
 
             $parser_data["ESTIMATE_ID"] = $estimate_info->id;
             $parser_data["ESTIMATE_NUMBER"] = $estimate_info->estimate_number;
+            $parser_data["COMPANY_IMAGE_URL_BIG"] = get_company_logo($estimate_info->company_id, "estimate_email", '100%');
             $parser_data["PUBLIC_ESTIMATE_URL"] = get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key);
             $parser_data["CONTACT_FIRST_NAME"] = $contact_first_name;
             $parser_data["CONTACT_LAST_NAME"] = $contact_last_name;
@@ -1217,6 +1219,106 @@ class Estimates extends Security_Controller {
         $view_data['estimate_info'] = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
         return $this->template->view("estimates/estimate_editor", $view_data);
     }
+}
+
+
+
+/**
+ * 
+ * get company logo
+ * @param Int $company_id
+ * @return string
+ * AJUSTAR LOGO DA COLIGADA NA PROPOSTA E NA PROPOSIÇÃO
+ */
+if (!function_exists('get_company_logo')) {
+
+    function get_company_logo($company_id, $type = "", $size = "300px") {
+        $Company_model = model('App\Models\Company_model');
+        $company_info = $Company_model->get_one($company_id);
+        $only_file_path = get_setting('only_file_path');
+
+        if($type == 'estimate')
+        {
+            if (isset($company_info->logo) && $company_info->logo) {
+                $file = unserialize($company_info->logo);
+                if (is_array($file)) {
+                    $file = get_array_value($file, 0);
+
+                    return '<img style="max-width: '.$size.';" class="max-logo-size" src="'. get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path) .'" alt="..." />';
+
+                }
+            } else {
+                $logo = $type . "_logo";
+                if (!get_setting($logo)) {
+                    $logo = "invoice_logo";
+                }
+    
+                return '<img style="max-width: '.$size.';" class="max-logo-size" src="'. get_file_from_setting($logo, $only_file_path) .'" alt="..." />';
+    
+
+            }
+        }
+        
+        if($type == 'estimate_email')
+        {
+            if (isset($company_info->logo) && $company_info->logo) {
+                $file = unserialize($company_info->logo);
+                if (is_array($file)) {
+                    $file = get_array_value($file, 0);
+                    return get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path, 1);
+                }
+            }
+            else {
+                return '';
+            }
+        }
+
+        if($type == 'proposal')
+        {
+            if (isset($company_info->logo) && $company_info->logo) {
+                $file = unserialize($company_info->logo);
+                if (is_array($file)) {
+                    $file = get_array_value($file, 0);
+                    ?>
+                    <!-- <img class="pasted-image" src="<?php echo get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path); ?>" alt="..." /> -->
+                    <?php
+                }
+            } else {
+                $logo = $type . "_logo";
+                if (!get_setting($logo)) {
+                    $logo = "invoice_logo";
+                }
+                ?>
+    
+                <!-- <img class="pasted-image" src="<?php echo get_file_from_setting($logo, $only_file_path); ?>" alt="..." /> -->
+    
+                <?php
+            }
+        }
+        else
+        {
+            if (isset($company_info->logo) && $company_info->logo) {
+                $file = unserialize($company_info->logo);
+                if (is_array($file)) {
+                    $file = get_array_value($file, 0);
+                    ?>
+                    <img class="max-logo-size" src="<?php echo get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path); ?>" alt="..." />
+                    <?php
+                }
+            } else {
+                $logo = $type . "_logo";
+                if (!get_setting($logo)) {
+                    $logo = "invoice_logo";
+                }
+                ?>
+    
+                <img class="max-logo-size" src="<?php echo get_file_from_setting($logo, $only_file_path); ?>" alt="..." />
+    
+                <?php
+            }
+        }
+    }
+
 }
 
 /* End of file estimates.php */

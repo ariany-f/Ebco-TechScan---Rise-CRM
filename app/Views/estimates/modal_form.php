@@ -132,7 +132,7 @@
         </div>
         <div class="form-group">
             <div class="row">
-                <label for="estimate_note" class=" col-md-3"><?php echo app_lang('note') . ' (Ex: ' . app_lang('payment_conditions') . ', ' . app_lang('term') . ')' ; ?></label>
+                <label for="estimate_note" class=" col-md-3"><?php echo app_lang('payment_conditions') ; ?></label>
                 <div class=" col-md-9">
                     <?php
                     echo form_textarea(array(
@@ -140,7 +140,7 @@
                         "name" => "estimate_note",
                         "value" => $model_info->note ? process_images_from_content($model_info->note, false) : "",
                         "class" => "form-control",
-                        "placeholder" => app_lang('note'),
+                        "placeholder" => app_lang('payment_conditions'),
                         "data-rich-text-editor" => true
                     ));
                     ?>

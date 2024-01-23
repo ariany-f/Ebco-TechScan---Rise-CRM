@@ -69,7 +69,7 @@
                         "name" => "estimate_unit_type",
                         "value" => $model_info->unit_type,
                         "class" => "form-control",
-                        "placeholder" => app_lang('unit_type') . ' (Ex: hours, pc, etc.)'
+                        "placeholder" => 'Ex: horas, meses, etc   (para itens sem quantidade digite qtb)'
                     ));
                     ?>
                 </div>

@@ -1868,6 +1868,42 @@ if (!function_exists('sellers_overview_widget')) {
     }
 
 }
+/**
+ * get sellers leads overview widget
+ * @param string $type
+ * 
+ * @return html
+ */
+if (!function_exists('sellers_leads_overview_widget')) {
+
+    function sellers_leads_overview_widget() {
+        $ci = new Security_Controller(false);
+        $permissions = $ci->login_user->permissions;
+        $date_start = null;
+        $date_end = null;
+
+        $options["role_id"] = 6;
+
+        if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
+            $options["show_own_leads_only_user_id"] = false;
+        } else if (get_array_value($permissions, "lead") == "own") {
+            $options["show_own_leads_only_user_id"] = $ci->login_user->id;
+        }
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["team_members"] = $ci->Users_model->get_leads_sellers( $options['role_id'], $options['show_own_leads_only_user_id'], $date_start, $date_end )->getResult();
+
+        $template = new Template();
+        return $template->view("leads/sellers_leads_overview_widget", $view_data);
+    }
+
+}
 
 /**
  * get termometer proposals widget

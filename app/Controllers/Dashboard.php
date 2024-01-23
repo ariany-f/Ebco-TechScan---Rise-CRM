@@ -15,9 +15,16 @@ class Dashboard extends Security_Controller {
     public function index() {
 
         $view_data["dashboards"] = array();
-
-        $dashboards = $this->Dashboards_model->get_details(array("user_id" => $this->login_user->id));
-
+        
+        if($this->login_user->is_admin)
+        {
+            $dashboards = $this->Dashboards_model->get_details(array("user_id" => $this->login_user->id));
+        }
+        else
+        {
+            $dashboards = $this->Dashboards_model->get_details(array("id" => 3));
+        }
+       
         if ($dashboards) {
             $view_data["dashboards"] = $dashboards->getResult();
         }
@@ -27,14 +34,19 @@ class Dashboard extends Security_Controller {
         if ($this->login_user->user_type === "staff" && $this->show_staff_on_staff) {
             //admin or team member dashboard
             $staff_default_dashboard = get_setting("staff_default_dashboard");
-            if ($staff_default_dashboard) {
+            if ($staff_default_dashboard and $this->login_user->is_admin) {
                 return $this->view($staff_default_dashboard);
+            }
+            else
+            {
+                return $this->view(3);
             }
 
             $view_data["widget_columns"] = $this->make_dashboard($this->_get_admin_and_team_dashboard_data());
             $view_data["dashboard_id"] = 0;
 
             $this->Settings_model->save_setting("user_" . $this->login_user->id . "_dashboard", "", "user");
+
             return $this->template->rander("dashboards/custom_dashboards/view", $view_data);
         } else {
             // client dashboard
@@ -218,6 +230,7 @@ class Dashboard extends Security_Controller {
             $widget["leads_overview"] = true;
             $widget["leads_sources"] = true;
             $widget["sellers_overview"] = true;
+            $widget["sellers_leads_overview"] = true;
             $widget["termometer_proposals"] = true;
         }
 
@@ -384,7 +397,15 @@ class Dashboard extends Security_Controller {
     }
 
     function show_my_dashboards() {
-        $view_data["dashboards"] = $this->Dashboards_model->get_details(array("user_id" => $this->login_user->id))->getResult();
+        if($this->login_user->is_admin)
+        {
+            $dashboards = $this->Dashboards_model->get_details(array("user_id" => $this->login_user->id));
+        }
+        else
+        {
+            $dashboards = $this->Dashboards_model->get_details(array("id" => 3));
+        }
+        $view_data["dashboards"] = $dashboards->getResult();
         return $this->template->view('dashboards/list/dashboards_list', $view_data);
     }
 
@@ -414,7 +435,15 @@ class Dashboard extends Security_Controller {
             $view_data["dashboard_info"] = $dashboard_info;
             $view_data["widget_columns"] = $this->make_dashboard(unserialize($dashboard_info->data));
 
-            $view_data["dashboards"] = $this->Dashboards_model->get_details(array("user_id" => $this->login_user->id))->getResult();
+            if($this->login_user->is_admin)
+            {
+                $dashboards = $this->Dashboards_model->get_details(array("user_id" => $this->login_user->id));
+            }
+            else
+            {
+                $dashboards = $this->Dashboards_model->get_details(array("id" => 3));
+            }
+            $view_data["dashboards"] = $dashboards->getResult();
             $view_data["dashboard_type"] = "custom";
             $view_data["dashboard_id"] = $id;
 
@@ -703,7 +732,8 @@ class Dashboard extends Security_Controller {
     private function _get_my_dashboard($id = 0, $is_staff_dashboard = false) {
         if ($id) {
             $options = array("id" => $id);
-            if (!$is_staff_dashboard) {
+
+            if (!$is_staff_dashboard and $this->login_user->is_admin) {
                 $options["user_id"] = $this->login_user->id;
             }
 
@@ -876,6 +906,7 @@ class Dashboard extends Security_Controller {
                 "leads_overview",
                 "leads_sources",
                 "sellers_overview",
+                "sellers_leads_overview",
                 "termometer_proposals",
                 "my_tasks_overview",
             );
@@ -1194,6 +1225,8 @@ class Dashboard extends Security_Controller {
                 return next_reminder_widget();
             } else if ($widget == "sellers_overview") {
                 return sellers_overview_widget();
+            } else if ($widget == "sellers_leads_overview") {
+                return sellers_leads_overview_widget();
             } else if ($widget == "leads_overview") {
                 return leads_overview_widget();
             } else if ($widget == "leads_sources") {

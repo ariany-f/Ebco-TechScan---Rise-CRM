@@ -506,7 +506,7 @@ class Clients_model extends Crud_model {
         return $this->db->query($sql);
     }
 
-    function count_total_clients($options = array()) {
+    function count_total_clients($options = array(), $date_start = null, $date_end = null) {
         $clients_table = $this->db->prefixTable('clients');
         $tickets_table = $this->db->prefixTable('tickets');
         $invoices_table = $this->db->prefixTable('invoices');
@@ -530,6 +530,11 @@ class Clients_model extends Crud_model {
         if ($filter) {
             $where .= $this->make_quick_filter_query($filter, $clients_table, $projects_table, $invoices_table, $taxes_table, $invoice_payments_table, $invoice_items_table, $estimates_table, $estimate_requests_table, $tickets_table, $orders_table, $proposals_table);
         }
+        
+        if($date_start and $date_end)
+        {
+            $where .= " AND ($clients_table.client_migration_date BETWEEN '$date_start' and '$date_end' OR $clients_table.created_date BETWEEN '$date_start' and '$date_end')";
+        }
 
         $client_groups = $this->_get_clean_value($options, "client_groups");
         $where .= $this->prepare_allowed_client_groups_query($clients_table, $client_groups);
@@ -550,13 +555,18 @@ class Clients_model extends Crud_model {
         return $this->db->query($sql);
     }
 
-    function count_total_leads($options = array()) {
+    function count_total_leads($options = array(), $date_start = null, $date_end = null) {
         $clients_table = $this->db->prefixTable('clients');
 
         $where = "";
         $show_own_leads_only_user_id = $this->_get_clean_value($options, "show_own_leads_only_user_id");
         if ($show_own_leads_only_user_id) {
             $where .= " AND $clients_table.owner_id=$show_own_leads_only_user_id";
+        }
+        
+        if($date_start and $date_end)
+        {
+            $where .= " AND ($clients_table.client_migration_date BETWEEN '$date_start' and '$date_end' OR $clients_table.created_date BETWEEN '$date_start' and '$date_end')";
         }
 
         $sql = "SELECT COUNT($clients_table.id) AS total
@@ -585,7 +595,7 @@ class Clients_model extends Crud_model {
 
         if($date_start and $date_end)
         {
-            $where .= " AND $projects_table.created_date BETWEEN '$date_start' and '$date_end'";
+            $where .= " AND ($clients_table.client_migration_date BETWEEN '$date_start' and '$date_end' OR $projects_table.created_date BETWEEN '$date_start' and '$date_end' OR $clients_table.created_date BETWEEN '$date_start' and '$date_end')";
         }
 
         
