@@ -1,0 +1,868 @@
+ERROR - 2024-03-12 10:32:03 --> Email: sendWithMail throwed ErrorException: mail(): Failed to connect to mailserver at &quot;ssl://mail.uniebco.com.br&quot; port 465, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in E:\httpdocs\www\crm\system\Email\Email.php:1735
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'mail(): Failed ...', 'E:\\httpdocs\\www...', 1735, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1735): mail('ariany_f@hotmai...', '=?UTF-8?Q?Test=...', 'This is a multi...', 'Date: Tue, 12 M...', '-f uniebco@unie...')
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithMail()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#4 E:\httpdocs\www\crm\app\Controllers\Settings.php(200): CodeIgniter\Email\Email->send()
+#5 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-03-12 10:32:03 --> Email: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:32:03 --> 
+ERROR - 2024-03-12 10:32:03 --> Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:32:03 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f075733446c8.28445892@uniebco.com.br&gt;
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07573344795.21766639&quot;
+=?UTF-8?Q?Test=20message?=
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07573344795.21766639
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07573344795.21766639
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07573344795.21766639--</pre>
+ERROR - 2024-03-12 10:32:06 --> Email: sendWithMail throwed ErrorException: mail(): Failed to connect to mailserver at &quot;ssl://mail.uniebco.com.br&quot; port 465, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in E:\httpdocs\www\crm\system\Email\Email.php:1735
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'mail(): Failed ...', 'E:\\httpdocs\\www...', 1735, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1735): mail('ariany_f@hotmai...', '=?UTF-8?Q?Test=...', 'This is a multi...', 'Date: Tue, 12 M...', '-f uniebco@unie...')
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithMail()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#4 E:\httpdocs\www\crm\app\Controllers\Settings.php(200): CodeIgniter\Email\Email->send()
+#5 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#9 {main}
+ERROR - 2024-03-12 10:32:06 --> Email: Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:32:06 --> 
+ERROR - 2024-03-12 10:32:06 --> Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:32:06 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f075764a5715.59434847@uniebco.com.br&gt;
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f075764a5822.83703053&quot;
+=?UTF-8?Q?Test=20message?=
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f075764a5822.83703053
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f075764a5822.83703053
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f075764a5822.83703053--</pre>
+ERROR - 2024-03-12 10:32:14 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(200): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:32:14 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:32:14 --> 
+ERROR - 2024-03-12 10:32:14 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:32:09 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07579a98064.86870642@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07579a98103.53246132&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07579a98103.53246132
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07579a98103.53246132
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07579a98103.53246132--</pre>
+ERROR - 2024-03-12 10:34:30 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(201): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:34:30 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:34:30 --> 
+ERROR - 2024-03-12 10:34:30 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:34:25 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07601aa3938.27568562@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07601aa39d7.31501292&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07601aa39d7.31501292
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07601aa39d7.31501292
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07601aa39d7.31501292--</pre>
+ERROR - 2024-03-12 10:34:41 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to mail.uniebco.com.br:587 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('mail.uniebco.co...', '587', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(201): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:34:41 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:34:41 --> 
+ERROR - 2024-03-12 10:34:41 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:34:36 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f0760c5c3868.31288039@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f0760c5c3905.87857034&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f0760c5c3905.87857034
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f0760c5c3905.87857034
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f0760c5c3905.87857034--</pre>
+ERROR - 2024-03-12 10:35:34 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(201): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:35:34 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:35:34 --> 
+ERROR - 2024-03-12 10:35:34 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:35:29 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07641e1eff6.30322080@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07641e1f091.61087279&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07641e1f091.61087279
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07641e1f091.61087279
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07641e1f091.61087279--</pre>
+ERROR - 2024-03-12 10:39:34 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(201): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:39:34 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:39:34 --> 
+ERROR - 2024-03-12 10:39:34 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:39:29 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07731590278.54716634@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07731590332.32410933&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07731590332.32410933
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07731590332.32410933
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07731590332.32410933--</pre>
+ERROR - 2024-03-12 10:45:04 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(204): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:45:04 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:45:04 --> 
+ERROR - 2024-03-12 10:45:04 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:44:59 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f0787b5e6589.45815624@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f0787b5e6636.20617531&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f0787b5e6636.20617531
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f0787b5e6636.20617531
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f0787b5e6636.20617531--</pre>
+ERROR - 2024-03-12 10:48:30 --> Email: sendWithSmtp throwed ErrorException: stream_socket_client(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1872
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'stream_socket_c...', 'E:\\httpdocs\\www...', 1872, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1872): stream_socket_client('ssl://mail.unie...', 10060, 'Uma tentativa d...', 30, 4, Resource id #217)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(206): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:48:30 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:48:30 --> 
+ERROR - 2024-03-12 10:48:30 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:48:09 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07939a85749.67856375@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07939a857e7.03683655&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07939a857e7.03683655
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07939a857e7.03683655
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07939a857e7.03683655--</pre>
+ERROR - 2024-03-12 10:49:44 --> Email: sendWithSmtp throwed ErrorException: fsockopen() expects at most 5 parameters, 6 given in E:\httpdocs\www\crm\system\Email\Email.php:1876
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen() exp...', 'E:\\httpdocs\\www...', 1876, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1876): fsockopen('ssl://mail.unie...', '465', NULL, NULL, 20, Resource id #217)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(206): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:49:44 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:49:44 --> 
+ERROR - 2024-03-12 10:49:44 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:49:44 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f0799837a4b1.89489603@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f0799837a552.15157600&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f0799837a552.15157600
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f0799837a552.15157600
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f0799837a552.15157600--</pre>
+ERROR - 2024-03-12 10:49:46 --> Email: sendWithSmtp throwed ErrorException: fsockopen() expects at most 5 parameters, 6 given in E:\httpdocs\www\crm\system\Email\Email.php:1876
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen() exp...', 'E:\\httpdocs\\www...', 1876, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1876): fsockopen('ssl://mail.unie...', '465', NULL, NULL, 20, Resource id #217)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(206): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:49:46 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:49:46 --> 
+ERROR - 2024-03-12 10:49:46 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:49:46 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f0799a463a24.91195508@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f0799a463ac6.19684089&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f0799a463ac6.19684089
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f0799a463ac6.19684089
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f0799a463ac6.19684089--</pre>
+ERROR - 2024-03-12 10:51:30 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1876
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1876, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1876): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 20)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(206): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:51:30 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:51:30 --> 
+ERROR - 2024-03-12 10:51:30 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:51:10 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f079ee76ade9.84668549@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f079ee76ae83.52865951&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f079ee76ae83.52865951
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f079ee76ae83.52865951
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f079ee76ae83.52865951--</pre>
+ERROR - 2024-03-12 10:53:48 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(202): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:53:48 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:53:48 --> 
+ERROR - 2024-03-12 10:53:48 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:53:43 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07a874aa9d4.95865254@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07a874aaa78.03782795&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07a874aaa78.03782795
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07a874aaa78.03782795
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07a874aaa78.03782795--</pre>
+ERROR - 2024-03-12 10:54:50 --> Email: sendWithSmtp throwed ErrorException: fsockopen(): unable to connect to ssl://mail.uniebco.com.br:465 (Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+) in E:\httpdocs\www\crm\system\Email\Email.php:1868
+Stack trace:
+#0 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'fsockopen(): un...', 'E:\\httpdocs\\www...', 1868, Array)
+#1 E:\httpdocs\www\crm\system\Email\Email.php(1868): fsockopen('ssl://mail.unie...', '465', 10060, 'Uma tentativa d...', 5)
+#2 E:\httpdocs\www\crm\system\Email\Email.php(1782): CodeIgniter\Email\Email->SMTPConnect()
+#3 E:\httpdocs\www\crm\system\Email\Email.php(1667): CodeIgniter\Email\Email->sendWithSmtp()
+#4 E:\httpdocs\www\crm\system\Email\Email.php(1565): CodeIgniter\Email\Email->spoolEmail()
+#5 E:\httpdocs\www\crm\app\Controllers\Settings.php(202): CodeIgniter\Email\Email->send()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(934): App\Controllers\Settings->save_email_settings()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Settings))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}
+ERROR - 2024-03-12 10:54:50 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:54:50 --> 
+ERROR - 2024-03-12 10:54:50 --> Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:54:45 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07ac5f17b80.10761489@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07ac5f17c32.12721212&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07ac5f17c32.12721212
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07ac5f17c32.12721212
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07ac5f17c32.12721212--</pre>
+ERROR - 2024-03-12 10:55:44 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-03-12 10:55:44 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:55:44 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+ERROR - 2024-03-12 10:55:44 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+<br>Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:55:39 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07afba20ba8.16411977@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07afba20c43.35993630&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07afba20c43.35993630
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07afba20c43.35993630
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07afba20c43.35993630--</pre>
+ERROR - 2024-03-12 10:58:03 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-03-12 10:58:03 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 10:58:03 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+ERROR - 2024-03-12 10:58:03 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+<br>Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 10:57:58 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07b862ce8f8.48959633@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07b862ce982.72592947&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07b862ce982.72592947
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07b862ce982.72592947
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07b862ce982.72592947--</pre>
+ERROR - 2024-03-12 11:05:33 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-03-12 11:05:33 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 11:05:33 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+ERROR - 2024-03-12 11:05:33 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+<br>Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 11:05:28 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07d489d6768.29203450@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07d489d6815.20193560&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07d489d6815.20193560
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07d489d6815.20193560
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07d489d6815.20193560--</pre>
+ERROR - 2024-03-12 11:06:50 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-03-12 11:06:50 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-03-12 11:06:50 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+ERROR - 2024-03-12 11:06:50 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+<br>Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 12 Mar 2024 11:06:45 -0500
+From: &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Test=20message?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;65f07d950caa34.66458648@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_65f07d950caad9.85263360&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_65f07d950caad9.85263360
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is a test message to check mail configuration.
+
+
+--B_ALT_65f07d950caad9.85263360
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test message to check mail configuration.
+
+--B_ALT_65f07d950caad9.85263360--</pre>
+CRITICAL - 2024-03-12 12:13:09 --> The action you requested is not allowed.
+in SYSTEMPATH\Security\Security.php on line 306.
+ 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/add_new_contact_modal_form', 'before')
+ 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

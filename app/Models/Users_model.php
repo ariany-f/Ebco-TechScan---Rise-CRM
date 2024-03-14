@@ -394,9 +394,9 @@ class Users_model extends Crud_model {
         $projects_table = $this->db->prefixTable('projects');
 
         $where = "";
-        
+       
         if ($role_id) {
-            $where .= " AND $users_table.role_id='$role_id'";
+            $where .= " AND $users_table.role_id IN (".implode(', ', $role_id).")";
         }
 
         if ($show_own_leads_only_user_id) {
@@ -439,9 +439,9 @@ class Users_model extends Crud_model {
         $estimate_items_table = $this->db->prefixTable('estimate_items');
 
         $where = "";
-        
+       
         if ($role_id) {
-            $where .= " AND $users_table.role_id='$role_id'";
+            $where .= " AND $users_table.role_id IN (".implode(', ', $role_id).")";
         }
 
         if ($show_own_leads_only_user_id) {
@@ -452,9 +452,7 @@ class Users_model extends Crud_model {
         {
             $where .= " AND $estimates_table.estimate_date BETWEEN '$date_start' and '$date_end'";
         }
-
         
-
         $sql = "SELECT 
                     $users_table.id,
                     $users_table.first_name, 
@@ -478,6 +476,77 @@ class Users_model extends Crud_model {
         WHERE $users_table.deleted=0 AND $users_table.status='active' $where
         GROUP BY $users_table.id";
         
+        return $this->db->query($sql);
+    }
+
+    function get_conversion_sellers($role_id = null, $show_own_leads_only_user_id = false, $date_start = null, $date_end = null) {
+
+        $users_table = $this->db->prefixTable('users');
+        $clients_table = $this->db->prefixTable('clients');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $custom_fields_table = $this->db->prefixTable('custom_fields');
+        $custom_field_values_table = $this->db->prefixTable('custom_field_values');
+        $estimate_items_table = $this->db->prefixTable('estimate_items');
+        $projects_table = $this->db->prefixTable('projects');
+
+        $where_estimates = "";
+        
+        if ($role_id) {
+            $where_estimates .= " AND $users_table.role_id IN (".implode(', ', $role_id).")";
+        }
+
+        if ($show_own_leads_only_user_id) {
+            $where_estimates .= " AND $clients_table.owner_id=$show_own_leads_only_user_id";
+        }
+
+        if($date_start and $date_end)
+        {
+            $where_estimates .= " AND $estimates_table.estimate_date BETWEEN '$date_start' and '$date_end'";
+        }
+
+        $where_projects = "";
+        
+        if ($role_id) {
+            $where_projects .= " AND $users_table.role_id IN (".implode(', ', $role_id).")";
+        }
+
+        if ($show_own_leads_only_user_id) {
+            $where_projects .= " AND $clients_table.owner_id=$show_own_leads_only_user_id";
+        }
+
+        if($date_start and $date_end)
+        {
+            $where_projects .= " AND $projects_table.start_date BETWEEN '$date_start' and '$date_end'";
+        }
+        
+        $sql = "SELECT 
+                    $users_table.id,
+                    $users_table.first_name, 
+                    $users_table.last_name, 
+                    COALESCE(SUM(estimate_value), 0) AS total_sells,
+                    'Propostas' AS type
+            FROM $estimates_table
+                INNER JOIN $clients_table ON $clients_table.id = $estimates_table.client_id
+                INNER JOIN $users_table ON $users_table.id = $clients_table.owner_id
+                LEFT JOIN $custom_fields_table ON $custom_fields_table.related_to = 'estimates' AND $custom_fields_table.placeholder = 'Valor Estimado'
+                LEFT JOIN $custom_field_values_table ON $custom_field_values_table.custom_field_id = $custom_fields_table.id AND $custom_field_values_table.related_to_id = $estimates_table.id
+                LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table WHERE deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
+            WHERE $users_table.deleted=0 AND $users_table.status='active' $where_estimates
+            GROUP BY $users_table.id
+        UNION ALL
+            SELECT 
+                $users_table.id,
+                $users_table.first_name, 
+                $users_table.last_name, 
+                COALESCE(SUM($projects_table.price), 0) AS total_sells, 
+                'Vendas' AS type
+            FROM $projects_table
+                INNER JOIN $clients_table ON $clients_table.id = $projects_table.client_id
+                INNER JOIN $users_table ON $users_table.id = $clients_table.owner_id
+            WHERE $users_table.deleted=0 AND $users_table.status='active' $where_projects
+            GROUP BY $users_table.id
+        ";
+
         return $this->db->query($sql);
     }
 

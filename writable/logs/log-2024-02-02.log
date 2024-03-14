@@ -1,4 +1,4 @@
-CRITICAL - 2024-01-17 07:21:24 --> The action you requested is not allowed.
+CRITICAL - 2024-02-02 06:58:01 --> The action you requested is not allowed.
 in SYSTEMPATH\Security\Security.php on line 306.
  1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
  2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
@@ -6,35 +6,27 @@ in SYSTEMPATH\Security\Security.php on line 306.
  4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/modal_form', 'before')
  5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
  6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
-CRITICAL - 2024-01-17 08:39:47 --> The action you requested is not allowed.
+CRITICAL - 2024-02-02 10:39:05 --> The action you requested is not allowed.
 in SYSTEMPATH\Security\Security.php on line 306.
  1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
  2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
  3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
- 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/modal_form', 'before')
+ 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/list_data', 'before')
  5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
  6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
-CRITICAL - 2024-01-17 09:36:40 --> The action you requested is not allowed.
+CRITICAL - 2024-02-02 12:40:41 --> The action you requested is not allowed.
 in SYSTEMPATH\Security\Security.php on line 306.
  1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
  2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
  3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
- 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/save', 'before')
+ 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/estimates/modal_form', 'before')
  5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
  6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
-CRITICAL - 2024-01-17 10:37:51 --> The action you requested is not allowed.
+CRITICAL - 2024-02-02 13:19:45 --> The action you requested is not allowed.
 in SYSTEMPATH\Security\Security.php on line 306.
  1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
  2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
  3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
- 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/estimate_templates/insert_template_modal_form', 'before')
- 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
- 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
-CRITICAL - 2024-01-17 11:41:51 --> The action you requested is not allowed.
-in SYSTEMPATH\Security\Security.php on line 306.
- 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
- 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
- 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
- 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/modal_form', 'before')
+ 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/list_data', 'before')
  5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
  6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

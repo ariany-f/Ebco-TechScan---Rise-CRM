@@ -1205,6 +1205,7 @@ $lang["client_permissions"] = "Permissões de cliente";
 
 $lang["invoice_over_payment_error_message"] = "Você não pode pagar mais do que a fatura devida.";
 $lang["account_already_exists_for_your_company_name"] = "Já existe uma conta para o nome da sua empresa.";
+$lang["account_already_exists_for_your_company_cnpj"] = "Já existe uma conta para o CNPJ da sua empresa.";
 $lang["personal_language"] = "Linguagem pessoal";
 $lang["no_messages_text"] = "Você ainda não tem mensagens";
 $lang["no_users_found"] = "Nenhum usuário encontrado";
@@ -2394,6 +2395,7 @@ $lang["order_number"] = "Order number";
 
 $lang['sellers_overview'] = 'Ranking Vendedores';
 $lang['sellers_leads_overview'] = 'Ranking Propostas Vendedores';
+$lang['sellers_conversions_overview'] = 'Taxa de conversão dos Vendedores';
 $lang['total_sells'] = 'Total Vendido';
 
 $lang['termometer_proposals'] = 'Termômetro das propostas';

@@ -86,6 +86,7 @@ class Clients extends Security_Controller {
         $view_data['invoice_rules_dropdown'] = $this->_get_invoice_rules_dropdown_select2_data();
         
         $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
+        $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
 
         //get custom fields
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("clients", $client_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
@@ -165,9 +166,12 @@ class Clients extends Security_Controller {
         }
         
         //check duplicate cnpj, if found then show an error message
-        if ($this->Clients_model->is_duplicate_cnpj($data["cnpj"], $client_id)) {
-            echo json_encode(array("success" => false, 'message' => app_lang("account_already_exists_for_your_company_name")));
-            exit();
+        if($data["cnpj"] != '')
+        {
+            if ($this->Clients_model->is_duplicate_cnpj($data["cnpj"], $client_id)) {
+                echo json_encode(array("success" => false, 'message' => app_lang("account_already_exists_for_your_company_cnpj")));
+                exit();
+            }
         }
 
         $save_id = $this->Clients_model->ci_save($data, $client_id);
@@ -290,11 +294,12 @@ class Clients extends Security_Controller {
             $due = ignor_minor_value($data->invoice_value - $data->payment_received);
         }
 
-        $row_data = array($data->id,
+            $row_data = array($data->id,
             anchor(get_uri("clients/view/" . $data->id), $data->company_name),
             $data->primary_contact ? $primary_contact : "",
             //$group_list,
             $data->limit_date_for_nota_fiscal,
+            $data->state,
             to_decimal_format($data->total_projects),
             to_currency($data->invoice_value, $data->currency_symbol),
             to_currency($data->payment_received, $data->currency_symbol),
@@ -824,7 +829,6 @@ class Clients extends Security_Controller {
     }
 
     /* load contacts tab  */
-
     function contacts($client_id = 0) {
         $this->access_only_allowed_members();
         $this->can_access_this_client($client_id);
@@ -876,6 +880,7 @@ class Clients extends Security_Controller {
             $view_data['label_column'] = "col-md-2";
             $view_data['field_column'] = "col-md-10";
             $view_data['can_edit_clients'] = $this->can_edit_clients();
+            
             return $this->template->view('clients/contacts/contact_general_info_tab', $view_data);
         }
     }
@@ -1216,8 +1221,9 @@ class Clients extends Security_Controller {
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("client_contacts", $this->login_user->is_admin, $this->login_user->user_type);
 
+        // removi filtro para mostrar somente usuários do tipo client pq ao aprovar uma proposta o cliente se torna cliente mas o usuario continua sendo lead
         $options = array(
-            "user_type" => "client",
+           // "user_type" => "client",
             "client_id" => $client_id,
             "custom_fields" => $custom_fields,
             "show_own_clients_only_user_id" => $this->show_own_clients_only_user_id(),

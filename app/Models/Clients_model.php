@@ -193,9 +193,8 @@ class Clients_model extends Crud_model {
         $join_custom_fieds               
         WHERE $clients_table.deleted=0 $where $custom_fields_where  
         $order $limit_offset";
-
         $raw_query = $this->db->query($sql);
-
+      
         $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();
 
         if ($limit) {

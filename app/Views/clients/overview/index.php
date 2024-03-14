@@ -42,7 +42,7 @@
                 <?php echo client_estimates_widget($show_own_clients_only_user_id, $allowed_client_groups); ?>
             </div>
         <?php } ?>
-
+        <?php  if ($show_ticket_info or $show_order_info) { ?>
         <div class="col-md-6">
             <?php
             if ($show_ticket_info) {
@@ -55,6 +55,8 @@
             }
             ?>
         </div>
+        <?php } ?>
+        <?php  if ($show_proposal_info) { ?>
         <div class="col-md-6">
             <?php
             if ($show_proposal_info) {
@@ -62,6 +64,7 @@
             }
             ?>
         </div>
+        <?php } ?>
     </div>
 </div>
 

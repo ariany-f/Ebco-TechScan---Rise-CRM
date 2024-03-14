@@ -156,6 +156,7 @@ class Settings extends Security_Controller {
                 'charset' => 'utf-8',
                 'mailType' => 'html'
             );
+
             if ($this->request->getPost("email_protocol") === "smtp") {
                 $email_config["protocol"] = "smtp";
                 $email_config["SMTPHost"] = $this->request->getPost("email_smtp_host");
@@ -178,7 +179,7 @@ class Settings extends Security_Controller {
 
             $email->setNewline("\r\n");
             $email->setCRLF("\r\n");
-            $email->setFrom($this->request->getPost("email_sent_from_address"), $this->request->getPost("email_sent_from_name"));
+            $email->setFrom($this->request->getPost("email_smtp_user"));
 
             $email->setTo($test_email_to);
             $email->setSubject("Test message");

@@ -1860,15 +1860,20 @@ class Email
             $ssl = 'ssl://';
         }
 
-        $this->SMTPConnect = fsockopen(
+        $this->SMTPConnect = @fsockopen(
             $ssl . $this->SMTPHost,
             $this->SMTPPort,
             $errno,
             $errstr,
             $this->SMTPTimeout
         );
-
-        if (! is_resource($this->SMTPConnect)) {
+     
+        if(!$this->SMTPConnect)
+        {
+            log_message('error', json_encode([$errno . ' ' . $errstr]));
+        }
+        
+        if (!is_resource($this->SMTPConnect)) {
             $this->setErrorMessage(lang('Email.SMTPError', [$errno . ' ' . $errstr]));
 
             return false;

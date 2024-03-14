@@ -92,7 +92,8 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
         $(function() {
             // Filtro para Datas dos gráficos
             $('input[name="daterange"]').daterangepicker({
-                opens: 'left'
+                opens: 'left',
+                autoUpdateInput: false
             }, function(start, end, label) {
                 var date_start = start.format('DD-MM-YYYY');
                 var date_end = end.format('DD-MM-YYYY');

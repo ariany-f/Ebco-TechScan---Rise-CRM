@@ -1846,7 +1846,7 @@ if (!function_exists('sellers_overview_widget')) {
         $date_start = null;
         $date_end = null;
 
-        $options["role_id"] = 6;
+        $options["role_id"] = [6, 8, 9, 10];
 
         if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
             $options["show_own_leads_only_user_id"] = false;
@@ -1882,7 +1882,7 @@ if (!function_exists('sellers_leads_overview_widget')) {
         $date_start = null;
         $date_end = null;
 
-        $options["role_id"] = 6;
+        $options["role_id"] = [6, 8, 9, 10];
 
         if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
             $options["show_own_leads_only_user_id"] = false;
@@ -1901,6 +1901,62 @@ if (!function_exists('sellers_leads_overview_widget')) {
 
         $template = new Template();
         return $template->view("leads/sellers_leads_overview_widget", $view_data);
+    }
+
+}
+/**
+ * get sellers leads overview widget
+ * @param string $type
+ * 
+ * @return html
+ */
+if (!function_exists('sellers_conversions_overview_widget')) {
+
+    function sellers_conversions_overview_widget() {
+        $ci = new Security_Controller(false);
+        $permissions = $ci->login_user->permissions;
+        $date_start = null;
+        $date_end = null;
+
+        $options["role_id"] = [6, 8, 9, 10];
+
+        if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
+            $options["show_own_leads_only_user_id"] = false;
+        } else if (get_array_value($permissions, "lead") == "own") {
+            $options["show_own_leads_only_user_id"] = $ci->login_user->id;
+        }
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $conversions = $ci->Users_model->get_conversion_sellers( $options['role_id'], $options['show_own_leads_only_user_id'], $date_start, $date_end )->getResult();
+        $view_data["team_members"] = [];
+
+
+        $temp = [];
+        foreach($conversions as $conversion)
+        {
+            $temp[$conversion->first_name][$conversion->type] = $conversion->total_sells; 
+        }
+        
+        foreach($temp as $key => $tmp)
+        {
+            $percent = (isset($tmp['Propostas']) && $tmp['Propostas'] !== 0 && isset($tmp['Vendas']) && $tmp['Vendas'] !== 0) ? (($tmp['Vendas'])/($tmp['Propostas'])) * 100 : 0;
+            $vendedor = [
+                'first_name' => $key,
+                'total_sells' => $tmp['Vendas'] ?? 0,
+                'total_estimates' => $tmp['Propostas'] ?? 0,
+                'conversion_percent' => floatval($percent) == intval($percent) ? number_format($percent) : number_format($percent,2)
+            ];
+            array_push($view_data["team_members"], $vendedor);
+        }
+        
+        $template = new Template();
+        return $template->view("leads/sellers_conversions_overview_widget", $view_data);
     }
 
 }

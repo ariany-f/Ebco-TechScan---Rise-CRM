@@ -31,17 +31,18 @@
             serverSide: true,
             filterDropdown: [
             {name: "group_id", class: "w200", options: <?php echo $groups_dropdown; ?>},
-<?php if ($login_user->is_admin || get_array_value($login_user->permissions, "client") === "all") { ?>
-                 {name: "created_by", class: "w200", options: <?php echo $team_members_dropdown; ?>},
-<?php } ?>
+            <?php if ($login_user->is_admin || get_array_value($login_user->permissions, "client") === "all") { ?>
+                            {name: "created_by", class: "w200", options: <?php echo $team_members_dropdown; ?>},
+            <?php } ?>
             {name: "quick_filter", class: "w200", options: quick_filters_dropdown},
-<?php echo $custom_field_filters; ?>
+            <?php echo $custom_field_filters; ?>
             ],
             columns: [
             {title: "<?php echo app_lang("id") ?>", "class": "text-center w50 all", order_by: "id"},
             {title: "<?php echo app_lang("name") ?>", "class": "all", order_by: "company_name"},
             {title: "<?php echo app_lang("primary_contact") ?>", order_by: "primary_contact"},
             {title: "<?php echo app_lang("limit_date_for_nota_fiscal") ?>", order_by: "limit_date_for_nota_fiscal"},
+            {title: "<?php echo app_lang("state") ?>", order_by: "state"},
             {title: "<?php echo app_lang("projects") ?>"},
             {visible: showInvoiceInfo, searchable: showInvoiceInfo, title: "<?php echo app_lang("total_invoiced") ?>"},
             {visible: showInvoiceInfo, searchable: showInvoiceInfo, title: "<?php echo app_lang("payment_received") ?>"},

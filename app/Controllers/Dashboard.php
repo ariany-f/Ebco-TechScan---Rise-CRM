@@ -231,6 +231,7 @@ class Dashboard extends Security_Controller {
             $widget["leads_sources"] = true;
             $widget["sellers_overview"] = true;
             $widget["sellers_leads_overview"] = true;
+            $widget["sellers_conversions_overview"] = true;
             $widget["termometer_proposals"] = true;
         }
 
@@ -907,6 +908,7 @@ class Dashboard extends Security_Controller {
                 "leads_sources",
                 "sellers_overview",
                 "sellers_leads_overview",
+                "sellers_conversions_overview",
                 "termometer_proposals",
                 "my_tasks_overview",
             );
@@ -1227,6 +1229,8 @@ class Dashboard extends Security_Controller {
                 return sellers_overview_widget();
             } else if ($widget == "sellers_leads_overview") {
                 return sellers_leads_overview_widget();
+            } else if ($widget == "sellers_conversions_overview") {
+                return sellers_conversions_overview_widget();
             } else if ($widget == "leads_overview") {
                 return leads_overview_widget();
             } else if ($widget == "leads_sources") {
