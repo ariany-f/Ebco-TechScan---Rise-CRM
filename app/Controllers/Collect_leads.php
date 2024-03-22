@@ -78,10 +78,10 @@ class Collect_leads extends App_Controller {
         }
 
         //validate duplicate email address
-        if ($this->request->getPost('email') && $this->Users_model->is_email_exists(trim($this->request->getPost('email')))) {
-            echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
-            exit();
-        }
+        // if ($this->request->getPost('email') && $this->Users_model->is_email_exists(trim($this->request->getPost('email')))) {
+        //     echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
+        //     exit();
+        // }
 
         $leads_data = array(
             "company_name" => $this->request->getPost('company_name'),

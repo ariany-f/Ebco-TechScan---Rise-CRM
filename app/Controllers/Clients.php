@@ -968,10 +968,10 @@ class Clients extends Security_Controller {
             $user_data["created_at"] = get_current_utc_time();
 
             //validate duplicate email address
-            if ($this->Users_model->is_email_exists($user_data["email"], 0, $client_id)) {
-                echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
-                exit();
-            }
+            // if ($this->Users_model->is_email_exists($user_data["email"], 0, $client_id)) {
+            //     echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
+            //     exit();
+            // }
         }
 
         //by default, the first contact of a client is the primary contact
@@ -1084,10 +1084,10 @@ class Clients extends Security_Controller {
         $email = $this->request->getPost('email');
         $password = $this->request->getPost("password");
 
-        if ($this->Users_model->is_email_exists($email, $user_id, $contact_info->client_id)) {
-            echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
-            exit();
-        }
+        // if ($this->Users_model->is_email_exists($email, $user_id, $contact_info->client_id)) {
+        //     echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
+        //     exit();
+        // }
 
         $account_data = array(
             "email" => $email
@@ -1831,9 +1831,9 @@ class Clients extends Security_Controller {
 
             if ($header_value == "contact_email") {
                 if ($data) {
-                    if ($this->Users_model->is_email_exists($data)) {
-                        return app_lang("duplicate_email");
-                    }
+                    // if ($this->Users_model->is_email_exists($data)) {
+                    //     return app_lang("duplicate_email");
+                    // }
                 } else {
                     return app_lang("import_client_error_contact_email");
                 }

@@ -1136,8 +1136,8 @@ class Leads extends Security_Controller {
                     }
 
                     if ($this->Users_model->is_email_exists($user_data["email"], $contact->id)) {
-                        echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
-                        exit();
+                        // echo json_encode(array("success" => false, 'message' => app_lang('duplicate_email')));
+                        // exit();
                     }
 
                     $user_data = clean_data($user_data);
