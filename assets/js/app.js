@@ -545,7 +545,6 @@ function selectLastlySelectedTab(target) {
 
                 return dateValue[yearIndex] + "-" + dateValue[monthIndex] + "-" + dateValue[dayIndex];
             }
-
         }
 
         function validateForm(form, customSubmit) {
@@ -1785,7 +1784,7 @@ var $appFilterXhrRequest = 'new';
             tr += "<tr " + trSection + ">";
 
             $.each(settings.columns, function (index, column) {
-
+                
                 var thAttr = "class = 'tf-blank' ",
                         thLable = " ";
 
@@ -1818,7 +1817,6 @@ var $appFilterXhrRequest = 'new';
 
         if (settings.summation && settings.summation.length && !settings.isMobile) {
             var content = "<tfoot>";
-
             content += _prepareFooter(settings, 'current', AppLanugage.total);
             content += _prepareFooter(settings, 'all', AppLanugage.totalOfAllPages);
 

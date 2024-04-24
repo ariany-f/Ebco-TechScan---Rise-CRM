@@ -36,6 +36,12 @@ class Leads extends Security_Controller {
         return $this->template->view('leads/modal_form', $view_data);
     }
 
+    
+    function validate_cnpj() {
+        $cnpj = $this->request->getPost('cnpj');
+        echo json_encode($this->Clients_model->is_duplicate_cnpj($cnpj));
+    }
+
     private function make_lead_modal_form_data($lead_id = 0) {
         $this->access_only_allowed_members();
 

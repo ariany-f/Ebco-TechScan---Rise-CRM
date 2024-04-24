@@ -26,6 +26,8 @@ class SecureHeaders implements FilterInterface
         // https://owasp.org/www-project-secure-headers/#x-frame-options
         'X-Frame-Options' => 'SAMEORIGIN',
 
+        'Access-Control-Allow-Origin' => '"*"',
+
         // https://owasp.org/www-project-secure-headers/#x-content-type-options
         'X-Content-Type-Options' => 'nosniff',
 

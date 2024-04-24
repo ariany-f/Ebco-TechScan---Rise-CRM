@@ -11,6 +11,41 @@ class Estimate extends Security_Controller {
     function index() {
         app_redirect("forbidden");
     }
+    
+    //print estimate
+    function print_estimate($estimate_id = 0, $public_key = 0) {
+            
+        if (!($estimate_id && $public_key)) {
+            echo json_encode(array("success" => false, app_lang('error_occurred')));
+        }
+
+        validate_numeric_value($estimate_id);
+
+        //check public key
+        $estimate_info = $this->Estimates_model->get_one($estimate_id);
+        
+        if ($estimate_info->public_key !== $public_key) {
+            echo json_encode(array("success" => false, app_lang('error_occurred')));
+        }
+
+        $view_data = get_estimate_making_data($estimate_id);
+        if (!$view_data) {
+            echo json_encode(array("success" => false, app_lang('error_occurred')));
+        }
+
+        $view_data['estimate_preview'] = prepare_estimate_pdf($view_data, "html");
+
+        // Pegar da previa e exibir no pdf ao imprimir pdf
+        $html = file_get_contents('http://'.$_SERVER['HTTP_HOST']."/crm/estimate/preview/" . $estimate_id . "/" . $public_key);
+        $myVar = htmlspecialchars($html, ENT_QUOTES);
+        $primeiroCorte = substr($myVar, 9150, -1);
+        $segundoCorte = substr($primeiroCorte, 0, -1900);
+
+        //$view_data['estimate_preview'] = html_entity_decode($segundoCorte, ENT_QUOTES);
+        $view_data['estimate_preview'] = $html;
+
+        echo json_encode(array("success" => true, "print_view" => $view_data['estimate_preview']));
+}
 
     function preview($estimate_id = 0, $public_key = "") {
         if (!($estimate_id && $public_key)) {
@@ -40,6 +75,36 @@ class Estimate extends Security_Controller {
         $view_data['public_key'] = clean_data($public_key);
 
         return view("estimates/estimate_public_preview", $view_data);
+    }
+    
+    function download_pdf($estimate_id = 0, $public_key = "") {
+        if (!($estimate_id && $public_key)) {
+            show_404();
+        }
+
+        validate_numeric_value($estimate_id);
+
+        //check public key
+        $estimate_info = $this->Estimates_model->get_one($estimate_id);
+        
+        if ($estimate_info->public_key !== $public_key) {
+            show_404();
+        }
+
+        $view_data = array();
+
+        $estimate_data = get_estimate_making_data($estimate_id);
+        if (!$estimate_data) {
+            show_404();
+        }
+
+        $view_data['estimate_preview'] = prepare_estimate_view($estimate_data);
+        $view_data['show_close_preview'] = false; //don't show back button
+        $view_data['estimate_id'] = $estimate_id;
+        $view_data['estimate_type'] = "public";
+        $view_data['public_key'] = clean_data($public_key);
+
+        return view("estimates/estimate_download_pdf", $view_data);
     }
 
     //update estimate status

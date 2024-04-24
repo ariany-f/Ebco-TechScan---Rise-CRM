@@ -92,8 +92,9 @@
     <b style="font-family:Barlow Bold, sans-serif;color: #17365D;font-size: 18px;">2. VALORES</b>
     <br />
     <?php if(!empty($categories)) : ?>
+        <?php if(!empty($categories_locacao)): ?>
         <br/><b  style="font-family:Barlow Bold, sans-serif;color: #17365D;font-size: 15px;">OPÇÃO VENDA </b><br/><br/>
-
+        <?php endif; ?>
         <?php $contador_categorias = 1;?>
         <table>
             <tr valign="center" style="font-family:Barlow Bold, sans-serif;background-color: <?php echo $color; ?>; color: #fff;font-size: 14px;text-align: center;line-height: 30px;">

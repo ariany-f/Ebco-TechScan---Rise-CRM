@@ -1,0 +1,95 @@
+CRITICAL - 2024-03-27 11:56:28 --> The action you requested is not allowed.
+in SYSTEMPATH\Security\Security.php on line 306.
+ 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/estimates/save', 'before')
+ 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-27 11:58:21 --> The action you requested is not allowed.
+in SYSTEMPATH\Security\Security.php on line 306.
+ 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/estimates/modal_form', 'before')
+ 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-27 13:18:25 --> Undefined variable: attachement_url
+in APPPATH\Controllers\Estimates.php on line 1005.
+ 1 APPPATH\Controllers\Estimates.php(1005): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: attachement_url', 'APPPATH\\Controllers\\Estimates.php', 1005, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->send_estimate()
+ 3 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 4 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-27 13:22:35 --> Undefined variable: attachement_url
+in APPPATH\Controllers\Estimates.php on line 1005.
+ 1 APPPATH\Controllers\Estimates.php(1005): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: attachement_url', 'APPPATH\\Controllers\\Estimates.php', 1005, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->send_estimate()
+ 3 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 4 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-27 13:23:15 --> Undefined variable: attachement_url
+in APPPATH\Controllers\Estimates.php on line 1005.
+ 1 APPPATH\Controllers\Estimates.php(1005): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: attachement_url', 'APPPATH\\Controllers\\Estimates.php', 1005, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->send_estimate()
+ 3 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 4 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-27 13:29:24 --> Undefined variable: attachement_url
+in APPPATH\Controllers\Estimates.php on line 1005.
+ 1 APPPATH\Controllers\Estimates.php(1005): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: attachement_url', 'APPPATH\\Controllers\\Estimates.php', 1005, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->send_estimate()
+ 3 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 4 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-27 13:30:24 --> trim() expects parameter 1 to be string, array given
+in APPPATH\Helpers\general_helper.php on line 645.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'trim() expects parameter 1 to be string, array given', 'APPPATH\\Helpers\\general_helper.php', 645, [...])
+ 2 APPPATH\Helpers\general_helper.php(645): trim([])
+ 3 APPPATH\Controllers\Estimates.php(1006): send_app_mail('renato@cnaga.com.b', 'Nova Proposta', '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;border-top: 0;border-bottom: 0;"> 
+	<tbody>
+		<tr>
+			<th>									
+				<img src="https://uniebco.com.br/crm/files/system/company_6_file6566054311781-Imagem221.jpg">
+			</th>
+		</tr>
+		<tr> 
+			<td align="center" valign="top" style="padding-top: 30px;padding-right: 10px;padding-bottom: 30px;padding-left: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+				<table border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: separate;border-spacing: 4em;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-family: Arial;background-color: #EEEEEE;box-shadow: 1px 2px 10px lightgrey;">
+					<tbody>
+						<tr>
+							<td>
+								<span>Olá, ! </span>
+								<br>
+								<br>
+								<span>Segue o link da sua proposta</span>
+							</td>
+						</tr>
+						<tr>
+							<td style="width: 100%;text-align: center;">
+								<a href="https://uniebco.com.br/crm/estimate/preview/204/cQalXucddH" style="cursor: pointer;font-size: 18px;color: white; background-color: #215089;padding: 15px 25px;border-radius: 3px;">Abrir proposta</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>Obrigado!</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</tbody>
+</table>', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(934): App\Controllers\Estimates->send_estimate()
+ 5 SYSTEMPATH\CodeIgniter.php(499): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 6 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-27 15:48:10 --> The action you requested is not allowed.
+in SYSTEMPATH\Security\Security.php on line 306.
+ 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\CodeIgniter.php(473): CodeIgniter\Filters\Filters->run('/leads/add_new_contact_modal_form', 'before')
+ 5 SYSTEMPATH\CodeIgniter.php(368): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

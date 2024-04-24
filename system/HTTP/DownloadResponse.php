@@ -269,6 +269,7 @@ class DownloadResponse extends Response
             $this->setContentTypeByMimeType();
         }
 
+        $this->setHeader('Access-Control-Allow-Origin', '"*"');
         $this->setHeader('Content-Disposition', $this->getContentDisposition());
         $this->setHeader('Expires-Disposition', '0');
         $this->setHeader('Content-Transfer-Encoding', 'binary');

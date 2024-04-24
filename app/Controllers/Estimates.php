@@ -951,6 +951,7 @@ class Estimates extends Security_Controller {
             $parser_data["ESTIMATE_NUMBER"] = $estimate_info->estimate_number;
             $parser_data["COMPANY_IMAGE_URL_BIG"] = get_company_logo($estimate_info->company_id, "estimate_email", '100%');
             $parser_data["PUBLIC_ESTIMATE_URL"] = get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key);
+            $parser_data["PUBLIC_ESTIMATE_DOWNLOAD"] = get_uri("estimate/download_pdf/" . $estimate_info->id . "/" . $estimate_info->public_key);
             $parser_data["CONTACT_FIRST_NAME"] = $contact_first_name;
             $parser_data["CONTACT_LAST_NAME"] = $contact_last_name;
             $parser_data["PROJECT_TITLE"] = $estimate_info->project_title;
@@ -988,8 +989,21 @@ class Estimates extends Security_Controller {
 
         $contact = $this->Users_model->get_one($contact_id);
 
+        
+        $target_path = get_setting("timeline_file_path");
+        $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "estimate");
+        $attachements = [];
+        $files_data = unserialize($files_data);
+        foreach($files_data as $i => $file)
+        {
+            $attachements[$i] = [
+                'file_path' => getcwd().'/'.$target_path.$file['file_name']
+            ];
+        }
+    
         $estimate_data = get_estimate_making_data($estimate_id);
-        $attachement_url = prepare_estimate_pdf($estimate_data, "send_email");
+
+        //$attachement_url = prepare_estimate_pdf($estimate_data, "send_email");
 
         $default_bcc = get_setting('send_estimate_bcc_to');
         $bcc_emails = "";
@@ -1002,16 +1016,17 @@ class Estimates extends Security_Controller {
             $bcc_emails = $custom_bcc;
         }
 
-        if (send_app_mail($contact->email, $subject, $message, array("attachments" => array(array("file_path" => $attachement_url)), "cc" => $cc, "bcc" => $bcc_emails))) {
+        if (send_app_mail($contact->email, $subject, $message, array("attachments" => $attachements, "cc" => $cc, "bcc" => $bcc_emails))) {
+        //if (send_app_mail($contact->email, $subject, $message, array("attachments" => array([]), "cc" => $cc, "bcc" => $bcc_emails))) {
             // change email status
             $status_data = array("status" => "sent", "last_email_sent_date" => get_my_local_time());
             if ($this->Estimates_model->ci_save($status_data, $estimate_id)) {
                 echo json_encode(array('success' => true, 'message' => app_lang("estimate_sent_message"), "estimate_id" => $estimate_id));
             }
             // delete the temp estimate
-            if (file_exists($attachement_url)) {
-                unlink($attachement_url);
-            }
+            // if (file_exists($attachement_url)) {
+            //     unlink($attachement_url);
+            // }
         } else {
             echo json_encode(array('success' => false, 'message' => app_lang('error_occurred')));
         }
@@ -1188,32 +1203,6 @@ class Estimates extends Security_Controller {
         echo json_encode(array("success" => true, 'message' => app_lang('record_saved')));
     }
 
-
-    //print estimate
-    function print_estimate($estimate_id = 0, $estimate_public_id = 0) {
-        if ($estimate_id) {
-            validate_numeric_value($estimate_id);
-            $view_data = get_estimate_making_data($estimate_id);
-
-            $this->_check_estimate_access_permission($view_data);
-
-            $view_data['estimate_preview'] = prepare_estimate_pdf($view_data, "html");
-
-            // Pegar da previa e exibir no pdf ao imprimir pdf
-            $html = file_get_contents("https://uniebco.com.br/crm/estimate/preview/" . $estimate_id . "/" . $estimate_public_id);
-            $myVar = htmlspecialchars($html, ENT_QUOTES);
-            $primeiroCorte = substr($myVar, 9150, -1);
-            $segundoCorte = substr($primeiroCorte, 0, -1900);
-
-            //$view_data['estimate_preview'] = html_entity_decode($segundoCorte, ENT_QUOTES);
-            $view_data['estimate_preview'] = $html;
-
-            echo json_encode(array("success" => true, "print_view" => $view_data['estimate_preview']));
-        } else {
-            echo json_encode(array("success" => false, app_lang('error_occurred')));
-        }
-    }
-
     function editor($estimate_id = 0) {
         validate_numeric_value($estimate_id);
         $view_data['estimate_info'] = $this->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
@@ -1244,7 +1233,7 @@ if (!function_exists('get_company_logo')) {
                 if (is_array($file)) {
                     $file = get_array_value($file, 0);
 
-                    return '<img style="max-width: '.$size.';" class="max-logo-size" src="'. get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path) .'" alt="..." />';
+                    return '<img style="max-width: '.$size.';width: 100%;" class="max-logo-size" src="'. get_source_url_of_file($file, get_setting("system_file_path"), "thumbnail", $only_file_path, $only_file_path) .'" alt="..." />';
 
                 }
             } else {

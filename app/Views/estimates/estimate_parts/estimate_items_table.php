@@ -120,10 +120,12 @@ $total_after_discount_row = '<tr>
     <br/><b>VALORES: </b><br/>
 
     <?php if(!empty($categories)) : ?>
-        <br/><b>OPÇÃO VENDA </b><br/>
+        <?php if(!empty($categories_locacao)): ?>
+        <br/><b>OPÇÃO VENDA </b><br/><br/>
+        <?php endif; ?>
         <?php $contador_categorias = 1;?>
         <table>
-            <tr style="font-weight: bold; background-color: <?php echo $color; ?>; color: #fff;  ">
+            <tr style="font-weight: bold; line-height: 2rem; word-spacing: .5rem;background-color: <?php echo $color; ?>; color: #fff;  ">
                 <th style="width: 15%; border-right: 1px solid #eee;"> <?php echo 'ITEM'; ?></th>
                 <th style="width: 70%; border-right: 1px solid #eee;"><?php echo 'DESCRIÇÃO CONFORME ESCOPO'; ?></th>
                 <th style="width: 10%; border-right: 1px solid #eee;"><?php echo 'QTD'; ?></th>
@@ -133,7 +135,7 @@ $total_after_discount_row = '<tr>
             </tr>
             <?php foreach($categories as $key => $category): ?>
                 <?php foreach($category as $k => $v): ?>
-                    <tr style="color: <?php echo $color; ?>;  ">
+                    <tr style="line-height: 2rem; word-spacing: .5rem;color: <?php echo $color; ?>;  ">
                         <td style="width: 15%; border-right: 1px solid #eee;"> <?php echo $contador_categorias; ?> </td>
                         <td style="width: 70%; border-right: 1px solid #eee;"><?php echo ($v->title ?? '') . ((!isset($v->category) or $v->category == 'Equipamento') ? '' : (' - ' . $v->category)); ?><br><small><?php echo ($v->description ?? ''); ?></small></td>
                         <td style="width: 70%; border-right: 1px solid #eee;"><?php echo ($v->unit_type == 'qtb') ? 'QTB' : $v->quantity ; ?></td>
@@ -146,7 +148,7 @@ $total_after_discount_row = '<tr>
             <?php endforeach; ?>
             
             <?php if(array_sum($categories_value_total) != 0): ?>
-                <tr style="background-color: <?php echo $secondary_color?>;">
+                <tr style="line-height: 2rem; word-spacing: .5rem;background-color: <?php echo $secondary_color?>;">
                     <td colspan="3" style="width: 15%; border-right: 1px solid #eee;"> <?php echo 'VALOR TOTAL'; ?></td>
                     <td style="width: 15%; border-right: 1px solid #eee;"> <?php echo to_currency(array_sum($categories_value_total), 'R$'); ?></td>
                 </tr>
@@ -183,19 +185,19 @@ $total_after_discount_row = '<tr>
     <?php endif;?>
 
     <?php if(!empty($categories_projeto)) : ?>
-        <br/><b>OPÇÃO PROJETO</b><br/>
+        <br/><b>OPÇÃO PROJETO</b><br/><br/>
 
         <?php $contador_categorias = 1;?>
         <table>
             <thead></thead>
             <tbody>
-            <tr style="font-weight: bold; background-color: <?php echo $color; ?>; color: #fff;  ">
+            <tr style="font-weight: bold;line-height: 2rem; word-spacing: .5rem; background-color: <?php echo $color; ?>; color: #fff;  ">
                 <th style="width: 10%; border-right: 1px solid #eee;"> <?php echo 'ITEM'; ?></th>
                 <th style="width: 50%; border-right: 1px solid #eee;"><?php echo 'DESCRIÇÃO CONFORME ESCOPO'; ?></th>
                     <th style="width: 50%; border-right: 1px solid #eee;"><?php echo 'QTD'; ?></th>
             </tr>
             <?php foreach($categories_projeto as $key => $category): ?>
-                <tr style="color: <?php echo $color; ?>;  ">
+                <tr style="line-height: 2rem; word-spacing: .5rem;color: <?php echo $color; ?>;  ">
                     <td style="width: 10%; border-right: 1px solid #eee;"> <?php echo $contador_categorias; ?> </td>
                     <td style="width: 50%; border-right: 1px solid #eee;"><?php echo ($category[0]->title ?? ''); ?><br><small><?php echo ($category[0]->description ?? ''); ?></small></td>
                      <td style="width: 10%; border-right: 1px solid #eee;"><?php echo (strtolower($category[0]->unit_type) == 'qtb') ? 'QTB' : array_sum(array_column($category,'quantity')); ?></td>
@@ -203,7 +205,7 @@ $total_after_discount_row = '<tr>
                 <?php $contador_categorias++; ?>
             <?php endforeach; ?>
             <?php if(array_sum($categories_value_total_projeto) != 0): ?>
-                <tr style="background-color: <?php echo $secondary_color?>;">
+                <tr style="line-height: 2rem; word-spacing: .5rem;background-color: <?php echo $secondary_color?>;">
                     <td colspan="2" style="width: 15%; border-right: 1px solid #eee;"> <?php echo 'VALOR TOTAL'; ?></td>
                     <td style="width: 15%; border-right: 1px solid #eee;"> <?php echo to_currency(array_sum($categories_value_total_projeto), 'R$'); ?></td>
                 </tr>
@@ -212,13 +214,13 @@ $total_after_discount_row = '<tr>
         </table><br/>
     <?php endif;?>
     <?php if(!empty($categories_locacao)) : ?>
-        <br/><b>OPÇÃO LOCAÇÃO DE EQUIPAMENTOS COM MANUTENÇÃO INCLUSA</b><br/>
+        <br/><b>OPÇÃO LOCAÇÃO DE EQUIPAMENTOS COM MANUTENÇÃO INCLUSA</b><br/><br/>
 
         <?php $contador_categorias = 1; $column = Array(); ?>
         <table>
             <thead></thead>
             <tbody>
-            <tr style="font-weight: bold; background-color: <?php echo $color; ?>; color: #fff;  ">
+            <tr style="font-weight: bold; line-height: 2rem; word-spacing: .5rem;background-color: <?php echo $color; ?>; color: #fff;  ">
                 <th style="width: 10%; border-right: 1px solid #eee;"> <?php echo 'ITEM'; ?></th>
                 <th style="width: 50%; border-right: 1px solid #eee;"><?php echo 'DESCRIÇÃO CONFORME ESCOPO'; ?></th>
                 <?php foreach($categories_locacao as $key => $category): ?>
@@ -231,7 +233,7 @@ $total_after_discount_row = '<tr>
                 <?php endforeach; ?>
             </tr>
             <?php foreach($categories_locacao as $key => $category): ?>
-                    <tr style="color: <?php echo $color; ?>;  ">
+                    <tr style="line-height: 2rem; word-spacing: .5rem;color: <?php echo $color; ?>;  ">
                         <td style="width: 10%; border-right: 1px solid #eee;"> <?php echo $contador_categorias; ?> </td>
                         <td style="width: 50%; border-right: 1px solid #eee;"><?php echo ($category->title ?? '');; ?><br><small><?php echo ($category->description ?? ''); ?></small></td>
                         <!-- <pre> -->
@@ -248,13 +250,13 @@ $total_after_discount_row = '<tr>
     <?php endif;?>
     
     <?php if(!empty($categories_service)) : ?>
-        <br/><b>OPÇÃO SERVIÇOS/MÃO DE OBRA</b><br/>
+        <br/><b>OPÇÃO SERVIÇOS/MÃO DE OBRA</b><br/><br/>
 
         <?php $contador_categorias = 1;?>
         <table>
             <thead></thead>
             <tbody>
-            <tr style="font-weight: bold; background-color: <?php echo $color; ?>; color: #fff;  ">
+            <tr style="font-weight: bold; line-height: 2rem; word-spacing: .5rem;background-color: <?php echo $color; ?>; color: #fff;  ">
                 <th style="width: 10%; border-right: 1px solid #eee;"> <?php echo 'ITEM'; ?></th>
                 <th style="width: 50%; border-right: 1px solid #eee;"><?php echo 'DESCRIÇÃO CONFORME ESCOPO'; ?></th>
                 <!-- <th style="width: 50%; border-right: 1px solid #eee;"><?php // echo 'QTD'; ?></th> -->
@@ -264,7 +266,7 @@ $total_after_discount_row = '<tr>
             </tr>
             <?php foreach($categories_service as $key => $category): ?>
                 <?php foreach($category as $k => $v): ?>
-                    <tr style="color: <?php echo $color; ?>;  ">
+                    <tr style="line-height: 2rem; word-spacing: .5rem;color: <?php echo $color; ?>;  ">
                         <td style="width: 10%; border-right: 1px solid #eee;"> <?php echo $contador_categorias; ?> </td>
                         <td style="width: 50%; border-right: 1px solid #eee;"><?php echo $v->title; ?><br><small><?php echo ($v->description ?? ''); ?></small></td>
                         <!-- <td style="width: 70%; border-right: 1px solid #eee;"><?php //echo (strtolower($v->unit_type) == 'qtb') ? 'QTB' : array_sum(array_column($category,'quantity')); ?></td> -->
@@ -276,7 +278,7 @@ $total_after_discount_row = '<tr>
                 <?php endforeach; ?>
             <?php endforeach; ?>
             <?php if(array_sum($categories_value_total_service) != 0): ?>
-                <tr style="background-color: <?php echo $secondary_color?>;">
+                <tr style="line-height: 2rem; word-spacing: .5rem;background-color: <?php echo $secondary_color?>;">
                     <td colspan="2" style="width: 15%; border-right: 1px solid #eee;"> <?php echo 'VALOR TOTAL'; ?></td>
                     <td style="width: 15%; border-right: 1px solid #eee;"> <?php echo to_currency(array_sum($categories_value_total_service), 'R$'); ?></td>
                 </tr>
@@ -287,7 +289,7 @@ $total_after_discount_row = '<tr>
     <?php if(array_sum($categories_value_total_service) == 0 and array_sum($categories_value_total_projeto) == 0 and array_sum($categories_value_total) == 0): ?>
         <table>
             <tbody>
-                <tr style="background-color: <?php echo $secondary_color?>;">
+                <tr style="line-height: 2rem; word-spacing: .5rem;background-color: <?php echo $secondary_color?>;">
                     <td  style="width: 15%; border-right: 1px solid #eee;"> <?php echo 'VALOR TOTAL'; ?></td>
                     <td style="width: 15%; border-right: 1px solid #eee;"> <?php echo to_currency(floatval($estimate_info->custom_fields[1]->value), 'R$'); ?></td>
                 </tr>

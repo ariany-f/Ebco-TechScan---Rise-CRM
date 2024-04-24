@@ -51,7 +51,7 @@
 <?php echo $custom_field_headers; ?>,
                 {visible: false}
             ],
-            summation: [{column: 4, dataType: 'currency', currencySymbol: currencySymbol}]
+            summation: [{column: 6, dataType: 'currency', currencySymbol: currencySymbol}]
         });
     });
 </script>

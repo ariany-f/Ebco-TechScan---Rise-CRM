@@ -1,0 +1,11 @@
+CRITICAL - 2024-04-23 10:47:23 --> Undefined property: stdClass::$date_start
+in APPPATH\Views\estimates\estimate_public_preview.php on line 136.
+ 1 APPPATH\Views\estimates\estimate_public_preview.php(136): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined property: stdClass::$date_start', 'APPPATH\\Views\\estimates\\estimate_public_preview.php', 136, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\estimate_public_preview.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/estimate_public_preview', [], true)
+ 5 APPPATH\Controllers\Estimate.php(77): view('estimates/estimate_public_preview', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimate->preview('235', 'jwyCJgHcDU')
+ 7 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimate))
+ 8 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

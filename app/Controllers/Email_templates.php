@@ -37,7 +37,7 @@ class Email_templates extends Security_Controller {
                 "invoice_manual_payment_added" => array("INVOICE_ID", "PAYMENT_AMOUNT", "INVOICE_URL", "ADDED_BY", "PAYMENT_NOTE", "LOGO_URL", "SIGNATURE", "RECIPIENTS_EMAIL_ADDRESS"),
             ),
             "estimate" => array(
-                "estimate_sent" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "COMPANY_IMAGE_URL_BIG", "PUBLIC_ESTIMATE_URL", "RECIPIENTS_EMAIL_ADDRESS"),
+                "estimate_sent" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "COMPANY_IMAGE_URL_BIG", "PUBLIC_ESTIMATE_URL", "RECIPIENTS_EMAIL_ADDRESS", "PUBLIC_ESTIMATE_DOWNLOAD"),
                 "estimate_accepted" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
                 "estimate_rejected" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
                 "estimate_request_received" => array("ESTIMATE_REQUEST_ID", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ESTIMATE_REQUEST_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),

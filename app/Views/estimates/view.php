@@ -253,7 +253,7 @@
             appLoader.show();
 
             $.ajax({
-                url: "<?php echo get_uri('estimates/print_estimate/' . $estimate_info->id . '/' . $estimate_info->public_key) ?>",
+                url: "<?php echo get_uri('estimate/print_estimate/' . $estimate_info->id . '/' . $estimate_info->public_key) ?>",
                 dataType: 'json',
                 success: function (result) {
                     if (result.success) {

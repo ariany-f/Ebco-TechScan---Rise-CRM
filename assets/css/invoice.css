@@ -2,6 +2,7 @@
   max-width: 900px;
   min-width: 400px;
   margin: auto;
+  page-break-before:always
 }
 .invoice-preview table {
   width: 100%;

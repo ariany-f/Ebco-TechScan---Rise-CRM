@@ -945,6 +945,7 @@ if (!function_exists('prepare_estimate_pdf')) {
             $pdf_file_name = app_lang("estimate") . "-$estimate_info->id.pdf";
 
             if ($mode === "download") {
+                $pdf->SetTitle($pdf_file_name);
                 $pdf->Output($pdf_file_name, "D");
             } else if ($mode === "send_email") {
                 $temp_download_path = getcwd() . "/" . get_setting("temp_file_path") . $pdf_file_name;

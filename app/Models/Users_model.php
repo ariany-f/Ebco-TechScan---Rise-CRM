@@ -457,7 +457,7 @@ class Users_model extends Crud_model {
                     $users_table.id,
                     $users_table.first_name, 
                     $users_table.last_name, 
-                    COALESCE(SUM(estimate_value), 0) AS total_sells,
+                    COALESCE(SUM(crm_custom_field_values.value), estimate_value) AS total_sells,
                     COALESCE(COUNT($estimates_table.id), 0) AS total_projects,
                     COALESCE(COUNT(DISTINCT $clients_table.id), 0) AS total_clients,
                     $users_table.user_type, 
@@ -469,10 +469,7 @@ class Users_model extends Crud_model {
         INNER JOIN $users_table ON $users_table.id = $clients_table.owner_id
         LEFT JOIN $custom_fields_table ON $custom_fields_table.related_to = 'estimates' AND $custom_fields_table.placeholder = 'Valor Estimado'
         LEFT JOIN $custom_field_values_table ON $custom_field_values_table.custom_field_id = $custom_fields_table.id AND $custom_field_values_table.related_to_id = $estimates_table.id
-
-
-        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table WHERE deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
-
+        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table WHERE deleted = 0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
         WHERE $users_table.deleted=0 AND $users_table.status='active' $where
         GROUP BY $users_table.id";
         
@@ -523,7 +520,7 @@ class Users_model extends Crud_model {
                     $users_table.id,
                     $users_table.first_name, 
                     $users_table.last_name, 
-                    COALESCE(SUM(estimate_value), 0) AS total_sells,
+                    COALESCE(SUM(crm_custom_field_values.value), estimate_value) AS total_sells,
                     'Propostas' AS type
             FROM $estimates_table
                 INNER JOIN $clients_table ON $clients_table.id = $estimates_table.client_id

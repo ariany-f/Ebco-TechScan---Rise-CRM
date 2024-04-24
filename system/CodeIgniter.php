@@ -341,12 +341,12 @@ class CodeIgniter
             if ($this->returnResponse) {
                 return $this->response;
             }
-
             $this->sendResponse();
 
             return;
         }
 
+      
         Events::trigger('pre_system');
 
         // Check for a cached page. Execution will stop
@@ -365,13 +365,16 @@ class CodeIgniter
         }
 
         try {
+           
             return $this->handleRequest($routes, $cacheConfig, $returnResponse);
         } catch (RedirectException $e) {
+           
             $logger = Services::logger();
             $logger->info('REDIRECTED ROUTE at ' . $e->getMessage());
 
             // If the route is a 'redirect' route, it throws
             // the exception with the $to as the message
+           
             $this->response->redirect(base_url($e->getMessage()), 'auto', $e->getCode());
 
             if ($this->returnResponse) {
@@ -484,15 +487,17 @@ class CodeIgniter
         }
 
         $returned = $this->startController();
-
+        
         // Closure controller has run in startController().
         if (! is_callable($this->controller)) {
+           
             $controller = $this->createController();
 
             if (! method_exists($controller, '_remap') && ! is_callable([$controller, $this->method], false)) {
+               
                 throw PageNotFoundException::forMethodNotFound($this->method);
             }
-
+           
             // Is there a "post_controller_constructor" event?
             Events::trigger('post_controller_constructor');
 
@@ -501,7 +506,7 @@ class CodeIgniter
             $this->benchmark->stop('controller_constructor');
             $this->benchmark->stop('controller');
         }
-
+        
         // If $returned is a string, then the controller output something,
         // probably a view, instead of echoing it directly. Send it along
         // so it can be used with the output.
@@ -902,7 +907,7 @@ class CodeIgniter
     protected function createController()
     {
         assert(is_string($this->controller));
-
+        
         $class = new $this->controller();
         $class->initController($this->request, $this->response, Services::logger());
 

@@ -30,7 +30,7 @@
 
                     if ($estimate_info->status === "accepted" || $estimate_info->status === "declined" || $estimate_info->status === "rejected") {
                         ?>
-                        <div class = "card  p15 no-border">
+                        <div id="controls-estimate" class = "card  p15 no-border">
                             <div class="clearfix">
                                 <div class="float-start mt5">
                                     <?php if ($estimate_info->status === "accepted") { ?>
@@ -48,7 +48,7 @@
                         if ($login_user->user_type === "client" && $estimate_info->status == "new") {
                             ?>
         
-                            <div class = "card  p15 no-border clearfix inline-block w100p mb0">
+                            <div id="controls-estimate" class = "card  p15 no-border clearfix inline-block w100p mb0">
         
                                 <div class="mr15 strong float-start">
                                     <?php
@@ -100,7 +100,6 @@
         </div>
     <?php } ?>
 </div>
-
 <script type="text/javascript">
     $(document).ready(function () {
         $("#payment-amount").change(function () {
@@ -110,13 +109,12 @@
             });
         });
         
-        
         //print estimate
         $("#print-estimate-btn").click(function () {
             appLoader.show();
 
             $.ajax({
-                url: "<?php echo get_uri('estimates/print_estimate/' . $estimate_info->id.'/'.$estimate_info->public_key) ?>",
+                url: "<?php echo get_uri('estimate/print_estimate/' . $estimate_info->id.'/'.$estimate_info->public_key) ?>",
                 dataType: 'json',
                 success: function (result) {
                     if (result.success) {

@@ -18,7 +18,7 @@ class Security_Controller extends App_Controller {
         
         //check user's login status, if not logged in, redirect to signin page
         $login_user_id = $this->Users_model->login_user_id();
-        
+
         if (!$login_user_id && $redirect) {
 
             $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);

@@ -1,0 +1,273 @@
+CRITICAL - 2024-04-24 08:35:50 --> Undefined variable: sort_as_decending
+in APPPATH\Views\estimates\send_estimate_modal_form.php on line 100.
+ 1 APPPATH\Views\estimates\send_estimate_modal_form.php(100): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: sort_as_decending', 'APPPATH\\Views\\estimates\\send_estimate_modal_form.php', 100, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\send_estimate_modal_form.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/send_estimate_modal_form', [], true)
+ 5 APPPATH\Libraries\Template.php(38): view('estimates/send_estimate_modal_form', [...])
+ 6 APPPATH\Controllers\Estimates.php(967): App\Libraries\Template->view('estimates/send_estimate_modal_form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate_modal_form('253')
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-24 08:35:57 --> Undefined variable: sort_as_decending
+in APPPATH\Views\estimates\send_estimate_modal_form.php on line 100.
+ 1 APPPATH\Views\estimates\send_estimate_modal_form.php(100): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: sort_as_decending', 'APPPATH\\Views\\estimates\\send_estimate_modal_form.php', 100, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\send_estimate_modal_form.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/send_estimate_modal_form', [], true)
+ 5 APPPATH\Libraries\Template.php(38): view('estimates/send_estimate_modal_form', [...])
+ 6 APPPATH\Controllers\Estimates.php(967): App\Libraries\Template->view('estimates/send_estimate_modal_form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate_modal_form('253')
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-24 08:40:21 --> Undefined variable: sort_as_decending
+in APPPATH\Views\estimates\send_estimate_modal_form.php on line 99.
+ 1 APPPATH\Views\estimates\send_estimate_modal_form.php(99): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: sort_as_decending', 'APPPATH\\Views\\estimates\\send_estimate_modal_form.php', 99, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\send_estimate_modal_form.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/send_estimate_modal_form', [], true)
+ 5 APPPATH\Libraries\Template.php(38): view('estimates/send_estimate_modal_form', [...])
+ 6 APPPATH\Controllers\Estimates.php(967): App\Libraries\Template->view('estimates/send_estimate_modal_form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate_modal_form('255')
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-24 08:41:14 --> Undefined variable: sort_as_decending
+in APPPATH\Views\estimates\send_estimate_modal_form.php on line 99.
+ 1 APPPATH\Views\estimates\send_estimate_modal_form.php(99): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: sort_as_decending', 'APPPATH\\Views\\estimates\\send_estimate_modal_form.php', 99, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\send_estimate_modal_form.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/send_estimate_modal_form', [], true)
+ 5 APPPATH\Libraries\Template.php(38): view('estimates/send_estimate_modal_form', [...])
+ 6 APPPATH\Controllers\Estimates.php(967): App\Libraries\Template->view('estimates/send_estimate_modal_form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate_modal_form('253')
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-24 08:43:46 --> Undefined variable: sort_as_decending
+in APPPATH\Views\estimates\send_estimate_modal_form.php on line 99.
+ 1 APPPATH\Views\estimates\send_estimate_modal_form.php(99): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: sort_as_decending', 'APPPATH\\Views\\estimates\\send_estimate_modal_form.php', 99, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\send_estimate_modal_form.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/send_estimate_modal_form', [], true)
+ 5 APPPATH\Libraries\Template.php(38): view('estimates/send_estimate_modal_form', [...])
+ 6 APPPATH\Controllers\Estimates.php(967): App\Libraries\Template->view('estimates/send_estimate_modal_form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate_modal_form('253')
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-24 08:45:18 --> Undefined variable: sort_as_decending
+in APPPATH\Views\estimates\send_estimate_modal_form.php on line 99.
+ 1 APPPATH\Views\estimates\send_estimate_modal_form.php(99): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: sort_as_decending', 'APPPATH\\Views\\estimates\\send_estimate_modal_form.php', 99, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\estimates\\send_estimate_modal_form.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('estimates/send_estimate_modal_form', [], true)
+ 5 APPPATH\Libraries\Template.php(38): view('estimates/send_estimate_modal_form', [...])
+ 6 APPPATH\Controllers\Estimates.php(967): App\Libraries\Template->view('estimates/send_estimate_modal_form', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate_modal_form('253')
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+ERROR - 2024-04-24 09:06:55 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-04-24 09:06:55 --> 220-cpanel11.bcmg.com.br ESMTP Exim 4.96.2 #2 Wed, 24 Apr 2024 11:06:50 -0300 
+220-We do not authorize the use of this system to transport unsolicited, 
+220 and/or bulk e-mail.
+
+hello: 250-cpanel11.bcmg.com.br Hello www.uniebco.com.br [179.228.234.15]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-PIPECONNECT
+250-AUTH PLAIN LOGIN
+250 HELP
+
+from: 250 OK
+
+to: 
+The following SMTP error was encountered: 
+quit: 250 Accepted
+
+The following SMTP error was encountered: 250 Accepted
+
+CRITICAL - 2024-04-24 09:06:55 --> 220-cpanel11.bcmg.com.br ESMTP Exim 4.96.2 #2 Wed, 24 Apr 2024 11:06:50 -0300 
+220-We do not authorize the use of this system to transport unsolicited, 
+220 and/or bulk e-mail.
+<br><pre>hello: 250-cpanel11.bcmg.com.br Hello www.uniebco.com.br [179.228.234.15]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250-PIPECONNECT
+250-AUTH PLAIN LOGIN
+250 HELP
+</pre><pre>from: 250 OK
+</pre><pre>to: </pre>The following SMTP error was encountered: <br><pre>quit: 250 Accepted
+</pre>The following SMTP error was encountered: 250 Accepted
+<br>Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Wed, 24 Apr 2024 09:06:50 -0500
+From: &quot;Uniebco&quot; &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: t.csilva@btp.com.br
+Subject: =?UTF-8?Q?BTP=20-=206378=20-=20SENSOR=20DE=20UMIDADE=20?=
+Cc: comercialrx@techscan.com.br, l.bispo@btp.com.br
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;662911fa93b7c9.80990409@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_662911fa93b863.57876735&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_662911fa93b863.57876735
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Prezado(a) Leandro&amp;nbsp;,&amp;nbsp;
+
+Gostaria de compartilhar a proposta comercial referente à fornecimento de
+peça.
+
+A proposta contém detalhes sobre o serviço, preço e outras
+informações relevantes. Estou à disposição para esclarecer dúvidas ou
+fornecer
+informações adicionais que possam ser úteis para sua decisão.
+
+&amp;nbsp;
+
+Agradeço o seu interesse e aguardo um retorno positivo.
+
+&amp;nbsp;
+
+Atenciosamente,
+
+&amp;nbsp;Andréia Braga&amp;nbsp;
+
+&amp;nbsp;
+
+**ESTA MENSAGEM É AUTOMÁTICA. Em caso de dúvidas, entre em
+contato pelo e-mail a.braga@techscan.com.br ou
+comercialrx@techscan.com.br**
+
+Abrir propostaDownload PDF
+
+Obrigado!
+
+
+--B_ALT_662911fa93b863.57876735
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+&lt;table border=3D&quot;0&quot; cellpadding=3D&quot;0&quot; cellspacing=3D&quot;0&quot; width=3D&quot;100%&quot; styl=
+e=3D&quot;border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;=
+-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;border-top: 0;bor=
+der-bottom: 0;&quot;&gt; =0A=09&lt;tbody&gt;=0A=09=09&lt;tr&gt;=0A=09=09=09&lt;th&gt;=09=09=09=09=09=
+=09=09=09=09=0A=09=09=09=09&lt;img src=3D&quot;https://www.uniebco.com.br/crm/files=
+/system/company_2_file65334b28a3d20-logo-techscan.png&quot;&gt;=0A=09=09=09&lt;/th&gt;=0A=
+=09=09&lt;/tr&gt;=0A=09=09&lt;tr&gt; =0A=09=09=09&lt;td align=3D&quot;center&quot; valign=3D&quot;top&quot; st=
+yle=3D&quot;padding-top: 30px;padding-right: 10px;padding-bottom: 30px;padding-l=
+eft: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-=
+text-size-adjust: 100%;&quot;&gt;=0A=09=09=09=09&lt;table border=3D&quot;0&quot; cellpadding=3D&quot;=
+0&quot; cellspacing=3D&quot;0&quot; width=3D&quot;600&quot; style=3D&quot;border-collapse: separate;borde=
+r-spacing: 4em;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-ad=
+just: 100%;-webkit-text-size-adjust: 100%;font-family: Arial;background-col=
+or: #EEEEEE;box-shadow: 1px 2px 10px lightgrey;&quot;&gt;=0A=09=09=09=09=09&lt;tbody&gt;=
+=0A=09=09=09=09=09=09&lt;tr&gt;=0A=09=09=09=09=09=09=09&lt;td&gt;Prezado(a) Leandro&lt;spa=
+n&gt;&amp;nbsp;,&lt;/span&gt;&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=
+=3D&quot;MsoNormal&quot;&gt;Gostaria de compartilhar a proposta comercial referente =
+=C3=A0 fornecimento de pe=C3=A7a.&lt;/p&gt;&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;br&gt;&lt;/p&gt;=0A=0A&lt;=
+p class=3D&quot;MsoNormal&quot;&gt;A proposta cont=C3=A9m detalhes sobre o servi=C3=
+=A7o, pre=C3=A7o e outras=0Ainforma=C3=A7=C3=B5es relevantes. Estou =C3=
+=A0 disposi=C3=A7=C3=A3o para esclarecer d=C3=BAvidas ou fornecer=0Ainforma=
+=C3=A7=C3=B5es adicionais que possam ser =C3=BAteis para sua decis=C3=A3o. =
+&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p c=
+lass=3D&quot;MsoNormal&quot;&gt;Agrade=C3=A7o o seu interesse e aguardo um retorno posit=
+ivo.&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A=
+&lt;p class=3D&quot;MsoNormal&quot;&gt;Atenciosamente, &lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;Mso=
+Normal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;Andr=C3=A9ia Braga=
+&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p =
+class=3D&quot;MsoNormal&quot;&gt;**ESTA MENSAGEM =C3=89 AUTOM=C3=81TICA. Em caso de d=
+=C3=BAvidas, entre em=0Acontato pelo e-mail a.braga@techscan.com.br ou=0Aco=
+mercialrx@techscan.com.br**&lt;/p&gt;&lt;/td&gt;=0A=09=09=09=09=09=09&lt;/tr&gt;=0A=09=09=09=
+=09=09=09&lt;tr&gt;=0A=09=09=09=09=09=09=09&lt;td style=3D&quot;width: 100%;text-align: c=
+enter;&quot;&gt;&lt;p&gt;=0A=09=09=09=09=09=09=09=09&lt;a href=3D&quot;https://www.uniebco.com.br=
+/crm/estimate/preview/256/XXUaVHLENe&quot; style=3D&quot;cursor: pointer;font-size: 1=
+8px;color: white; background-color: #215089;padding: 15px 25px;border-radiu=
+s: 3px;&quot;&gt;Abrir proposta&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=
+=3D&quot;https://www.uniebco.com.br/crm/estimate/download_pdf/256/XXUaVHLENe&quot; ta=
+rget=3D&quot;_blank&quot;&gt;Download PDF&lt;/a&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;/td&gt;=0A=09=09=09=09=09=
+=09&lt;/tr&gt;=0A=09=09=09=09=09=09&lt;tr&gt;=0A=09=09=09=09=09=09=09&lt;td&gt;=0A=09=09=09=
+=09=09=09=09=09&lt;span&gt;Obrigado!&lt;/span&gt;=0A=09=09=09=09=09=09=09&lt;/td&gt;=0A=09=09=
+=09=09=09=09&lt;/tr&gt;=0A=09=09=09=09=09&lt;/tbody&gt;=0A=09=09=09=09&lt;/table&gt;=0A=09=09=
+=09&lt;/td&gt;=0A=09=09&lt;/tr&gt;=0A=09&lt;/tbody&gt;=0A&lt;/table&gt;
+
+--B_ALT_662911fa93b863.57876735--</pre>
+in APPPATH\Helpers\general_helper.php on line 673.
+ 1 APPPATH\Controllers\Estimates.php(1019): send_app_mail('t.csilva@btp.com.br', 'BTP - 6378 - SENSOR DE UMIDADE ', '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;border-top: 0;border-bottom: 0;"> 
+	<tbody>
+		<tr>
+			<th>									
+				<img src="https://www.uniebco.com.br/crm/files/system/company_2_file65334b28a3d20-logo-techscan.png">
+			</th>
+		</tr>
+		<tr> 
+			<td align="center" valign="top" style="padding-top: 30px;padding-right: 10px;padding-bottom: 30px;padding-left: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+				<table border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: separate;border-spacing: 4em;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-family: Arial;background-color: #EEEEEE;box-shadow: 1px 2px 10px lightgrey;">
+					<tbody>
+						<tr>
+							<td>Prezado(a) Leandro<span>&nbsp;,</span><p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal">Gostaria de compartilhar a proposta comercial referente à fornecimento de peça.</p><p class="MsoNormal"><br></p>
+
+<p class="MsoNormal">A proposta contém detalhes sobre o serviço, preço e outras
+informações relevantes. Estou à disposição para esclarecer dúvidas ou fornecer
+informações adicionais que possam ser úteis para sua decisão. <o:p></o:p></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal">Agradeço o seu interesse e aguardo um retorno positivo.<o:p></o:p></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal">Atenciosamente, <o:p></o:p></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p></p><p class="MsoNormal"><o:p>Andréia Braga&nbsp;</o:p></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal">**ESTA MENSAGEM É AUTOMÁTICA. Em caso de dúvidas, entre em
+contato pelo e-mail a.braga@techscan.com.br ou
+comercialrx@techscan.com.br**</p></td>
+						</tr>
+						<tr>
+							<td style="width: 100%;text-align: center;"><p>
+								<a href="https://www.uniebco.com.br/crm/estimate/preview/256/XXUaVHLENe" style="cursor: pointer;font-size: 18px;color: white; background-color: #215089;padding: 15px 25px;border-radius: 3px;">Abrir proposta</a></p><p><br></p><p><br></p><p><br></p><p><a href="https://www.uniebco.com.br/crm/estimate/download_pdf/256/XXUaVHLENe" target="_blank">Download PDF</a><br></p><p><br></p></td>
+						</tr>
+						<tr>
+							<td>
+								<span>Obrigado!</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</tbody>
+</table>', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate()
+ 3 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 4 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-24 12:14:12 --> The action you requested is not allowed.
+in SYSTEMPATH\Security\Security.php on line 306.
+ 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\CodeIgniter.php(476): CodeIgniter\Filters\Filters->run('/leads/modal_form', 'before')
+ 5 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
