@@ -84,6 +84,8 @@ class Clients extends Security_Controller {
         $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
 
         $view_data['invoice_rules_dropdown'] = $this->_get_invoice_rules_dropdown_select2_data();
+
+        $view_data['setor_dropdown'] = $this->_get_setor_select2_data();
         
         $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
         $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
@@ -115,6 +117,7 @@ class Clients extends Security_Controller {
 
         $data = array(
             "company_name" => $company_name,
+            "setor" => $this->request->getPost('setor'),
             "cnpj" => $this->request->getPost('cnpj'),
             "limit_date_for_nota_fiscal" => $this->request->getPost('limit_date_for_nota_fiscal'),
             "city_subscription" => $this->request->getPost('city_subscription'),
@@ -214,19 +217,167 @@ class Clients extends Security_Controller {
         }
     }
 
+    function new_clients($type="monthly") {
+        
+        $seller_id = $this->request->getPost('seller');
+        $options = array(
+            "seller_id" => $seller_id,
+            "start_date" => $this->request->getPost("start_date"),
+            "end_date" => $this->request->getPost("end_date"),
+        );
+
+        $all_options = append_server_side_filtering_commmon_params($options);
+
+        $result = $this->Clients_model->new_clients($all_options);
+        
+        if (get_array_value($all_options, "server_side")) {
+            $list_data = get_array_value($result, "data");
+        } else {
+            $list_data = $result->getResult();
+            $result = array();
+        }
+
+
+        $result_data = array();
+        foreach ($list_data as $data) {
+            $result_data[] = $this->_make_new_clients_list_row($data, $type);
+        }
+        
+        $result["data"] = $result_data;
+
+        echo json_encode($result);
+    }
+
+    private function _make_new_clients_list_row($data, $type) {
+        $collaborators = "";
+        $collaborator_parts = explode("--::--", $data->Vendedor);
+
+        $collaborator_id = get_array_value($collaborator_parts, 0);
+        $collaborator_name = get_array_value($collaborator_parts, 1);
+
+        $image_url = get_avatar(get_array_value($collaborator_parts, 2));
+
+        $collaboratr_image = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='$collaborator_name'></span> $collaborator_name";
+       
+        $collaborators .= get_team_member_profile_link($collaborator_id, $collaboratr_image, array("title" => $collaborator_name)); 
+
+        if($type == 'monthly')
+        { 
+            $row_data = array(
+                $collaborators,
+                $data->new_clients,
+                $data->visit_count,
+            );
+        }
+        else
+        {
+            $row_data = array(
+                translate_month_name($data->Mes),
+                $collaborators,
+                $data->new_clients,
+                $data->visit_count,
+            );
+        }
+
+        return $row_data;
+    }
+
+    function leads_prospects($type="monthly") {
+        
+        $seller_id = $this->request->getPost('seller');
+        $options = array(
+            "seller_id" => $seller_id,
+            "start_date" => $this->request->getPost("start_date"),
+            "end_date" => $this->request->getPost("end_date"),
+        );
+
+        $all_options = append_server_side_filtering_commmon_params($options);
+
+        $result = $this->Clients_model->leads_prospects($all_options);
+        
+        if (get_array_value($all_options, "server_side")) {
+            $list_data = get_array_value($result, "data");
+        } else {
+            $list_data = $result->getResult();
+            $result = array();
+        }
+
+
+        $result_data = array();
+        foreach ($list_data as $data) {
+            $result_data[] = $this->_make_leads_prospect_list_row($data, $type);
+        }
+        
+        $result["data"] = $result_data;
+
+        echo json_encode($result);
+    }
+
+    private function _make_leads_prospect_list_row($data, $type) {
+        $collaborators = "";
+        $collaborator_parts = explode("--::--", $data->Vendedor);
+
+        $collaborator_id = get_array_value($collaborator_parts, 0);
+        $collaborator_name = get_array_value($collaborator_parts, 1);
+
+        $image_url = get_avatar(get_array_value($collaborator_parts, 2));
+
+        $collaboratr_image = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='$collaborator_name'></span> $collaborator_name";
+       
+        $collaborators .= get_team_member_profile_link($collaborator_id, $collaboratr_image, array("title" => $collaborator_name)); 
+        
+        $conversao_class = "bg-primary";
+        if($data->Conversao < 1)
+        {
+            $conversao_class = "bg-danger";
+        }
+        else if($data->Conversao < 30) {
+            
+            $conversao_class = "bg-warning";
+        }
+
+        $conversao = "<span class='badge mt0 $conversao_class' title='$data->Conversao'><b>$data->Conversao</b></span>";
+
+        if($type == 'monthly')
+        {
+            $row_data = array(
+                $collaborators,
+                $data->new_leads,
+                $data->new_prospects,
+                $conversao,
+            );
+        }
+        else
+        {
+            $row_data = array(
+                translate_month_name($data->Mes),
+                $collaborators,
+                $data->new_leads,
+                $data->new_prospects,
+                $conversao,
+            );
+        }
+
+        return $row_data;
+    }
+
     /* list of clients, prepared for datatable  */
 
     function list_data() {
 
         $this->access_only_allowed_members();
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
+       
+        $status = $this->request->getPost('status_id') ? implode(",", $this->request->getPost('status_id')) : "";
         $options = array(
             "custom_fields" => $custom_fields,
+            "status_ids" => $status,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("clients", $this->login_user->is_admin, $this->login_user->user_type),
             "group_id" => $this->request->getPost("group_id"),
             "invoice_rule_id" => $this->request->getPost("invoice_rule_id"),
             "show_own_clients_only_user_id" => $this->show_own_clients_only_user_id(),
             "quick_filter" => $this->request->getPost("quick_filter"),
+            "setor" => $this->request->getPost("setor"),
             "created_by" => $this->request->getPost("created_by"),
             "client_groups" => $this->allowed_client_groups
         );
@@ -288,22 +439,35 @@ class Clients extends Security_Controller {
             $group_list = "<ul class='pl15'>" . $group_list . "</ul>";
         }
 
+        $status = "<span class='float-end'><span class='badge mt0' style='background: $data->status_color;'>" . $data->status_title . "</span></span>";
+        
+        if ($data->setor == "public") {
+            $setor_status_class = "bg-secondary";
+        } else if ($data->setor == "private") {
+            $setor_status_class = "bg-primary";
+        }
+
+        $setor = "<span class='mt0 badge $setor_status_class large'>" . app_lang($data->setor) . "</span>";
 
         $due = 0;
         if ($data->invoice_value) {
             $due = ignor_minor_value($data->invoice_value - $data->payment_received);
         }
 
-            $row_data = array($data->id,
+            $row_data = array(
+            anchor(get_uri("clients/view/" . $data->id), $data->id),
             anchor(get_uri("clients/view/" . $data->id), $data->company_name),
+            $setor,
+            $data->state,
             $data->primary_contact ? $primary_contact : "",
             //$group_list,
             $data->limit_date_for_nota_fiscal,
-            $data->state,
+            to_decimal_format($data->total_estimates_sent),
+            to_decimal_format($data->total_estimates_approved),
             to_decimal_format($data->total_projects),
             to_currency($data->invoice_value, $data->currency_symbol),
             to_currency($data->payment_received, $data->currency_symbol),
-            to_currency($due, $data->currency_symbol)
+            to_currency($due, $data->currency_symbol),
         );
 
         foreach ($custom_fields as $field) {
@@ -311,8 +475,16 @@ class Clients extends Security_Controller {
             $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
         }
 
-        $row_data[] = modal_anchor(get_uri("clients/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_client'), "data-post-id" => $data->id))
-                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_client'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("clients/delete"), "data-action" => "delete-confirmation"));
+        $row_data[] = $status;
+        
+        if($data->deleted)
+        {
+            $row_data[] = modal_anchor(get_uri("clients/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_client'), "data-post-id" => $data->id));
+        }
+        else{
+            $row_data[] = modal_anchor(get_uri("clients/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_client'), "data-post-id" => $data->id))
+                    . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('inactive_client'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("clients/delete"), "data-action" => "delete-confirmation"));
+        }
 
         return $row_data;
     }
@@ -1626,7 +1798,9 @@ class Clients extends Security_Controller {
             "vat_number",
             "client_groups",
             "currency",
-            "currency_symbol"
+            "currency_symbol",
+            "cnpj",
+            "cf-12"
         );
     }
 
@@ -1995,7 +2169,8 @@ class Clients extends Security_Controller {
         $access_info = $this->get_access_info("invoice");
         $view_data["show_invoice_info"] = (get_setting("module_invoice") && $access_info->access_type == "all") ? true : false;
         $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("clients", $this->login_user->is_admin, $this->login_user->user_type);
-
+        $view_data["client_statuses"] = $this->Clients_model->get_statuses();
+        $view_data['setor_dropdown'] = json_encode($this->_get_setor_select2_data(true));
         $view_data['groups_dropdown'] = json_encode($this->_get_groups_dropdown_select2_data(true));
         $view_data['can_edit_clients'] = $this->can_edit_clients();
         $view_data["team_members_dropdown"] = $this->get_team_members_dropdown(true);

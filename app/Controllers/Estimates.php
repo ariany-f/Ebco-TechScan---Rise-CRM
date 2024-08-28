@@ -71,7 +71,6 @@ class Estimates extends Security_Controller {
     }
 
     /* load new estimate modal */
-
     function modal_form() {
         $this->access_only_allowed_members();
 
@@ -147,7 +146,7 @@ class Estimates extends Security_Controller {
                 if(is_numeric($number))
                 {
                     $number++;
-                    $model_info->estimate_number = preg_replace("/[^a-zA-Z]+/", "", $model_info->estimate_number) . (($number < 10) ? str_pad($number,2,"0",STR_PAD_LEFT) : $number);
+                    $model_info->estimate_number = str_replace(('Rev'. str_pad($number-1,2,"0",STR_PAD_LEFT)), '',$model_info->estimate_number) . preg_replace("/[^a-zA-Z]+/", "", $model_info->estimate_number) . (($number < 10) ? str_pad($number,2,"0",STR_PAD_LEFT) : $number);
                 }
             }
             else
@@ -173,6 +172,7 @@ class Estimates extends Security_Controller {
 
     /* add, edit or clone an estimate */
     function save() {
+      
         $this->access_only_allowed_members();
 
         $this->validate_submitted_data(array(
@@ -186,7 +186,7 @@ class Estimates extends Security_Controller {
         $client_id = $this->request->getPost('estimate_client_id');
         $id = $this->request->getPost('id');
         $this->can_access_this_estimate($id);
-
+     
         $estimate_data = array(
             "client_id" => $client_id,
             "estimate_date" => $this->request->getPost('estimate_date'),
@@ -194,6 +194,7 @@ class Estimates extends Security_Controller {
             "tax_id" => $this->request->getPost('tax_id') ? $this->request->getPost('tax_id') : 0,
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
             "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
+            "is_bidding" => $this->request->getPost('is_bidding'),
             "note" => $this->request->getPost('estimate_note'),
             'estimate_number' => $this->request->getPost('estimate_number')
         );
@@ -223,7 +224,7 @@ class Estimates extends Security_Controller {
             $estimate_data["discount_amount_type"] = $this->request->getPost('discount_amount_type') ? $this->request->getPost('discount_amount_type') : "percentage";
             $estimate_data["discount_type"] = $this->request->getPost('discount_type') ? $this->request->getPost('discount_type') : "before_tax";
         }
-
+    
         if (!$id) {
             $estimate_data["created_by"] = $this->login_user->id;
             $estimate_data["public_key"] = make_random_string();
@@ -234,11 +235,14 @@ class Estimates extends Security_Controller {
                 $estimate_data["content"] = $Estimate_templates_model->get_one(get_setting("default_estimate_template"))->template;
             }
         }
+        else{
+            $options_estimate = array("id" => $id);
+            $estimate_info_detail = $this->Estimates_model->get_details($options_estimate)->getRow();
+            //log_notification("estimate_changed", array("estimate_id" => $id, "client_id" => $estimate_info_detail->company_id, "description" => $estimate_info_detail->public_key));
+        }
 
         $estimate_id = $this->Estimates_model->ci_save($estimate_data, $id);
         if ($estimate_id) {
-            
-
             // Altera lead para prospect em caso de ser lead
             $client = $this->Clients_model->get_one($client_id);
             if($client->lead_status_id == 1)
@@ -262,6 +266,11 @@ class Estimates extends Security_Controller {
 
                     $estimate_item = $this->Estimate_items_model->ci_save($estimate_item_data);
                 }
+
+                
+                $options_original_estimate['status'] = 5;
+                $this->Estimates_model->ci_save($options_original_estimate, $main_estimate_id);
+
             } else {
                 save_custom_fields("estimates", $estimate_id, $this->login_user->is_admin, $this->login_user->user_type);
             }
@@ -272,7 +281,7 @@ class Estimates extends Security_Controller {
             $copy_items_from_order = $this->request->getPost("copy_items_from_order");
             $this->_copy_related_items_to_estimate($copy_items_from_proposal, $copy_items_from_contract, $copy_items_from_order, $estimate_id);
 
-            echo json_encode(array("success" => true, "data" => $this->_row_data($estimate_id), 'id' => $estimate_id, 'message' => app_lang('record_saved')));
+            echo json_encode(array("success" => true, 'id' => $estimate_id, 'message' => app_lang('record_saved')));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
@@ -325,7 +334,7 @@ class Estimates extends Security_Controller {
         if ($this->login_user->user_type == "client") {
             //updating by client
             //client can only update the status once and the value should be either accepted or declined
-            if (!($estmate_info->status == "sent" && ($status == "accepted" || $status == "declined"))) {
+            if (!($estmate_info->status == "sent" && ($status == "accepted" || $status == "declined" || $status == "in_revision"))) {
                 show_404();
             }
 
@@ -359,7 +368,7 @@ class Estimates extends Security_Controller {
 
             //create notification
             if ($status == "accepted") {
-                log_notification("estimate_accepted", array("estimate_id" => $estimate_id));
+                log_notification("estimate_accepted", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
 
                 //estimate accepted, create a new project
                 if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
@@ -370,11 +379,11 @@ class Estimates extends Security_Controller {
                     echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
                 }
             } else if ($status == "declined") {
-                log_notification("estimate_rejected", array("estimate_id" => $estimate_id));
+                log_notification("estimate_rejected", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
             }
         } else {
             //updating by team members
-            if (!($status == "accepted" || $status == "declined")) {
+            if (!($status == "accepted" || $status == "declined" || $status == "in_revision" || $status == "sent")) {
                 show_404();
             }
 
@@ -450,6 +459,7 @@ class Estimates extends Security_Controller {
             "status" => $this->request->getPost("status"),
             "start_date" => $this->request->getPost("start_date"),
             "end_date" => $this->request->getPost("end_date"),
+            "is_bidding" => $this->request->getPost("is_bidding"),
             "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
             "custom_fields" => $custom_fields,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("estimates", $this->login_user->is_admin, $this->login_user->user_type)
@@ -521,6 +531,8 @@ class Estimates extends Security_Controller {
             $client = anchor(get_uri("leads/view/" . $data->client_id), $data->company_name);
         }
 
+        $licitacao = $data->is_bidding ? "Sim" : "Não";
+
         $row_data = array(
             $estimate_url_code,
             $estimate_url,
@@ -530,6 +542,7 @@ class Estimates extends Security_Controller {
             $data->estimate_type,
             to_currency($data->estimate_value, $data->currency_symbol),
             $this->_get_estimate_status_label($data),
+            $licitacao,
         );
 
         $comment_link = "";
@@ -541,7 +554,40 @@ class Estimates extends Security_Controller {
 
         foreach ($custom_fields as $field) {
             $cf_id = "cfv_" . $field->id;
-            $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
+            if($field->title === 'Valor Estimado')
+            {
+                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)$data->$cf_id, $data->currency_symbol)));
+            } else if($field->title === 'Termômetro')
+            {
+                $class = "badge-primary";
+                $style = "";
+                switch($data->$cf_id) {
+                    case 'Morna':
+                        $style = "border-left: 5px solid #FFB822 !important;";
+                    break;
+                    case 'Fria':
+                        $style = "border-left: 5px solid #22B9FF !important;";
+                     break;
+                    case 'Quente':
+                        $style = "border-left: 5px solid #FD397A !important;";
+                    break;
+                }
+                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => "<span style='padding:10px;$style'>" . $data->$cf_id . "</span>"));
+            } else if($field->title === "Vendedor")
+            {
+                $collaborators_array = explode(',', $data->$cf_id);
+                $user_result = '';
+                foreach( $collaborators_array as $user )
+                {
+                    $user_info = $this->Users_model->get_one($user);
+                    $user_result .= "<div class='user-avatar avatar-30 avatar-circle' data-bs-toggle='tooltip' title='" . $user_info->first_name .' '.$user_info->last_name . "'><img alt='' src='" . get_avatar($user_info->image) . "'></div>";
+                }
+                $row_data[] = "<div class='w100 avatar-group'>" .  $user_result . "</div>";
+            }
+            else
+            {
+                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
+            }
         }
 
         $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
@@ -670,7 +716,6 @@ class Estimates extends Security_Controller {
     }
 
     /* add or edit an estimate item */
-
     function save_item() {
         $this->access_only_allowed_members();
 
@@ -721,9 +766,13 @@ class Estimates extends Security_Controller {
         }
 
         $estimate_item_id = $this->Estimate_items_model->ci_save($estimate_item_data, $id);
+
         if ($estimate_item_id) {
+            $options_estimate = array("id" => $estimate_id);
+            $estimate_info_detail = $this->Estimates_model->get_details($options_estimate)->getRow();
             $options = array("id" => $estimate_item_id);
             $item_info = $this->Estimate_items_model->get_details($options)->getRow();
+          //  log_notification("estimate_changed", array("estimate_id" => $estimate_id, "client_id" => $estimate_info_detail->company_id, "description" => $estimate_info_detail->public_key));
             echo json_encode(array("success" => true, "estimate_id" => $item_info->estimate_id, "data" => $this->_make_item_row($item_info), "estimate_total_view" => $this->_get_estimate_total_view($item_info->estimate_id), 'id' => $estimate_item_id, 'message' => app_lang('record_saved')));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
@@ -820,7 +869,7 @@ class Estimates extends Security_Controller {
     }
 
     //view html is accessable to client only.
-    function preview($estimate_id = 0, $show_close_preview = false,  $is_editor_preview = false) {
+    function preview($estimate_id = 0, $show_close_preview = false,  $is_editor_preview = false, $show_acceptance = true) {
 
         $view_data = array();
 
@@ -852,6 +901,8 @@ class Estimates extends Security_Controller {
             $view_data['show_close_preview'] = $show_close_preview && $this->login_user->user_type === "staff" ? true : false;
 
             $view_data['estimate_id'] = $estimate_id;
+
+            $view_data['show_acceptance'] = 0;
             
             if ($is_editor_preview) {
                 $view_data["is_editor_preview"] = clean_data($is_editor_preview);
@@ -862,6 +913,11 @@ class Estimates extends Security_Controller {
         } else {
             show_404();
         }
+    }
+    
+    function validate_code() {
+        $code = $this->request->getPost('code');
+        echo json_encode($this->Estimates_model->is_duplicate_code($code));
     }
 
     function download_pdf($estimate_id = 0, $mode = "download", $estimate_public_id = 0) {
@@ -951,6 +1007,8 @@ class Estimates extends Security_Controller {
             $parser_data["ESTIMATE_NUMBER"] = $estimate_info->estimate_number;
             $parser_data["COMPANY_IMAGE_URL_BIG"] = get_company_logo($estimate_info->company_id, "estimate_email", '100%');
             $parser_data["PUBLIC_ESTIMATE_URL"] = get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key);
+            $parser_data["PUBLIC_ACCEPT_ESTIMATE_URL"] = get_uri("estimate/accept/" . $estimate_info->id . "/" . $estimate_info->public_key);
+            $parser_data["PUBLIC_DECLINE_ESTIMATE_URL"] = get_uri("estimate/reject/" . $estimate_info->id . "/" . $estimate_info->public_key);
             $parser_data["PUBLIC_ESTIMATE_DOWNLOAD"] = get_uri("estimate/download_pdf/" . $estimate_info->id . "/" . $estimate_info->public_key);
             $parser_data["CONTACT_FIRST_NAME"] = $contact_first_name;
             $parser_data["CONTACT_LAST_NAME"] = $contact_last_name;
@@ -989,8 +1047,7 @@ class Estimates extends Security_Controller {
 
         $contact = $this->Users_model->get_one($contact_id);
 
-        
-        $target_path = get_setting("timeline_file_path");
+        $target_path = get_setting("timeline_file_path") . 'estimates/' . $estimate_id . '/';
         $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "estimate");
         $attachements = [];
         $files_data = unserialize($files_data);
@@ -1002,8 +1059,6 @@ class Estimates extends Security_Controller {
         }
     
         $estimate_data = get_estimate_making_data($estimate_id);
-
-        //$attachement_url = prepare_estimate_pdf($estimate_data, "send_email");
 
         $default_bcc = get_setting('send_estimate_bcc_to');
         $bcc_emails = "";
@@ -1055,7 +1110,6 @@ class Estimates extends Security_Controller {
     }
 
     /* upload a post file */
-
     function upload_file() {
         upload_file_to_temp();
     }
@@ -1173,6 +1227,543 @@ class Estimates extends Security_Controller {
         return $this->template->view('estimates/comment_form', $view_data);
     }
 
+    
+    /**
+     * Importação Excel
+     */
+    function import_estimates_modal_form() {
+        $this->access_only_allowed_members();
+        return $this->template->view("estimates/import_estimates_modal_form");
+    }
+
+    private function _prepare_estimate_data($data_row, $allowed_headers) {
+        //prepare estimate data
+        $Estimate_templates_model = model("App\Models\Estimate_templates_model");
+        $estimate_data = array("status" => "draft", "public_key" => make_random_string(), "content" => $Estimate_templates_model->get_one(get_setting("default_estimate_template"))->template);
+        $estimate_item_data = array();
+        $custom_field_values_array = array();
+
+        $Company_model = model('App\Models\Company_model');
+
+        foreach ($data_row as $row_data_key => $row_data_value) {
+            if (!$row_data_value) {
+                continue;
+            }
+
+            $header_key_value = get_array_value($allowed_headers, $row_data_key);
+            if (strpos($header_key_value, 'cf') !== false) { //custom field
+                $explode_header_key_value = explode("-", $header_key_value);
+                $custom_field_id = get_array_value($explode_header_key_value, 1);
+
+                //modify date value
+                $custom_field_info = $this->Custom_fields_model->get_one($custom_field_id);
+                if ($custom_field_info->field_type === "date") {
+                    $row_data_value = $this->_check_valid_date($row_data_value);
+                }
+                if($custom_field_info->field_type === "number")
+                {
+                    $formatted = str_replace(",", "", $row_data_value);
+                    $formatted = str_replace(".", ",", $formatted);
+                    $row_data_value = unformat_currency($formatted);
+                }
+
+                $custom_field_values_array[$custom_field_id] = $row_data_value;
+            } else if ($header_key_value == "number") {
+                $estimate_data["estimate_number"] = $row_data_value;
+            } else if ($header_key_value == "created_at") {
+                $estimate_data["estimate_date"] = $this->_check_valid_date($row_data_value);
+            }  else if ($header_key_value == "is_revision") {
+                $estimate_data["estimate_type_id"] = $row_data_value == "Sim" ? 2 : 1;
+            } else if ($header_key_value == "is_bidding") {
+                $estimate_data["is_bidding"] = $row_data_value == "Sim" ? 1 : 0;
+            } else if ($header_key_value == "total_amount") {
+              
+            } else if ($header_key_value == "description") {
+              
+            } else if ($header_key_value == "valid_until") {
+                $estimate_data["valid_until"] = $this->_check_valid_date($row_data_value);
+            } else if ($header_key_value == "item") {
+                $parts = explode('-', $row_data_value);
+                if (count($parts) == 2) {
+                    $equipment_name = trim($parts[0]);
+                    $equipment_category = trim($parts[1]);
+                } else {
+                    // Lida com o caso onde o formato é inesperado
+                    $equipment_name = $row_data_value;
+                    $category_id = '22';
+                }
+
+                //get existing category, if not create new one and add the id
+                if($equipment_category and (!empty($equipment_category)))
+                {
+                    $existing_category = $this->Item_categories_model->get_one_where(array("title" => $equipment_category, "deleted" => 0));
+                    if ($existing_category->id) {
+                        $category_id = $existing_category->id;
+                    } else {
+                        $category_data = array("title" => $equipment_category);
+                        $category_id = $this->Item_categories_model->ci_save($category_data);
+                    }
+                }
+                
+                //get existing item, if not create new one and add the id
+                $existing_item = $this->Items_model->get_one_where(array("title" => $equipment_name, "deleted" => 0, "category_id" => $category_id));
+                if ($existing_item->id) {
+                    $estimate_item_data["item_id"] = $existing_item->id;
+                } else {
+                    $item_data = array("title" => $equipment_name, "category_id" => $category_id);
+                    $estimate_item_data["item_id"] = $this->Items_model->ci_save($item_data);
+                }
+                $estimate_item_data["title"] = $equipment_name;
+            } else if ($header_key_value == "quantity") {
+                $text_only = preg_replace('/[0-9]+/', '', $row_data_value);
+                $estimate_item_data["unit_type"] = $text_only;
+                $estimate_item_data["quantity"] = intval($row_data_value);
+            }  else if ($header_key_value == "price") {
+                $formatted = str_replace(",", "", $row_data_value);
+                $formatted = str_replace(".", ",", $formatted);
+                $estimate_item_data["rate"] = unformat_currency($formatted);
+                if(isset($estimate_item_data["quantity"]) and (!empty($estimate_item_data["quantity"])))
+                {
+                    $estimate_item_data['total'] = unformat_currency($formatted) * $estimate_item_data["quantity"];
+                }
+            } else if ($header_key_value == "cnpj") {
+                //get existing status, if not create new one and add the id
+                $existing_client = $this->Clients_model->get_one_where(array("cnpj" => $row_data_value, "deleted" => 0));
+                if ($existing_client->id) {
+                    $estimate_data["client_id"] = $existing_client->id;
+                } else {
+                    $client_data = array("cnpj" => $row_data_value, "owner_id" => $this->login_user->id);
+                    $estimate_data["client_id"] = $this->Clients_model->ci_save($client_data);
+                }
+            } else if ($header_key_value == "company_name") {
+                //get existing company, if not create new one and add the id
+                $existing_company = $Company_model->get_one_where(array("name" => $row_data_value, "deleted" => 0));
+                if ($existing_company->id) {
+                    $estimate_data["company_id"] = $existing_company->id;
+                } else {
+                    $company_data = array("name" => $row_data_value);
+                    $estimate_data["company_id"] = $Company_model->ci_save($company_data);
+                }
+            }  else if ($header_key_value == "seller") {
+                //get existing seller, if not create new one and add the id
+                $existing_seller = $this->_get_user_id($row_data_value);
+                if ($existing_seller) {
+                    $estimate_data["created_by"] = $existing_seller;
+                } else {
+                    $user_data = array("first_name" => $row_data_value);
+                    $estimate_data["created_by"] = $this->Users_model->ci_save($user_data);
+                }
+            } else {
+                $estimate_data[$header_key_value] = $row_data_value;
+            }
+        }
+
+        return array(
+            "estimate_data" => $estimate_data,
+            "estimate_item_data" => $estimate_item_data,
+            "custom_field_values_array" => $custom_field_values_array
+        );
+    }
+
+    private function _get_existing_custom_field_id($title = "") {
+        if (!$title) {
+            return false;
+        }
+
+        $custom_field_data = array(
+            "title" => $title,
+            "related_to" => "estimates"
+        );
+
+        $existing = $this->Custom_fields_model->get_one_where(array_merge($custom_field_data, array("deleted" => 0)));
+        if ($existing->id) {
+            return $existing->id;
+        }
+    }
+
+    private function _prepare_headers_for_submit($headers_row, $headers) {
+        foreach ($headers_row as $key => $header) {
+            if (!((count($headers) - 1) < $key)) { //skip default headers
+                continue;
+            }
+
+            //so, it's a custom field
+            //check if there is any custom field existing with the title
+            //add id like cf-3
+            $existing_id = $this->_get_existing_custom_field_id($header);
+            if ($existing_id) {
+                array_push($headers, "cf-$existing_id");
+            }
+        }
+
+        return $headers;
+    }
+
+    function save_estimate_from_excel_file() {
+        if (!$this->validate_import_estimates_file_data(true)) {
+            echo json_encode(array('success' => false, 'message' => app_lang('error_occurred')));
+        }
+
+        $file_name = $this->request->getPost('file_name');
+        require_once(APPPATH . "ThirdParty/PHPOffice-PhpSpreadsheet/vendor/autoload.php");
+
+        $temp_file_path = get_setting("temp_file_path");
+        $excel_file = \PhpOffice\PhpSpreadsheet\IOFactory::load($temp_file_path . $file_name);
+        $excel_file = $excel_file->getActiveSheet()->toArray();
+        $allowed_headers = $this->_get_allowed_headers();
+        $now = get_current_utc_time();
+
+        foreach ($excel_file as $key => $value) { //rows
+            if ($key === 0) { //first line is headers, modify this for custom fields and continue for the next loop
+                $allowed_headers = $this->_prepare_headers_for_submit($value, $allowed_headers);
+                continue;
+            }
+
+            $estimate_data_array = $this->_prepare_estimate_data($value, $allowed_headers);
+            $estimate_data = get_array_value($estimate_data_array, "estimate_data");
+            $estimate_item_data = get_array_value($estimate_data_array, "estimate_item_data");
+            $custom_field_values_array = get_array_value($estimate_data_array, "custom_field_values_array");
+
+            //couldn't prepare valid data
+            if (!($estimate_data && count($estimate_data) > 1)) {
+                continue;
+            }
+
+            //found information about lead, add some additional info
+    //      $estimate_data["created_date"] = $now;
+    //      $estimate_data["owner_id"] = $this->login_user->id;
+    //      $estimate_item_data["created_at"] = $now;
+
+            //save estimate data
+            if($estimate_data['estimate_number'] and (!empty($estimate_data['estimate_number'])))
+            {
+                $existing_estimate = $this->Estimates_model->get_one_where(["estimate_number" => $estimate_data['estimate_number'], "deleted" => 0]);
+                if( $existing_estimate->id )
+                {
+                    $estimate_save_id = $existing_estimate->id;
+                }
+                else
+                {
+                    $estimate_save_id = $this->Estimates_model->ci_save($estimate_data);
+                    if (!$estimate_save_id) {
+                        continue;
+                    }
+    
+                    //save custom fields
+                    $this->_save_custom_fields_of_estimate($estimate_save_id, $custom_field_values_array);
+                }
+    
+                //add lead id to contact data
+                $estimate_item_data["estimate_id"] = $estimate_save_id;
+                $this->Estimate_items_model->ci_save($estimate_item_data);
+            }
+        }
+
+        delete_file_from_directory($temp_file_path . $file_name); //delete temp file
+
+        echo json_encode(array('success' => true, 'message' => app_lang("record_saved")));
+    }
+
+    private function _save_custom_fields_of_estimate($estimate_id, $custom_field_values_array) {
+        if (!$custom_field_values_array) {
+            return false;
+        }
+
+        foreach ($custom_field_values_array as $key => $custom_field_value) {
+            $field_value_data = array(
+                "related_to_type" => "estimates",
+                "related_to_id" => $estimate_id,
+                "custom_field_id" => $key,
+                "value" => $custom_field_value
+            );
+
+            $field_value_data = clean_data($field_value_data);
+
+            $this->Custom_field_values_model->ci_save($field_value_data);
+        }
+    }
+
+     private function _get_allowed_headers() {
+        return array(
+            "number", // Código da Proposta
+            "cnpj",
+            "created_at",
+            "is_revision",
+            "total_amount",
+            "is_bidding",
+            "cf-1", //Thermometer
+            "seller", // Ou cf-4
+            "cf-5", // Estimated Value
+            "item",
+            "quantity",
+            "price",
+            "description",
+            "cf-9", // Prazos
+            "cf-8", // Condições de Pagamento
+            "company_name",
+            "valid_until"
+        );
+    }
+
+    private function _store_headers_position($headers_row = array()) {
+        $allowed_headers = $this->_get_allowed_headers();
+
+        //check if all headers are correct and on the right position
+        $final_headers = array();
+        foreach ($headers_row as $key => $header) {
+            if (!$header) {
+                continue;
+            }
+
+            $key_value = str_replace(' ', '_', strtolower(trim($header, " ")));
+            $header_on_this_position = get_array_value($allowed_headers, $key);
+            $header_array = array("key_value" => $header_on_this_position, "value" => $header);
+
+            if ($header_on_this_position == $key_value) {
+                //allowed headers
+                //the required headers should be on the correct positions
+                //the rest headers will be treated as custom fields
+                //pushed header at last of this loop
+            } else if (((count($allowed_headers) - 1) < $key) && $key_value) {
+                //custom fields headers
+                //check if there is any existing custom field with this title
+                $existing_id = $this->_get_existing_custom_field_id(trim($header, " "));
+                if ($existing_id) {
+                    $header_array["custom_field_id"] = $existing_id;
+                } else {
+                    $header_array["has_error"] = true;
+                    $header_array["custom_field"] = true;
+                }
+            } else { //invalid header, flag as red
+                $header_array["has_error"] = true;
+            }
+
+            if ($key_value) {
+                array_push($final_headers, $header_array);
+            }
+        }
+
+        return $final_headers;
+    }
+
+    function validate_import_estimates_file() {
+        $file_name = $this->request->getPost("file_name");
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        if (!is_valid_file_to_upload($file_name)) {
+            echo json_encode(array("success" => false, 'message' => app_lang('invalid_file_type')));
+            exit();
+        }
+
+        if ($file_ext == "xlsx") {
+            echo json_encode(array("success" => true));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('please_upload_a_excel_file') . " (.xlsx)"));
+        }
+    }
+
+    function validate_import_estimates_file_data($check_on_submit = false) {
+        $table_data = "";
+        $error_message = "";
+        $headers = array();
+        $got_error_header = false; //we've to check the valid headers first, and a single header at a time
+        $got_error_table_data = false;
+
+        $file_name = $this->request->getPost("file_name");
+
+        require_once(APPPATH . "ThirdParty/PHPOffice-PhpSpreadsheet/vendor/autoload.php");
+
+        $temp_file_path = get_setting("temp_file_path");
+        $excel_file = \PhpOffice\PhpSpreadsheet\IOFactory::load($temp_file_path . $file_name);
+        $excel_file = $excel_file->getActiveSheet()->toArray();
+
+        $table_data .= '<table class="table table-responsive table-bordered table-hover" style="width: 100%; color: #444;">';
+
+        $table_data_header_array = array();
+        $table_data_body_array = array();
+
+        foreach ($excel_file as $row_key => $value) {
+            if ($row_key == 0) { //validate headers
+                $headers = $this->_store_headers_position($value);
+
+                foreach ($headers as $row_data) {
+                    $has_error_class = false;
+                    if (get_array_value($row_data, "has_error") && !$got_error_header) {
+                        $has_error_class = true;
+                        $got_error_header = true;
+
+                        if (get_array_value($row_data, "custom_field")) {
+                            $error_message = app_lang("no_such_custom_field_found");
+                        } else {
+                            $error_message = sprintf(app_lang("import_client_error_header"), app_lang(get_array_value($row_data, "key_value")));
+                        }
+                    }
+
+                    array_push($table_data_header_array, array("has_error_class" => $has_error_class, "value" => get_array_value($row_data, "value")));
+                }
+            } else { //validate data
+                if (!array_filter($value)) {
+                    continue;
+                }
+
+                $error_message_on_this_row = "<ol class='pl15'>";
+
+                foreach ($value as $key => $row_data) {
+                    $has_error_class = false;
+
+                    if (!$got_error_header) {
+                        $row_data_validation = $this->_row_data_validation_and_get_error_message($key, $row_data, $headers);
+                        if ($row_data_validation) {
+                            $has_error_class = true;
+                            $error_message_on_this_row .= "<li>" . $row_data_validation . "</li>";
+                            $got_error_table_data = true;
+                        }
+                    }
+
+                    if (count($headers) > $key) {
+                        $table_data_body_array[$row_key][] = array("has_error_class" => $has_error_class, "value" => $row_data);
+                    }
+                }
+
+                $error_message_on_this_row .= "</ol>";
+
+                //error messages for this row
+                if ($got_error_table_data) {
+                    $table_data_body_array[$row_key][] = array("has_error_text" => true, "value" => $error_message_on_this_row);
+                }
+            }
+        }
+
+        //return false if any error found on submitting file
+        if ($check_on_submit) {
+            return ($got_error_header || $got_error_table_data) ? false : true;
+        }
+
+        //add error header if there is any error in table body
+        if ($got_error_table_data) {
+            array_push($table_data_header_array, array("has_error_text" => true, "value" => app_lang("error")));
+        }
+
+        //add headers to table
+        $table_data .= "<tr>";
+        foreach ($table_data_header_array as $table_data_header) {
+            $error_class = get_array_value($table_data_header, "has_error_class") ? "error" : "";
+            $error_text = get_array_value($table_data_header, "has_error_text") ? "text-danger" : "";
+            $value = get_array_value($table_data_header, "value");
+            $table_data .= "<th class='$error_class $error_text'>" . $value . "</th>";
+        }
+        $table_data .= "</tr>";
+
+        //add body data to table
+        foreach ($table_data_body_array as $table_data_body_row) {
+            $table_data .= "<tr>";
+            $error_text = "";
+
+            foreach ($table_data_body_row as $table_data_body_row_data) {
+                $error_class = get_array_value($table_data_body_row_data, "has_error_class") ? "error" : "";
+                $error_text = get_array_value($table_data_body_row_data, "has_error_text") ? "text-danger" : "";
+                $value = get_array_value($table_data_body_row_data, "value");
+                $table_data .= "<td class='$error_class $error_text'>" . $value . "</td>";
+            }
+
+            if ($got_error_table_data && !$error_text) {
+                $table_data .= "<td></td>";
+            }
+
+            $table_data .= "</tr>";
+        }
+
+        //add error message for header
+        if ($error_message) {
+            $total_columns = count($table_data_header_array);
+            $table_data .= "<tr><td class='text-danger' colspan='$total_columns'><i data-feather='alert-triangle' class='icon-16'></i> " . $error_message . "</td></tr>";
+        }
+
+        $table_data .= "</table>";
+
+        echo json_encode(array("success" => true, 'table_data' => $table_data, 'got_error' => ($got_error_header || $got_error_table_data) ? true : false));
+    }
+
+    private function _row_data_validation_and_get_error_message($key, $data, $headers = array()) {
+        $allowed_headers = $this->_get_allowed_headers();
+        $header_value = get_array_value($allowed_headers, $key);
+
+        //company name field is required
+        // if ($header_value == "cnpj" && !$data) {
+        //     return app_lang("import_client_error_company_name_field_required");
+        // }
+
+         //check dates
+         if ($header_value == "valid_until" && !$this->_check_valid_date($data)) {
+            return app_lang("import_date_error_message");
+        }
+        if ($header_value == "estimate_date" && !$this->_check_valid_date($data)) {
+           return app_lang("import_date_error_message");
+        }
+
+        //check existance
+        if ($data && (
+            ($header_value == "company_name" && !$this->_get_company_id($data)) ||
+            ($header_value == "seller" && !$this->_get_user_id($data)))) {
+            return sprintf(app_lang("import_not_exists_error_message"), app_lang($header_value));
+        }
+
+
+        //there has no date field on default import fields
+        //check on custom fields
+        if (((count($allowed_headers) - 1) < $key) && $data) {
+            $header_info = get_array_value($headers, $key);
+            $custom_field_info = $this->Custom_fields_model->get_one(get_array_value($header_info, "custom_field_id"));
+            if ($custom_field_info->field_type === "date" && !$this->_check_valid_date($data)) {
+                return app_lang("import_date_error_message");
+            }
+        }
+    }
+
+    function download_sample_excel_file() {
+        $this->access_only_allowed_members();
+        return $this->download_app_files(get_setting("system_file_path"), serialize(array(array("file_name" => "import-estimates-sample.xlsx"))));
+    }
+
+    function upload_excel_file() {
+        upload_file_to_temp(true);
+    }    
+
+    private function _get_company_id($company = "") {
+        $company = trim($company);
+        if (!$company) {
+            return false;
+        }
+
+        $Company_model = model('App\Models\Company_model');
+
+        $existing_company = $Company_model->get_company_from_name($company);
+        if ($existing_company) {
+            return $existing_company->id;
+        } else {
+            return false;
+        }
+    }
+
+    
+
+    private function _get_user_id($user = "") {
+        $user = trim($user);
+        if (!$user) {
+            return false;
+        }
+
+        $existing_user = $this->Users_model->get_user_from_full_name($user, "staff");
+        if ($existing_user) {
+            return $existing_user->id;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * End Importação Excel
+     */
+
     function load_statistics_of_selected_currency($currency = "") {
         if ($currency) {
             $statistics = estimate_sent_statistics_widget(array("currency" => $currency));
@@ -1183,6 +1774,156 @@ class Estimates extends Security_Controller {
                 echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
             }
         }
+    }
+
+    function get_sellers_estimates($type = 'monthly', $pos = false) {
+        
+        $seller_id = $this->request->getPost('seller');
+        $options = array(
+            "pos" => $pos,
+            "seller_id" => $seller_id,
+            "start_date" => $this->request->getPost("start_date"),
+            "end_date" => $this->request->getPost("end_date"),
+        );
+
+        $all_options = append_server_side_filtering_commmon_params($options);
+
+        $result = $this->Estimates_model->get_sellers_estimates($all_options);
+        
+        if (get_array_value($all_options, "server_side")) {
+            $list_data = get_array_value($result, "data");
+        } else {
+            $list_data = $result->getResult();
+            $result = array();
+        }
+
+
+        $result_data = array();
+        foreach ($list_data as $data) {
+            $result_data[] = $this->_make_sellers_estimate_list_row($data, $type);
+        }
+        
+        $result["data"] = $result_data;
+
+        echo json_encode($result);
+    }
+
+    private function _make_sellers_estimate_list_row($data, $type) {
+        $collaborators = "";
+        $collaborator_parts = explode("--::--", $data->Vendedor);
+
+        $collaborator_id = get_array_value($collaborator_parts, 0);
+        $collaborator_name = get_array_value($collaborator_parts, 1);
+
+        $image_url = get_avatar(get_array_value($collaborator_parts, 2));
+
+        $collaboratr_image = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='$collaborator_name'></span> $collaborator_name";
+       
+        $collaborators .= get_team_member_profile_link($collaborator_id, $collaboratr_image, array("title" => $collaborator_name)); 
+
+        $conversao_class = "bg-primary";
+        if($data->Conversao < 1)
+        {
+            $conversao_class = "bg-danger";
+        }
+        else if($data->Conversao < 30) {
+            
+            $conversao_class = "bg-warning";
+        }
+
+        $conversao = "<span class='badge mt0 $conversao_class' title='$data->Conversao'><b>$data->Conversao</b></span>";
+
+        if($type == 'monthly')
+        {
+            $row_data = array(
+                $collaborators,
+                $data->Propostas_Emitidas,
+                $data->Propostas_Fechadas,
+                $conversao,
+                $data->Valor_Fechado
+            );
+        }
+        else{
+            $row_data = array(
+                translate_month_name($data->Mes),
+                $collaborators,
+                $data->Propostas_Emitidas,
+                $data->Propostas_Fechadas,
+                $conversao,
+                $data->Valor_Fechado
+            );
+        }
+
+        return $row_data;
+    }
+
+    function get_coligadas_estimates($type = 'monthly') {
+        
+        $coligada_id = $this->request->getPost('coligada');
+        $options = array(
+            "coligada" => $coligada_id,
+            "start_date" => $this->request->getPost("start_date"),
+            "end_date" => $this->request->getPost("end_date"),
+        );
+
+        $all_options = append_server_side_filtering_commmon_params($options);
+
+        $result = $this->Estimates_model->get_coligadas_estimates($all_options);
+        
+        if (get_array_value($all_options, "server_side")) {
+            $list_data = get_array_value($result, "data");
+        } else {
+            $list_data = $result->getResult();
+            $result = array();
+        }
+
+
+        $result_data = array();
+        foreach ($list_data as $data) {
+            $result_data[] = $this->_make_coligadas_estimate_list_row($data, $type);
+        }
+        
+        $result["data"] = $result_data;
+
+        echo json_encode($result);
+    }
+
+    private function _make_coligadas_estimate_list_row($data, $type = 'monthly') {
+        $conversao_class = "bg-primary";
+        if($data->Conversao < 1)
+        {
+            $conversao_class = "bg-danger";
+        }
+        else if($data->Conversao < 30) {
+            
+            $conversao_class = "bg-warning";
+        }
+
+        $conversao = "<span class='badge mt0 $conversao_class' title='$data->Conversao'><b>$data->Conversao</b></span>";
+
+        if($type == 'monthly')
+        {
+            $row_data = array(
+                $data->Nome_Empresa,
+                $data->Propostas_Emitidas,
+                $data->Propostas_Fechadas,
+                $conversao,
+                $data->Valor_Fechado
+            );
+        }
+        else
+        {
+            $row_data = array(
+                translate_month_name($data->Mes),
+                $data->Nome_Empresa,
+                $data->Propostas_Emitidas,
+                $data->Propostas_Fechadas,
+                $conversao,
+                $data->Valor_Fechado
+            );
+        }
+
+        return $row_data;
     }
     
     function save_view() {

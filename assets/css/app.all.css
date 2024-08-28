@@ -3978,6 +3978,9 @@ i.online {
 .bg-orange {
   background-color: #FFB822;
 }
+.bg-green {
+  background-color: green;
+}
 .text-off {
   opacity: 0.6;
 }
@@ -6442,7 +6445,7 @@ input[type="color"]::-webkit-color-swatch {
 }
 .max-logo-size {
   max-width: 300px;
-  max-height: 100px;
+  max-height: 90px;
 }
 .circle-progress {
   position: relative;

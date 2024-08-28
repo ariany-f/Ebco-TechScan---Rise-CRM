@@ -80,8 +80,8 @@
                 </div>
                 <?php echo view("includes/dropzone_preview"); ?>
                 <div class="form-group ml15">
+                    <!-- <i data-feather="check-circle" class='icon-16' style="color: #5CB85C;"></i> <?php //echo app_lang('attached') . ' ' . anchor(get_uri("estimate/download_pdf/" . $estimate_info->id . '/' . $estimate_info->public_key), app_lang("estimate") . "-$estimate_info->id.pdf", array("target" => "_blank")); ?>  -->
                     <button class="btn btn-default upload-file-button float-start me-auto btn-sm round" type="button" style="color:#7988a2"><i data-feather="camera" class='icon-16'></i> <?php echo app_lang("upload_file"); ?></button>
-                    <!-- <i data-feather="check-circle" class='icon-16' style="color: #5CB85C;"></i> <?php //echo app_lang('attached') . ' ' . anchor(get_uri("estimates/download_pdf/" . $estimate_info->id), app_lang("estimate") . "-$estimate_info->id.pdf", array("target" => "_blank")); ?>  -->
                 </div>
 
             </div>

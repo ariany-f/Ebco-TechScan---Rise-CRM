@@ -486,6 +486,7 @@ setSummernote = function ($instance, notFocus) {
                 height: 150,
                 focus: focus,
                 toolbar: [
+					['paperSize',['paperSize']], // The Button
                     ['style', ['style']],
                     ['font', ['bold', 'italic', 'underline', 'clear']],
                     ['fontname', ['fontname']],
@@ -906,6 +907,7 @@ initWYSIWYGEditor = function (element, options) {
     var settings = $.extend({}, {
         height: 250,
         toolbar: [
+            ['paperSize',['paperSize']], // The Button
             ['style', ['style']],
             ['font', ['bold', 'italic', 'underline', 'clear']],
             ['fontname', ['fontname']],

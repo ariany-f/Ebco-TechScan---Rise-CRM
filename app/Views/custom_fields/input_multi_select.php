@@ -7,7 +7,17 @@ $options_array = explode(",", $options);
 $options_dropdown = array();
 if ($options && count($options_array)) {
     foreach ($options_array as $value) {
-        $options_dropdown[] = array("id" => $value, "text" => $value);
+        if (strpos($value, ':') !== false) {
+            $value_array = explode(":", $value);
+            $id = $value_array[0];
+            $name = $value_array[1];
+        }
+        else
+        {
+            $id = $value;
+            $name = $value;
+        }
+        $options_dropdown[] = array("id" => $id, "text" => $name);
     }
 } else {
     $options_dropdown = array(array("id" => "-", "text" => "-"));

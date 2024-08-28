@@ -2,6 +2,7 @@
     <?php
     load_css(array(
         "assets/css/invoice.css",
+        "assets/css/estimate.css",
     ));
     ?>
 
@@ -67,6 +68,7 @@
         initWYSIWYGEditor("#proposal-view", {
             height: 600,
             toolbar: [
+                ['paperSize',['paperSize']], // The Button
                 ['style', ['style']],
                 ['font', ['bold', 'italic', 'underline', 'clear']],
                 ['fontname', ['fontname']],

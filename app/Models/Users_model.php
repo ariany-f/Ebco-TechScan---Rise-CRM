@@ -437,6 +437,7 @@ class Users_model extends Crud_model {
         $custom_fields_table = $this->db->prefixTable('custom_fields');
         $custom_field_values_table = $this->db->prefixTable('custom_field_values');
         $estimate_items_table = $this->db->prefixTable('estimate_items');
+        $items_table = $this->db->prefixTable('items');
 
         $where = "";
        
@@ -454,24 +455,91 @@ class Users_model extends Crud_model {
         }
         
         $sql = "SELECT 
-                    $users_table.id,
-                    $users_table.first_name, 
-                    $users_table.last_name, 
-                    COALESCE(SUM(crm_custom_field_values.value), estimate_value) AS total_sells,
-                    COALESCE(COUNT($estimates_table.id), 0) AS total_projects,
-                    COALESCE(COUNT(DISTINCT $clients_table.id), 0) AS total_clients,
-                    $users_table.user_type, 
-                    $users_table.image,  
-                    $users_table.job_title, 
-                    $users_table.last_online
-        FROM $estimates_table
-        INNER JOIN $clients_table ON $clients_table.id = $estimates_table.client_id
-        INNER JOIN $users_table ON $users_table.id = $clients_table.owner_id
+        id,
+        first_name, 
+        last_name, 
+        COALESCE(SUM(total_sells), 0) AS total_sells,
+        COALESCE(SUM(total_projects), 0) AS total_projects,
+        COALESCE(SUM(total_clients), 0) AS total_clients,
+        COALESCE(SUM(total_leads), 0) AS total_leads,
+        COALESCE(SUM(total_prospects), 0) AS total_prospects,
+        user_type, 
+        image,  
+        job_title, 
+        last_online
+    FROM (
+        SELECT 
+            $users_table.id,
+            $users_table.first_name, 
+            $users_table.last_name, 
+            COALESCE(SUM(crm_custom_field_values.value), SUM(items_table.estimate_value)) AS total_sells,
+            COUNT(DISTINCT $estimates_table.id) AS total_projects,
+            COUNT(DISTINCT clients.id) AS total_clients,
+            0 AS total_leads,
+            0 AS total_prospects,
+            $users_table.user_type, 
+            $users_table.image,  
+            $users_table.job_title, 
+            $users_table.last_online
+        FROM $users_table
+        LEFT JOIN $clients_table AS clients ON clients.owner_id = $users_table.id AND clients.is_lead = 0 AND clients.deleted = 0
+        LEFT JOIN $estimates_table ON $estimates_table.client_id = clients.id AND $estimates_table.deleted = 0
         LEFT JOIN $custom_fields_table ON $custom_fields_table.related_to = 'estimates' AND $custom_fields_table.placeholder = 'Valor Estimado'
         LEFT JOIN $custom_field_values_table ON $custom_field_values_table.custom_field_id = $custom_fields_table.id AND $custom_field_values_table.related_to_id = $estimates_table.id
-        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table WHERE deleted = 0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
-        WHERE $users_table.deleted=0 AND $users_table.status='active' $where
-        GROUP BY $users_table.id";
+        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted = 0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
+        WHERE $users_table.deleted = 0 AND $users_table.status = 'active' $where
+        GROUP BY $users_table.id
+    
+        UNION ALL
+    
+        SELECT 
+            $users_table.id,
+            $users_table.first_name, 
+            $users_table.last_name, 
+            COALESCE(SUM(crm_custom_field_values.value), SUM(items_table.estimate_value)) AS total_sells,
+            COUNT(DISTINCT $estimates_table.id) AS total_projects,
+            0 AS total_clients,
+            COUNT(DISTINCT leads.id) AS total_leads,
+            0 AS total_prospects,
+            $users_table.user_type, 
+            $users_table.image,  
+            $users_table.job_title, 
+            $users_table.last_online
+        FROM $users_table
+        LEFT JOIN $clients_table AS leads ON leads.owner_id = $users_table.id AND leads.is_lead = 1 AND leads.lead_status_id = 1 AND leads.deleted = 0
+        LEFT JOIN $estimates_table ON $estimates_table.client_id = leads.id AND $estimates_table.deleted = 0
+        LEFT JOIN $custom_fields_table ON $custom_fields_table.related_to = 'estimates' AND $custom_fields_table.placeholder = 'Valor Estimado'
+        LEFT JOIN $custom_field_values_table ON $custom_field_values_table.custom_field_id = $custom_fields_table.id AND $custom_field_values_table.related_to_id = $estimates_table.id
+        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted = 0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
+        WHERE $users_table.deleted = 0 AND $users_table.status = 'active' $where
+        GROUP BY $users_table.id
+    
+        UNION ALL
+    
+        SELECT 
+            $users_table.id,
+            $users_table.first_name, 
+            $users_table.last_name, 
+            COALESCE(SUM(crm_custom_field_values.value), SUM(items_table.estimate_value)) AS total_sells,
+            COUNT(DISTINCT $estimates_table.id) AS total_projects,
+            0 AS total_clients,
+            0 AS total_leads,
+            COUNT(DISTINCT prospect.id) AS total_prospects,
+            $users_table.user_type, 
+            $users_table.image,  
+            $users_table.job_title, 
+            $users_table.last_online
+        FROM $users_table
+        LEFT JOIN $clients_table AS prospect ON prospect.owner_id = $users_table.id AND prospect.is_lead = 1 AND prospect.lead_status_id > 1 AND prospect.deleted = 0
+        LEFT JOIN $estimates_table ON $estimates_table.client_id = prospect.id AND $estimates_table.deleted = 0
+        LEFT JOIN $custom_fields_table ON $custom_fields_table.related_to = 'estimates' AND $custom_fields_table.placeholder = 'Valor Estimado'
+        LEFT JOIN $custom_field_values_table ON $custom_field_values_table.custom_field_id = $custom_fields_table.id AND $custom_field_values_table.related_to_id = $estimates_table.id
+        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted = 0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
+        WHERE $users_table.deleted = 0 AND $users_table.status = 'active' $where
+        GROUP BY $users_table.id
+    ) AS combined
+    GROUP BY 
+        id";
         
         return $this->db->query($sql);
     }
@@ -520,7 +588,7 @@ class Users_model extends Crud_model {
                     $users_table.id,
                     $users_table.first_name, 
                     $users_table.last_name, 
-                    COALESCE(SUM(crm_custom_field_values.value), estimate_value) AS total_sells,
+                    COALESCE(SUM(crm_custom_field_values.value), SUM(estimate_value)) AS total_sells,
                     'Propostas' AS type
             FROM $estimates_table
                 INNER JOIN $clients_table ON $clients_table.id = $estimates_table.client_id
@@ -528,7 +596,7 @@ class Users_model extends Crud_model {
                 LEFT JOIN $custom_fields_table ON $custom_fields_table.related_to = 'estimates' AND $custom_fields_table.placeholder = 'Valor Estimado'
                 LEFT JOIN $custom_field_values_table ON $custom_field_values_table.custom_field_id = $custom_fields_table.id AND $custom_field_values_table.related_to_id = $estimates_table.id
                 LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value FROM $estimate_items_table WHERE deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
-            WHERE $users_table.deleted=0 AND $users_table.status='active' $where_estimates
+            WHERE $estimates_table.deleted=0 AND $users_table.deleted=0 AND $users_table.status='active' $where_estimates
             GROUP BY $users_table.id
         UNION ALL
             SELECT 
@@ -538,6 +606,7 @@ class Users_model extends Crud_model {
                 COALESCE(SUM($projects_table.price), 0) AS total_sells, 
                 'Vendas' AS type
             FROM $projects_table
+                /*INNER JOIN $estimates_table ON $estimates_table.project_id = $projects_table.id*/
                 INNER JOIN $clients_table ON $clients_table.id = $projects_table.client_id
                 INNER JOIN $users_table ON $users_table.id = $clients_table.owner_id
             WHERE $users_table.deleted=0 AND $users_table.status='active' $where_projects

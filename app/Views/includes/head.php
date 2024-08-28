@@ -65,15 +65,17 @@
         "assets/js/select2/select2.css", //don't combine this css because of the images path
         "assets/js/select2/select2-bootstrap.min.css",
         "assets/css/daterangepicker.css",
-        "assets/css/app.all.css",
+        "assets/css/app.all.css?ver=" . date('%d%m%Y'),
     );
 
     if (app_lang("text_direction") == "rtl") {
         array_push($css_files, "assets/css/rtl.css");
     }
 
-    array_push($css_files, "assets/css/custom-style.css"); //add to last. custom style should not be merged
-
+    array_push($css_files, "assets/css/custom-style.css?ver=4"); //add to last. custom style should not be merged
+    echo '<link rel="preconnect" href="https://fonts.googleapis.com">';
+    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
+    echo '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">';
     load_css($css_files);
 
     load_js(array(

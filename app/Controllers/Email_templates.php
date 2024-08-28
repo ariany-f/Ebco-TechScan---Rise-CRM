@@ -42,6 +42,7 @@ class Email_templates extends Security_Controller {
                 "estimate_rejected" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "SIGNATURE", "ESTIMATE_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
                 "estimate_request_received" => array("ESTIMATE_REQUEST_ID", "CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "SIGNATURE", "ESTIMATE_REQUEST_URL", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),
                 "estimate_commented" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "USER_NAME", "COMMENT_CONTENT", "ESTIMATE_URL", "LOGO_URL", "SIGNATURE", "RECIPIENTS_EMAIL_ADDRESS"),
+                "estimate_changed" => array("ESTIMATE_ID", "ESTIMATE_NUMBER", "USER_NAME", "CONTACT_FIRST_NAME", "ESTIMATE_URL", "LOGO_URL", "SIGNATURE", "COMPANY_IMAGE_URL_BIG", "PUBLIC_ESTIMATE_URL", "PUBLIC_ESTIMATE_DOWNLOAD"),
             ),
             "contract" => array(
                 "contract_sent" => array("CONTACT_FIRST_NAME", "CONTACT_LAST_NAME", "CONTRACT_ID", "CONTRACT_URL", "PUBLIC_CONTRACT_URL", "PROJECT_TITLE", "SIGNATURE", "LOGO_URL", "RECIPIENTS_EMAIL_ADDRESS"),

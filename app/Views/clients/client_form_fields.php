@@ -174,6 +174,96 @@
     </div>
 <?php } ?>
 
+<div class="form-group">
+    <div class="row">
+        <label for="limit_date_for_nota_fiscal" class="<?php echo $label_column; ?>"><?php echo app_lang('limit_date_for_nota_fiscal'); ?>
+            <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('day_of_month') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+        </label>
+        <div class="col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "limit_date_for_nota_fiscal",
+                "name" => "limit_date_for_nota_fiscal",
+                "value" => $model_info->limit_date_for_nota_fiscal,
+                "class" => "form-control",
+                "placeholder" => app_lang('limit_date_for_nota_fiscal'),
+                "autocomplete" => "off",
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+        <div class="row">
+            <label for="setor" class="<?php echo $label_column; ?>"><?php echo app_lang('setor'); ?>
+                <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('public') . ' ou ' . app_lang('private') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+            </label>
+            <div class="<?php echo $field_column; ?>">
+                <?php
+                echo form_input(array(
+                    "id" => "setor",
+                    "name" => "setor",
+                    "value" => $model_info->setor,
+                    "class" => "form-control",
+                    "placeholder" => app_lang('setor')
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
+<div class="form-group">
+        <div class="row">
+            <label for="invoice_rule_id" class="<?php echo $label_column; ?>"><?php echo app_lang('invoice_rule'); ?>
+                <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('invoice_rule_detail') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+            </label>
+            <div class="<?php echo $field_column; ?>">
+                <?php
+                echo form_input(array(
+                    "id" => "invoice_rule_id",
+                    "name" => "invoice_rule_id",
+                    "value" => $model_info->invoice_rule_id,
+                    "class" => "form-control",
+                    "placeholder" => app_lang('invoice_rule')
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
+<div class="form-group invoice_rule_date <?=((!$model_info->invoice_rule_date) || $model_info->invoice_rule_date == 0)  ? 'hide' : '' ?>">
+    <div class="row">
+        <label for="invoice_rule_date" class=" col-md-3"><?php echo app_lang('invoice_rule_date'); ?></label>
+        <div class="col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "invoice_rule_date",
+                "name" => "invoice_rule_date",
+                "value" => $model_info->invoice_rule_date,
+                "class" => "form-control",
+                "placeholder" => app_lang('invoice_rule_date'),
+                "autocomplete" => "off"
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <label for="lead_interested" class=" col-md-3"><?php echo app_lang('lead_interested'); ?></label>
+        <div class=" col-md-9">
+            <?php
+            echo form_textarea(array(
+                "id" => "lead_interested",
+                "name" => "lead_interested",
+                "value" => $model_info->lead_interested,
+                "class" => "form-control",
+                "placeholder" => app_lang('lead_interested'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
 <?php if ($login_user->is_admin || get_array_value($login_user->permissions, "client") === "all") { ?>
     <div class="form-group">
         <div class="row">
@@ -198,42 +288,8 @@
 <?php } ?>
 
 
-<div class="form-group">
-    <div class="row">
-        <label for="limit_date_for_nota_fiscal" class="<?php echo $label_column; ?>"><?php echo app_lang('limit_date_for_nota_fiscal'); ?>
-            <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('day_of_month') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
-        </label>
-        <div class="col-md-9">
-            <?php
-            echo form_input(array(
-                "id" => "limit_date_for_nota_fiscal",
-                "name" => "limit_date_for_nota_fiscal",
-                "value" => $model_info->limit_date_for_nota_fiscal,
-                "class" => "form-control",
-                "placeholder" => app_lang('limit_date_for_nota_fiscal'),
-                "autocomplete" => "off",
-            ));
-            ?>
-        </div>
-    </div>
-</div>
+<?php echo view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => $label_column, "field_column" => $field_column)); ?> 
 
-<div class="form-group">
-    <div class="row">
-        <label for="lead_interested" class=" col-md-3"><?php echo app_lang('lead_interested'); ?></label>
-        <div class=" col-md-9">
-            <?php
-            echo form_textarea(array(
-                "id" => "lead_interested",
-                "name" => "lead_interested",
-                "value" => $model_info->lead_interested,
-                "class" => "form-control",
-                "placeholder" => app_lang('lead_interested'),
-            ));
-            ?>
-        </div>
-    </div>
-</div>
 <div class="form-group">
     <div class="row">
         <label for="address" class="<?php echo $label_column; ?>"><?php echo app_lang('address'); ?></label>
@@ -349,59 +405,23 @@
 </div>
 
 <?php if ($login_user->user_type === "staff") { ?>
-    <div class="form-group">
+    <!-- <div class="form-group">
         <div class="row">
-            <label for="groups" class="<?php echo $label_column; ?>"><?php echo app_lang('client_groups'); ?></label>
-            <div class="<?php echo $field_column; ?>">
+            <label for="groups" class="<?php // echo $label_column; ?>"><?php // echo app_lang('client_groups'); ?></label>
+            <div class="<?php // echo $field_column; ?>">
                 <?php
-                echo form_input(array(
-                    "id" => "group_ids",
-                    "name" => "group_ids",
-                    "value" => $model_info->group_ids,
-                    "class" => "form-control",
-                    "placeholder" => app_lang('client_groups')
-                ));
+                // echo form_input(array(
+                //     "id" => "group_ids",
+                //     "name" => "group_ids",
+                //     "value" => $model_info->group_ids,
+                //     "class" => "form-control",
+                //     "placeholder" => app_lang('client_groups')
+                // ));
                 ?>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <label for="invoice_rule_id" class="<?php echo $label_column; ?>"><?php echo app_lang('invoice_rule'); ?>
-                <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('invoice_rule_detail') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
-            </label>
-            <div class="<?php echo $field_column; ?>">
-                <?php
-                echo form_input(array(
-                    "id" => "invoice_rule_id",
-                    "name" => "invoice_rule_id",
-                    "value" => $model_info->invoice_rule_id,
-                    "class" => "form-control",
-                    "placeholder" => app_lang('invoice_rule')
-                ));
-                ?>
-            </div>
-        </div>
-    </div>
+    </div> -->
 <?php } ?>
-
-<div class="form-group invoice_rule_date <?=((!$model_info->invoice_rule_date) || $model_info->invoice_rule_date == 0)  ? 'hide' : '' ?>">
-    <div class="row">
-        <label for="invoice_rule_date" class=" col-md-3"><?php echo app_lang('invoice_rule_date'); ?></label>
-        <div class="col-md-9">
-            <?php
-            echo form_input(array(
-                "id" => "invoice_rule_date",
-                "name" => "invoice_rule_date",
-                "value" => $model_info->invoice_rule_date,
-                "class" => "form-control",
-                "placeholder" => app_lang('invoice_rule_date'),
-                "autocomplete" => "off"
-            ));
-            ?>
-        </div>
-    </div>
-</div>
 
 <?php if ($login_user->is_admin && get_setting("module_invoice")) { ?>
     <div class="form-group">
@@ -439,8 +459,6 @@
 
 <?php } ?>
 
-<?php echo view("custom_fields/form/prepare_context_fields", array("custom_fields" => $custom_fields, "label_column" => $label_column, "field_column" => $field_column)); ?> 
-
 <?php if ($login_user->is_admin && get_setting("module_invoice")) { ?>
     <div class="form-group">
         <div class="row">
@@ -464,6 +482,12 @@
             if ($('#currency').length) {
                 $('#currency').select2({data: <?php echo json_encode($currency_dropdown); ?>});
             }
+<?php } ?>
+
+<?php if (isset($setor_dropdown)) { ?>
+            $("#setor").select2({
+                data: <?php echo json_encode($setor_dropdown); ?>
+            });
 <?php } ?>
 
 <?php if (isset($groups_dropdown)) { ?>

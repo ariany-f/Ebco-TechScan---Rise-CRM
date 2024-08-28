@@ -1,0 +1,28 @@
+CRITICAL - 2024-06-17 08:53:17 --> The action you requested is not allowed.
+in SYSTEMPATH\Security\Security.php on line 306.
+ 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\CodeIgniter.php(476): CodeIgniter\Filters\Filters->run('/clients/list_data', 'before')
+ 5 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-06-17 11:58:00 --> The action you requested is not allowed.
+in SYSTEMPATH\Security\Security.php on line 306.
+ 1 SYSTEMPATH\Security\Security.php(306): CodeIgniter\Security\Exceptions\SecurityException::forDisallowedAction()
+ 2 SYSTEMPATH\Filters\CSRF.php(55): CodeIgniter\Security\Security->verify(Object(CodeIgniter\HTTP\IncomingRequest))
+ 3 SYSTEMPATH\Filters\Filters.php(173): CodeIgniter\Filters\CSRF->before(Object(CodeIgniter\HTTP\IncomingRequest), null)
+ 4 SYSTEMPATH\CodeIgniter.php(476): CodeIgniter\Filters\Filters->run('/clients/contacts_list_data/', 'before')
+ 5 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-06-17 13:23:42 --> Division by zero
+in APPPATH\Helpers\widget_helper.php on line 1948.
+ 1 APPPATH\Helpers\widget_helper.php(1948): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Division by zero', 'APPPATH\\Helpers\\widget_helper.php', 1948, [...])
+ 2 APPPATH\Controllers\Dashboard.php(1233): sellers_conversions_overview_widget()
+ 3 APPPATH\Controllers\Dashboard.php(1104): App\Controllers\Dashboard->_get_widgets_for_staffs('sellers_conversions_overview', [...])
+ 4 APPPATH\Controllers\Dashboard.php(1081): App\Controllers\Dashboard->_make_dashboard_widgets('sellers_conversions_overview')
+ 5 APPPATH\Controllers\Dashboard.php(437): App\Controllers\Dashboard->make_dashboard([...])
+ 6 APPPATH\Controllers\Dashboard.php(38): App\Controllers\Dashboard->view('1')
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Dashboard->index()
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

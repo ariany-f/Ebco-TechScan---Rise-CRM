@@ -1,0 +1,13 @@
+ERROR - 2024-07-23 12:44:16 --> mysqli_sql_exception: Unknown column 'custom_field_12' in 'field list' in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('INSERT INTO `cr...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cr...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cr...')
+#3 E:\httpdocs\www\crm\system\Database\BaseBuilder.php(2309): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cr...', Array, false)
+#4 E:\httpdocs\www\crm\app\Models\Crud_model.php(230): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 E:\httpdocs\www\crm\app\Controllers\Clients.php(1716): App\Models\Crud_model->ci_save(Array)
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(939): App\Controllers\Clients->save_client_from_excel_file()
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#10 {main}

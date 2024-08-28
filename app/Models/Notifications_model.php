@@ -47,6 +47,7 @@ class Notifications_model extends Crud_model {
         $where = "";
         $notify_to_terms = $notification_settings->notify_to_terms;
         $options = $this->escape_array($options);
+        $description = get_array_value($options, "description");
         $project_id = get_array_value($options, "project_id");
         $task_id = get_array_value($options, "task_id");
         $leave_id = get_array_value($options, "leave_id");
@@ -551,7 +552,7 @@ class Notifications_model extends Crud_model {
 
         $data = array(
             "user_id" => $user_id,
-            "description" => "",
+            "description" => $description,
             "created_at" => get_current_utc_time(),
             "notify_to" => $web_notify_to,
             "read_by" => "",

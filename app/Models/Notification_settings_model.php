@@ -13,7 +13,7 @@ class Notification_settings_model extends Crud_model {
 
     function notify_to_terms() {
         return array(
-            "team_members", "team", "project_members", "client_primary_contact", "client_all_contacts", "task_assignee", "task_collaborators", "comment_creator", "cusomer_feedback_creator", "leave_applicant", "ticket_creator", "ticket_assignee", "estimate_request_assignee", "recipient", "mentioned_members", "owner", "client_assigned_contacts", "post_creator", "order_creator_contact"
+            "team_members", "team", "project_members", "client_primary_contact", "client_all_contacts", "task_assignee", "task_collaborators", "comment_creator", "cusomer_feedback_creator", "leave_applicant", "ticket_creator", "ticket_assignee", "estimate_request_assignee", "estimate_creator", "recipient", "mentioned_members", "owner", "client_assigned_contacts", "post_creator", "order_creator_contact"
         );
     }
 

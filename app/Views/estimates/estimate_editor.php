@@ -65,8 +65,9 @@
         });
 
         initWYSIWYGEditor("#estimate-view", {
-            height: 600,
+            height: 842,
             toolbar: [
+                ['paperSize',['paperSize']], // The Button
                 ['style', ['style']],
                 ['font', ['bold', 'italic', 'underline', 'clear']],
                 ['fontname', ['fontname']],

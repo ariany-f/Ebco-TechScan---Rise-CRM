@@ -1108,7 +1108,6 @@ if (!function_exists('my_tasks_list_widget')) {
         $template = new Template();
         return $template->view("projects/tasks/my_tasks_list_widget", $view_data);
     }
-
 }
 
 /**
@@ -1166,6 +1165,394 @@ if (!function_exists('total_clients_widget')) {
     }
 
 }
+
+/**
+ * get total prospects
+ * 
+ * @return html
+ */
+if (!function_exists('total_prospects_widget')) {
+
+    function total_prospects_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Clients_model = model("App\Models\Clients_model");
+        $view_data["total"] = $Clients_model->count_total_prospects(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups));
+        $template = new Template();
+        return $template->view("clients/total_prospects_widget", $view_data);
+    }
+
+}
+
+/**
+ * get total emmited estimates
+ * 
+ * @return html
+ */
+if (!function_exists('total_emmited_estimates_widget')) {
+
+    function total_emmited_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+          
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_emmited_estimates(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_emmited_estimates_widget", $view_data);
+    }
+
+}
+
+/**
+ * get total conversion estimates
+ * 
+ * @return html
+ */
+if (!function_exists('total_conversion_estimates_widget')) {
+
+    function total_conversion_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->get_conversion_data(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_conversion_estimates_widget", $view_data);
+    }
+}
+
+/**
+ * get total conversion leads prospects
+ * 
+ * @return html
+ */
+if (!function_exists('total_conversion_leads_prospects_widget')) {
+
+    function total_conversion_leads_prospects_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Clients_model = model("App\Models\Clients_model");
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Clients_model->get_conversion_leads_prospects(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_conversion_leads_prospects_widget", $view_data);
+    }
+}
+
+/**
+ * get total conversion prospects clients
+ * 
+ * @return html
+ */
+if (!function_exists('total_conversion_prospects_clients_widget')) {
+
+    function total_conversion_prospects_clients_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Clients_model = model("App\Models\Clients_model");
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Clients_model->get_conversion_prospects_clients(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_conversion_prospects_clients_widget", $view_data);
+    }
+}
+
+/**
+ * get total conversion bidding estimates LICITAÇÕES
+ * 
+ * @return html
+ */
+if (!function_exists('total_conversion_bidding_estimates_widget')) {
+
+    function total_conversion_bidding_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->get_conversion_bidding_data(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_conversion_bidding_estimates_widget", $view_data);
+    }
+}
+
+/**
+ * get total approved estimates
+ * 
+ * @return html
+ */
+if (!function_exists('total_approved_estimates_widget')) {
+
+    function total_approved_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_approved_estimates(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_approved_estimates_widget", $view_data);
+    }
+}
+
+/**
+ * get total emmited estimates
+ * 
+ * @return html
+ */
+if (!function_exists('total_emmited_bidding_estimates_widget')) {
+
+    function total_emmited_bidding_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_emmited_bidding_estimates(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_emmited_bidding_estimates_widget", $view_data);
+    }
+
+}
+
+/**
+ * get total approved estimates
+ * 
+ * @return html
+ */
+if (!function_exists('total_approved_bidding_estimates_widget')) {
+
+    function total_approved_bidding_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_approved_bidding_estimates(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_approved_bidding_estimates_widget", $view_data);
+    }
+}
+
+/**
+ * get total amount estimates
+ * 
+ * @return html
+ */
+if (!function_exists('total_amount_estimates_widget')) {
+
+    function total_amount_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_amount_estimates(array(), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_amount_estimates_widget", $view_data);
+    }
+
+}
+
+/**
+ * get total amount bidding estimates (LICITAÇÕES)
+ * 
+ * @return html
+ */
+if (!function_exists('total_amount_bidding_estimates_widget')) {
+
+    function total_amount_bidding_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_amount_bidding_estimates(array(), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_amount_bidding_estimates_widget", $view_data);
+    }
+
+}
+
+
+
+/**
+ * get total amount estimates rx
+ * 
+ * @return html
+ */
+if (!function_exists('total_amount_estimates_rx_widget')) {
+
+    function total_amount_estimates_rx_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_amount_estimates(array("item" => array("rx", "raio", "portico", "RAIO", "RX", "PORTICO", "pórtico", "PÓRTICO")), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_amount_estimates_rx_widget", $view_data);
+    }
+}
+
+
+/**
+ * get total amount estimates se
+ * 
+ * @return html
+ */
+if (!function_exists('total_amount_estimates_se_widget')) {
+
+    function total_amount_estimates_se_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_amount_estimates(array("item" => array("se", "Segurança Eletrônica", "segurança eletronica", "SE")), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_amount_estimates_se_widget", $view_data);
+    }
+}
+
+/**
+ * get total amount estimates colete
+ * 
+ * @return html
+ */
+if (!function_exists('total_amount_estimates_colete_widget')) {
+
+    function total_amount_estimates_colete_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_amount_estimates(array("item" => array("colete", "Colete")), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_amount_estimates_colete_widget", $view_data);
+    }
+}
+
+/**
+ * get total amount estimates vistoria
+ * 
+ * @return html
+ */
+if (!function_exists('total_amount_estimates_vistoria_widget')) {
+
+    function total_amount_estimates_vistoria_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_amount_estimates(array("item" => array("vistoria", "Vistoria")), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_amount_estimates_vistoria_widget", $view_data);
+    }
+}
+
 
 /**
  * get total client contacts
@@ -1820,6 +2207,7 @@ if (!function_exists('leads_sources_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        
 
         $view_data["lead_sources"] = $ci->Clients_model->get_lead_sources($options, $date_start, $date_end)->lead_sources;
         $view_data["total_leads"] = $ci->Clients_model->count_total_leads($options, $date_start, $date_end);
@@ -2014,4 +2402,212 @@ if (!function_exists('termometer_proposals_widget')) {
         return $template->view("leads/termometer_proposals_widget", $view_data);
     }
 
+}
+
+/**
+ * Novos Widgets KPI Ebco
+ * 
+ */
+
+
+/**
+ * PROPOSTAS EMITIDASxFECHADAS
+ * 
+ * @return html
+ */
+if (!function_exists('sellers_estimates_list_widget')) {
+
+    function sellers_estimates_list_widget() {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+       
+        $options['start_date'] = $date_start;
+        $options['end_date'] = $date_end; 
+
+
+        $view_data['data'] = $Estimates_model->get_sellers_estimates($options)->getResult();
+        $template = new Template();
+        //prepare assign to filter list
+        $collaborators_dropdown = array(array("id" => "", "text" => "- " . app_lang("seller") . " -"));
+
+        $Users_model = model("App\Models\Users_model");
+        $assigned_to_list = $Users_model->get_dropdown_list(array("first_name", "last_name"), "id", array("deleted" => 0, "user_type" => "staff"));
+        foreach ($assigned_to_list as $key => $value) {
+            $collaborators_dropdown[] = array("id" => $key, "text" => $value);
+        }
+
+        $view_data['collaborators_dropdown'] = json_encode($collaborators_dropdown);
+        return $template->view("estimates/widgets/sellers_estimates_list_widget", $view_data);
+    }
+}
+
+/**
+ * PROPOSTAS EMITIDASxFECHADAS POS VENDAS
+ * 
+ * @return html
+ */
+if (!function_exists('pos_venda_sellers_estimates_list_widget')) {
+
+    function pos_venda_sellers_estimates_list_widget() {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+       
+        $options['pos'] = true;
+        $options['start_date'] = $date_start;
+        $options['end_date'] = $date_end; 
+
+
+        $view_data['data'] = $Estimates_model->get_sellers_estimates($options)->getResult();
+        $template = new Template();
+        //prepare assign to filter list
+        $collaborators_dropdown = array(array("id" => "", "text" => "- " . app_lang("seller") . " -"));
+
+        $Users_model = model("App\Models\Users_model");
+        $assigned_to_list = $Users_model->get_dropdown_list(array("first_name", "last_name"), "id", array("deleted" => 0, "user_type" => "staff"));
+        foreach ($assigned_to_list as $key => $value) {
+            $collaborators_dropdown[] = array("id" => $key, "text" => $value);
+        }
+
+        $view_data['collaborators_dropdown'] = json_encode($collaborators_dropdown);
+        return $template->view("estimates/widgets/pos_venda_sellers_estimates_list_widget", $view_data);
+    }
+}
+
+
+/**
+ * PROPOSTAS EMITIDASxFECHADAS POR COLIGADA
+ * 
+ * @return html
+ */
+if (!function_exists('coligadas_estimates_list_widget')) {
+
+    function coligadas_estimates_list_widget() {
+        $Estimates_model = model("App\Models\Estimates_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+       
+        $options['start_date'] = $date_start;
+        $options['end_date'] = $date_end; 
+
+        $view_data['data'] = $Estimates_model->get_coligadas_estimates($options)->getResult();
+        $template = new Template();
+        //prepare assign to filter list
+        $coligadas_dropdown = array(array("id" => "", "text" => "- " . app_lang("coligada") . " -"));
+
+        $Company_model = model("App\Models\Company_model");
+        $assigned_to_list = $Company_model->get_dropdown_list(array("name"), "id", array("deleted" => 0));
+        foreach ($assigned_to_list as $key => $value) {
+            $coligadas_dropdown[] = array("id" => $key, "text" => $value);
+        }
+
+        $view_data['coligadas_dropdown'] = json_encode($coligadas_dropdown);
+        return $template->view("estimates/widgets/coligadas_estimates_list_widget", $view_data);
+    }
+}
+
+
+/**
+ * NOVOS CLIENTES
+ * 
+ * @return html
+ */
+if (!function_exists('new_clients_list_widget')) {
+
+    function new_clients_list_widget() {
+        $Clients_model = model("App\Models\Clients_model");
+
+        
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $options['start_date'] = $date_start;
+        $options['end_date'] = $date_end; 
+
+        $view_data['data'] = $Clients_model->new_clients($options)->getResult();
+        $template = new Template();
+        //prepare assign to filter list
+        $collaborators_dropdown = array(array("id" => "", "text" => "- " . app_lang("seller") . " -"));
+
+        $Users_model = model("App\Models\Users_model");
+        $assigned_to_list = $Users_model->get_dropdown_list(array("first_name", "last_name"), "id", array("deleted" => 0, "user_type" => "staff"));
+        foreach ($assigned_to_list as $key => $value) {
+            $collaborators_dropdown[] = array("id" => $key, "text" => $value);
+        }
+
+        $view_data['collaborators_dropdown'] = json_encode($collaborators_dropdown);
+        return $template->view("estimates/widgets/new_clients_list_widget", $view_data);
+    }
+}
+
+/**
+ * LEADS X PROSPECTS
+ * 
+ * @return html
+ */
+if (!function_exists('leads_prospects_list_widget')) {
+
+    function leads_prospects_list_widget() {
+        $Clients_model = model("App\Models\Clients_model");
+
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+       
+        $options['start_date'] = $date_start;
+        $options['end_date'] = $date_end; 
+
+        $view_data['data'] = $Clients_model->leads_prospects($options)->getResult();
+        $template = new Template();
+        //prepare assign to filter list
+        $collaborators_dropdown = array(array("id" => "", "text" => "- " . app_lang("seller") . " -"));
+
+        $Users_model = model("App\Models\Users_model");
+        $assigned_to_list = $Users_model->get_dropdown_list(array("first_name", "last_name"), "id", array("deleted" => 0, "user_type" => "staff"));
+        foreach ($assigned_to_list as $key => $value) {
+            $collaborators_dropdown[] = array("id" => $key, "text" => $value);
+        }
+
+        $view_data['collaborators_dropdown'] = json_encode($collaborators_dropdown);
+        return $template->view("estimates/widgets/leads_prospects_list_widget", $view_data);
+    }
 }

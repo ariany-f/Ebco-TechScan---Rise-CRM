@@ -1,0 +1,176 @@
+ERROR - 2024-07-02 14:03:16 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-07-02 14:03:17 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-07-02 14:03:17 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+CRITICAL - 2024-07-02 14:03:17 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+<br>Unable to send email using SMTP. Your server might not be configured to send mail using this method.<br><pre>Date: Tue, 2 Jul 2024 14:03:11 -0500
+From: &quot;Uniebco&quot; &lt;uniebco@uniebco.com.br&gt;
+Return-Path: &lt;uniebco@uniebco.com.br&gt;
+To: ariany_f@hotmail.com
+Subject: =?UTF-8?Q?Nova=20Proposta?=
+Reply-To: &lt;uniebco@uniebco.com.br&gt;
+User-Agent: CodeIgniter
+X-Sender: uniebco@uniebco.com.br
+X-Mailer: CodeIgniter
+X-Priority: 3 (Normal)
+Message-ID: &lt;66844eef9e32a8.54715141@uniebco.com.br&gt;
+Mime-Version: 1.0
+
+
+Content-Type: multipart/alternative; boundary=&quot;B_ALT_66844eef9e33a5.14140852&quot;
+
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+
+--B_ALT_66844eef9e33a5.14140852
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Prezado(a)&amp;nbsp;Ariany,&amp;nbsp;
+
+Gostaria de compartilhar a proposta comercial referente à [o que se refere
+a proposta].
+
+A proposta contém detalhes sobre o serviço, preço e outras
+informações relevantes. Estou à disposição para esclarecer dúvidas ou
+fornecer
+informações adicionais que possam ser úteis para sua decisão.
+
+&amp;nbsp;
+
+Agradeço o seu interesse e aguardo um retorno positivo.
+
+&amp;nbsp;
+
+Atenciosamente,
+
+&amp;nbsp;
+
+[Nome de quem está enviando]
+
+&amp;nbsp;
+
+**ESTA MENSAGEM É AUTOMÁTICA. Em caso de dúvidas, entre em
+contato pelo e-mail [e-mail de quem estiver enviando] ou
+comercialrx@techscan.com.br**
+
+Abrir propostaDownload PDF
+
+Obrigado!
+
+
+--B_ALT_66844eef9e33a5.14140852
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+&lt;table border=3D&quot;0&quot; cellpadding=3D&quot;0&quot; cellspacing=3D&quot;0&quot; width=3D&quot;100%&quot; styl=
+e=3D&quot;border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;=
+-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;border-top: 0;bor=
+der-bottom: 0;font-weight: 500!important;&quot;&gt; =0A=09&lt;tbody&gt;=0A=09=09&lt;tr&gt;=0A=
+=09=09=09&lt;th&gt;=09=09=09=09=09=09=09=09=09=0A=09=09=09=09&lt;img src=3D&quot;https://=
+uniebco.com.br/crm/files/system/company_4_file65334b42ef845-1624973024646.j=
+pg&quot;&gt;=0A=09=09=09&lt;/th&gt;=0A=09=09&lt;/tr&gt;=0A=09=09&lt;tr&gt; =0A=09=09=09&lt;td align=3D&quot;c=
+enter&quot; valign=3D&quot;top&quot; style=3D&quot;padding-top: 30px;padding-right: 10px;paddin=
+g-bottom: 30px;padding-left: 10px;mso-line-height-rule: exactly;-ms-text-si=
+ze-adjust: 100%;-webkit-text-size-adjust: 100%;&quot;&gt;=0A=09=09=09=09&lt;table bord=
+er=3D&quot;0&quot; cellpadding=3D&quot;0&quot; cellspacing=3D&quot;0&quot; width=3D&quot;600&quot; style=3D&quot;border-=
+collapse: separate;border-spacing: 4em;mso-table-lspace: 0pt;mso-table-rspa=
+ce: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-fami=
+ly: Arial;background-color: #EEEEEE;box-shadow: 1px 2px 10px lightgrey;font=
+-weight: 500;&quot;&gt;=0A=09=09=09=09=09&lt;tbody&gt;=0A=09=09=09=09=09=09&lt;tr&gt;=0A=09=09=
+=09=09=09=09=09&lt;td&gt;&lt;font color=3D&quot;#000000&quot;&gt;Prezado(a)&amp;nbsp;&lt;span&gt;Ariany,&lt;/s=
+pan&gt;&lt;/font&gt;&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;Ms=
+oNormal&quot;&gt;&lt;font color=3D&quot;#000000&quot;&gt;Gostaria de compartilhar a proposta comerc=
+ial referente =C3=A0 &lt;/font&gt;&lt;span style=3D&quot;color:red&quot;&gt;[o que se refere a pr=
+oposta].&lt;o:p&gt;&lt;/o:p&gt;&lt;/span&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;font color=3D&quot;#=
+000000&quot;&gt;A proposta cont=C3=A9m detalhes sobre o servi=C3=A7o, pre=C3=A7o e =
+outras=0Ainforma=C3=A7=C3=B5es relevantes. Estou =C3=A0 disposi=C3=A7=C3=
+=A3o para esclarecer d=C3=BAvidas ou fornecer=0Ainforma=C3=A7=C3=B5es adici=
+onais que possam ser =C3=BAteis para sua decis=C3=A3o. &lt;/font&gt;&lt;o:p&gt;&lt;/o:p&gt;&lt;/=
+p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNo=
+rmal&quot;&gt;&lt;font color=3D&quot;#000000&quot;&gt;Agrade=C3=A7o o seu interesse e aguardo um re=
+torno positivo.&lt;o:p&gt;&lt;/o:p&gt;&lt;/font&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&lt;fon=
+t color=3D&quot;#000000&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;fo=
+nt color=3D&quot;#000000&quot;&gt;Atenciosamente, &lt;/font&gt;&lt;o:p&gt;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=
+=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;span styl=
+e=3D&quot;color:red&quot;&gt;[Nome de quem est=C3=A1 enviando]&lt;o:p&gt;&lt;/o:p&gt;&lt;/span&gt;&lt;/p&gt;=0A=
+=0A&lt;p class=3D&quot;MsoNormal&quot;&gt;&lt;o:p&gt;&amp;nbsp;&lt;/o:p&gt;&lt;/p&gt;=0A=0A&lt;p class=3D&quot;MsoNormal&quot;=
+&gt;*&lt;font color=3D&quot;#000000&quot;&gt;*ESTA MENSAGEM =C3=89 AUTOM=C3=81TICA. Em caso de=
+ d=C3=BAvidas, entre em=0Acontato&lt;/font&gt; pelo e-mail &lt;span style=3D&quot;color:r=
+ed&quot;&gt;[e-mail de quem estiver enviando] &lt;/span&gt;ou=0Acomercialrx@techscan.com.=
+br**&lt;/p&gt;&lt;/td&gt;=0A=09=09=09=09=09=09&lt;/tr&gt;=0A=09=09=09=09=09=09&lt;tr&gt;=0A=09=09=
+=09=09=09=09=09&lt;td style=3D&quot;width: 100%;text-align: center;&quot;&gt;&lt;p&gt;=0A=09=09=
+=09=09=09=09=09=09&lt;a href=3D&quot;https://uniebco.com.br/crm/estimate/preview/25=
+3/vwGNugSKQp&quot; style=3D&quot;cursor: pointer;font-size: 18px;color: white; backgr=
+ound-color: #215089;padding: 15px 25px;border-radius: 3px;&quot;&gt;Abrir proposta&lt;=
+/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=3D&quot;https://uniebco.com.b=
+r/crm/estimate/download_pdf/253/vwGNugSKQp&quot; target=3D&quot;_blank&quot;&gt;Download PDF&lt;=
+/a&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;/td&gt;=0A=09=09=09=09=09=09&lt;/tr&gt;=0A=09=09=09=09=09=09&lt;=
+tr&gt;=0A=09=09=09=09=09=09=09&lt;td&gt;=0A=09=09=09=09=09=09=09=09&lt;span&gt;Obrigado!&lt;/=
+span&gt;=0A=09=09=09=09=09=09=09&lt;/td&gt;=0A=09=09=09=09=09=09&lt;/tr&gt;=0A=09=09=09=09=
+=09&lt;/tbody&gt;=0A=09=09=09=09&lt;/table&gt;=0A=09=09=09&lt;/td&gt;=0A=09=09&lt;/tr&gt;=0A=09&lt;/tb=
+ody&gt;=0A&lt;/table&gt;
+
+--B_ALT_66844eef9e33a5.14140852--</pre>
+in APPPATH\Helpers\general_helper.php on line 676.
+ 1 APPPATH\Controllers\Estimates.php(1040): send_app_mail('ariany_f@hotmail.com', 'Nova Proposta', '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;border-top: 0;border-bottom: 0;font-weight: 500!important;"> 
+	<tbody>
+		<tr>
+			<th>									
+				<img src="https://uniebco.com.br/crm/files/system/company_4_file65334b42ef845-1624973024646.jpg">
+			</th>
+		</tr>
+		<tr> 
+			<td align="center" valign="top" style="padding-top: 30px;padding-right: 10px;padding-bottom: 30px;padding-left: 10px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+				<table border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: separate;border-spacing: 4em;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;font-family: Arial;background-color: #EEEEEE;box-shadow: 1px 2px 10px lightgrey;font-weight: 500;">
+					<tbody>
+						<tr>
+							<td><font color="#000000">Prezado(a)&nbsp;<span>Ariany,</span></font><p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal"><font color="#000000">Gostaria de compartilhar a proposta comercial referente à </font><span style="color:red">[o que se refere a proposta].<o:p></o:p></span></p>
+
+<p class="MsoNormal"><font color="#000000">A proposta contém detalhes sobre o serviço, preço e outras
+informações relevantes. Estou à disposição para esclarecer dúvidas ou fornecer
+informações adicionais que possam ser úteis para sua decisão. </font><o:p></o:p></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal"><font color="#000000">Agradeço o seu interesse e aguardo um retorno positivo.<o:p></o:p></font></p>
+
+<p class="MsoNormal"><o:p><font color="#000000">&nbsp;</font></o:p></p>
+
+<p class="MsoNormal"><font color="#000000">Atenciosamente, </font><o:p></o:p></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal"><span style="color:red">[Nome de quem está enviando]<o:p></o:p></span></p>
+
+<p class="MsoNormal"><o:p>&nbsp;</o:p></p>
+
+<p class="MsoNormal">*<font color="#000000">*ESTA MENSAGEM É AUTOMÁTICA. Em caso de dúvidas, entre em
+contato</font> pelo e-mail <span style="color:red">[e-mail de quem estiver enviando] </span>ou
+comercialrx@techscan.com.br**</p></td>
+						</tr>
+						<tr>
+							<td style="width: 100%;text-align: center;"><p>
+								<a href="https://uniebco.com.br/crm/estimate/preview/253/vwGNugSKQp" style="cursor: pointer;font-size: 18px;color: white; background-color: #215089;padding: 15px 25px;border-radius: 3px;">Abrir proposta</a></p><p><br></p><p><br></p><p><br></p><p><a href="https://uniebco.com.br/crm/estimate/download_pdf/253/vwGNugSKQp" target="_blank">Download PDF</a><br></p><p><br></p></td>
+						</tr>
+						<tr>
+							<td>
+								<span>Obrigado!</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</tbody>
+</table>', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate()
+ 3 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+ 4 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

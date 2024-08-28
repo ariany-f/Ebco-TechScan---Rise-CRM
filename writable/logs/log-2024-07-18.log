@@ -1,0 +1,67 @@
+ERROR - 2024-07-18 15:56:59 --> mysqli_sql_exception: Unknown column 'cs.created_date' in 'where clause' in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('WITH client_sta...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('WITH client_sta...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('WITH client_sta...')
+#3 E:\httpdocs\www\crm\app\Models\Clients_model.php(338): CodeIgniter\Database\BaseConnection->query('WITH client_sta...')
+#4 E:\httpdocs\www\crm\app\Controllers\Clients.php(231): App\Models\Clients_model->new_clients(Array)
+#5 E:\httpdocs\www\crm\system\CodeIgniter.php(939): App\Controllers\Clients->new_clients('yearly')
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-07-18 15:56:59 --> Call to a member function getResult() on bool
+in APPPATH\Models\Clients_model.php on line 341.
+ 1 APPPATH\Controllers\Clients.php(231): App\Models\Clients_model->new_clients([...])
+ 2 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Clients->new_clients('yearly')
+ 3 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+ 4 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+ERROR - 2024-07-18 15:57:00 --> mysqli_sql_exception: Unknown column 'cs.created_date' in 'where clause' in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('WITH client_sta...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('WITH client_sta...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('WITH client_sta...')
+#3 E:\httpdocs\www\crm\app\Models\Clients_model.php(338): CodeIgniter\Database\BaseConnection->query('WITH client_sta...')
+#4 E:\httpdocs\www\crm\app\Controllers\Clients.php(231): App\Models\Clients_model->new_clients(Array)
+#5 E:\httpdocs\www\crm\system\CodeIgniter.php(939): App\Controllers\Clients->new_clients()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-07-18 15:57:00 --> Call to a member function getResult() on bool
+in APPPATH\Models\Clients_model.php on line 341.
+ 1 APPPATH\Controllers\Clients.php(231): App\Models\Clients_model->new_clients([...])
+ 2 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Clients->new_clients()
+ 3 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+ 4 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+ERROR - 2024-07-18 16:06:39 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'csi.seller_name as 'Vendedor',
+            COUNT(CASE WHEN csi.current_status =' at line 54 in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('WITH lead_statu...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('WITH lead_statu...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('WITH lead_statu...')
+#3 E:\httpdocs\www\crm\app\Models\Clients_model.php(486): CodeIgniter\Database\BaseConnection->query('WITH lead_statu...')
+#4 E:\httpdocs\www\crm\app\Helpers\widget_helper.php(2448): App\Models\Clients_model->leads_prospects(Array)
+#5 E:\httpdocs\www\crm\app\Controllers\Dashboard.php(1360): leads_prospects_list_widget()
+#6 E:\httpdocs\www\crm\app\Controllers\Dashboard.php(1178): App\Controllers\Dashboard->_get_widgets_for_staffs('leads_prospects...', Array)
+#7 E:\httpdocs\www\crm\app\Controllers\Dashboard.php(1155): App\Controllers\Dashboard->_make_dashboard_widgets('leads_prospects...')
+#8 E:\httpdocs\www\crm\app\Controllers\Dashboard.php(453): App\Controllers\Dashboard->make_dashboard(Array)
+#9 E:\httpdocs\www\crm\app\Controllers\Dashboard.php(38): App\Controllers\Dashboard->view('1')
+#10 E:\httpdocs\www\crm\system\CodeIgniter.php(939): App\Controllers\Dashboard->index()
+#11 E:\httpdocs\www\crm\system\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+#12 E:\httpdocs\www\crm\system\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#13 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#14 {main}
+CRITICAL - 2024-07-18 16:06:39 --> Call to a member function getResult() on bool
+in APPPATH\Helpers\widget_helper.php on line 2448.
+ 1 APPPATH\Controllers\Dashboard.php(1360): leads_prospects_list_widget()
+ 2 APPPATH\Controllers\Dashboard.php(1178): App\Controllers\Dashboard->_get_widgets_for_staffs('leads_prospects_list', [...])
+ 3 APPPATH\Controllers\Dashboard.php(1155): App\Controllers\Dashboard->_make_dashboard_widgets('leads_prospects_list')
+ 4 APPPATH\Controllers\Dashboard.php(453): App\Controllers\Dashboard->make_dashboard([...])
+ 5 APPPATH\Controllers\Dashboard.php(38): App\Controllers\Dashboard->view('1')
+ 6 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Dashboard->index()
+ 7 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+ 8 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

@@ -4,6 +4,7 @@
             <?php
             load_css(array(
                 "assets/css/invoice.css",
+                "assets/css/estimate.css",
             ));
 
             load_js(array(
@@ -13,7 +14,7 @@
 
             <div class="invoice-preview estimate-preview">
                 
-                <?php if (!isset($is_editor_preview)) {
+                <?php if (!isset($is_editor_preview) && ((!isset($buttons)) || $buttons)) {
                     $action_buttons = "<div class='clearfix float-end'>";
 
                     if ($show_close_preview) {
@@ -28,7 +29,7 @@
 
                     $action_buttons .= "</div>";
 
-                    if ($estimate_info->status === "accepted" || $estimate_info->status === "declined" || $estimate_info->status === "rejected") {
+                    if ($show_acceptance && ($estimate_info->status === "accepted" || $estimate_info->status === "declined" || $estimate_info->status === "rejected")) {
                         ?>
                         <div id="controls-estimate" class = "card  p15 no-border">
                             <div class="clearfix">
@@ -44,7 +45,7 @@
                             </div>
                         </div>
                         <?php
-                    } else {
+                    } else if((!isset($show_acceptance)) || $show_acceptance) {
                         if ($login_user->user_type === "client" && $estimate_info->status == "new") {
                             ?>
         
@@ -76,18 +77,22 @@
                 }
                 ?>
 
-                <div id="estimate-preview" class="invoice-preview-container bg-white mt15">
-                    <div class="row">
-                        <div class="col-md-12 position-relative">
-                            <div class="ribbon"><?php echo $estimate_status_label; ?></div>
+            <div class="invoice-preview">
+                <?php if((!isset($buttons)) || $buttons): ?>
+                    <div id="estimate-preview" class="invoice-preview-container bg-white mt15">
+                        <div class="row">
+                            <div class="col-md-12 position-relative">
+                                <div class="ribbon"><?php echo $estimate_status_label; ?></div>
+                            </div>
                         </div>
                     </div>
-
-                    <?php
-                    echo $estimate_preview;
-                    ?>
-                </div>
-
+                <?php endif; ?>
+                
+                <?php if(!$show_acceptance || $show_acceptance === 0) : ?>
+                    <?php echo $estimate_preview; ?>
+                <?php endif; ?>
+                <div id="marker"></div>
+            </div>
             </div>
         </div>
     </div>
@@ -100,6 +105,11 @@
         </div>
     <?php } ?>
 </div>
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.0/purify.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
+<?php if((!isset($show_acceptance)) || $show_acceptance): ?>
 <script type="text/javascript">
     $(document).ready(function () {
         $("#payment-amount").change(function () {
@@ -109,36 +119,10 @@
             });
         });
         
-        //print estimate
-        $("#print-estimate-btn").click(function () {
-            appLoader.show();
-
-            $.ajax({
-                url: "<?php echo get_uri('estimate/print_estimate/' . $estimate_info->id.'/'.$estimate_info->public_key) ?>",
-                dataType: 'json',
-                success: function (result) {
-                    if (result.success) {
-                        let div = result.print_view;
-                        document.body.innerHTML = div; //add estimate's print view to the page
-                        let noButtonsDiv = document.body.getElementsByClassName('invoice-preview-container')[0].innerHTML;
-                        document.body.innerHTML = noButtonsDiv;
-                        $("html").css({"overflow": "visible"});
-
-                        setTimeout(function () {
-                            window.print();
-                        }, 200);
-                    } else {
-                        appAlert.error(result.message);
-                    }
-
-                    appLoader.hide();
-                }
-            });
-        });
-
         //reload page after finishing print action
         window.onafterprint = function () {
             location.reload();
         };
     });
 </script>
+<?php endif; ?>

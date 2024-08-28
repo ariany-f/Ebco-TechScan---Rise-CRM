@@ -31,6 +31,17 @@ class Company_model extends Crud_model {
         return $this->db->query($sql);
     }
 
+    function get_company_from_name($company_name = "") {
+        $company_table = $this->db->prefixTable('company');
+
+        $sql = "SELECT $company_table.id 
+        FROM $company_table
+        WHERE $company_table.deleted=0 AND TRIM($company_table.name)='$company_name'
+        LIMIT 1";
+
+        return $this->db->query($sql)->getRow();
+    }
+
     function remove_other_default_company($except_id) {
         $company_table = $this->db->prefixTable('company');
 

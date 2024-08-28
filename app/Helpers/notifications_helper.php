@@ -110,7 +110,7 @@ if (!function_exists('get_notification_config')) {
         $estimate_link = function ($options) {
             $url = "";
             if (isset($options->estimate_id)) {
-                $url = get_uri("estimates/preview/" . $options->estimate_id);
+                $url = get_uri("estimates/view/" . $options->estimate_id);
             }
 
             return array("url" => $url);
@@ -367,11 +367,11 @@ if (!function_exists('get_notification_config')) {
                 "info" => $estimate_request_link
             ),
             "estimate_accepted" => array(
-                "notify_to" => array("team_members", "team"),
+                "notify_to" => array("team_members", "estimate_creator", "team"),
                 "info" => $estimate_link
             ),
             "estimate_rejected" => array(
-                "notify_to" => array("team_members", "team"),
+                "notify_to" => array("team_members", "estimate_creator", "team"),
                 "info" => $estimate_link
             ),
             "new_message_sent" => array(
@@ -470,6 +470,10 @@ if (!function_exists('get_notification_config')) {
                 "notify_to" => array("client_primary_contact", "client_all_contacts"),
                 "info" => $invoice_link
             ),
+            "estimate_changed" => array(
+                "notify_to" => array("client_primary_contact", "client_all_contacts", "estimate_creator", "team_members", "team"),
+                "info" => $estimate_link
+            ),
             "estimate_commented" => array(
                 "notify_to" => array("client_primary_contact", "client_all_contacts", "estimate_creator", "team_members", "team"),
                 "info" => $estimate_link
@@ -538,7 +542,7 @@ if (!function_exists('send_notification_emails')) {
         if (is_array($info) && get_array_value($info, "public_url")) {
             $public_url = get_array_value($info, "public_url");
         }
-
+        
         $parser_data["APP_TITLE"] = get_setting("app_title");
 
         $Company_model = model('App\Models\Company_model');
@@ -672,6 +676,20 @@ if (!function_exists('send_notification_emails')) {
                 $parser_data["USER_NAME"] = $notification->user_name;
                 $parser_data["COMMENT_CONTENT"] = nl2br($notification->estimate_comment_description ? $notification->estimate_comment_description : "");
                 $parser_data["ESTIMATE_URL"] = $url;
+            } else if ($notification->event == "estimate_changed") {
+                
+                $template_name = "estimate_changed";
+                $estimate_data = get_estimate_making_data($notification->estimate_id);
+                $parser_data["ESTIMATE_ID"] = $notification->estimate_id;
+                $parser_data["USER_NAME"] = $notification->user_name;
+                $parser_data["CONTACT_FIRST_NAME"] = $estimate_data['client_info']->company_name;
+                $parser_data["PUBLIC_ESTIMATE_URL"] = get_uri("estimate/preview/" . $notification->estimate_id . "/" . $notification->description);
+                $parser_data["PUBLIC_ESTIMATE_DOWNLOAD"] = get_uri("estimate/download_pdf/" . $notification->estimate_id . "/" . $notification->description);
+                $parser_data["ESTIMATE_URL"] = $url;
+                $parser_data["COMPANY_IMAGE_URL_BIG"] = get_company_logo($notification->client_id, "estimate_email", '100%');
+              //  $attachement_url = prepare_estimate_pdf($estimate_data, "send_email");
+               // $email_options["attachments"] = array(array("file_path" => $attachement_url));
+
             } else if ($notification->event == "estimate_request_received") {
                 $template_name = "estimate_request_received";
 

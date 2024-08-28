@@ -3,7 +3,7 @@
     <div class="modal-dialog" style="max-width: 400px;">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="confirmationModalTitle"><?php echo app_lang('delete') . "?"; ?></h4>
+                <h4 class="modal-title" id="confirmationModalTitle"><?php echo app_lang('proceed') . "?"; ?></h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="confirmationModalContent" class="modal-body">
@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="modal-footer clearfix">
-                <button id="confirmDeleteButton" type="button" class="btn btn-danger" data-bs-dismiss="modal"><i data-feather="trash-2" class="icon-16"></i> <?php echo app_lang("delete"); ?></button>
+                <button id="confirmDeleteButton" type="button" class="btn btn-danger" data-bs-dismiss="modal"><i data-feather="trash-2" class="icon-16"></i> <?php echo app_lang("proceed"); ?></button>
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal"><i data-feather="x" class="icon-16"></i> <?php echo app_lang('cancel'); ?></button>
             </div>
         </div>

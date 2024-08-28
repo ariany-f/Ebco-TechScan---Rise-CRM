@@ -1,0 +1,31 @@
+ERROR - 2024-07-15 13:02:27 --> mysqli_sql_exception: Unknown column 'private' in 'where clause' in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('SELECT SQL_CALC...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SQL_CALC...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SQL_CALC...')
+#3 E:\httpdocs\www\crm\app\Models\Clients_model.php(202): CodeIgniter\Database\BaseConnection->query('SELECT SQL_CALC...')
+#4 E:\httpdocs\www\crm\app\Controllers\Clients.php(240): App\Models\Clients_model->get_details(Array)
+#5 E:\httpdocs\www\crm\system\CodeIgniter.php(939): App\Controllers\Clients->list_data()
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-07-15 13:02:27 --> Call to a member function getResult() on bool
+in APPPATH\Models\Clients_model.php on line 208.
+ 1 APPPATH\Controllers\Clients.php(240): App\Models\Clients_model->get_details([...])
+ 2 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Clients->list_data()
+ 3 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+ 4 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-07-15 13:15:40 --> Invalid argument supplied for foreach()
+in APPPATH\Views\clients\clients_list.php on line 12.
+ 1 APPPATH\Views\clients\clients_list.php(12): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Invalid argument supplied for foreach()', 'APPPATH\\Views\\clients\\clients_list.php', 12, [...])
+ 2 SYSTEMPATH\View\View.php(213): include('APPPATH\\Views\\clients\\clients_list.php')
+ 3 SYSTEMPATH\View\View.php(216): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1184): CodeIgniter\View\View->render('clients/clients_list', [], true)
+ 5 APPPATH\Libraries\Template.php(38): view('clients/clients_list', [...])
+ 6 APPPATH\Controllers\Clients.php(2023): App\Libraries\Template->view('clients/clients_list', [...])
+ 7 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Clients->clients_list()
+ 8 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+ 9 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

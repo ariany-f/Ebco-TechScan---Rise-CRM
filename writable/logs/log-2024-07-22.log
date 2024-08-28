@@ -1,0 +1,18 @@
+ERROR - 2024-07-22 12:33:29 --> mysqli_sql_exception: Unknown column 'ps.id' in 'where clause' in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('WITH lead_statu...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('WITH lead_statu...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('WITH lead_statu...')
+#3 E:\httpdocs\www\crm\app\Models\Clients_model.php(490): CodeIgniter\Database\BaseConnection->query('WITH lead_statu...')
+#4 E:\httpdocs\www\crm\app\Controllers\Clients.php(296): App\Models\Clients_model->leads_prospects(Array)
+#5 E:\httpdocs\www\crm\system\CodeIgniter.php(939): App\Controllers\Clients->leads_prospects('yearly')
+#6 E:\httpdocs\www\crm\system\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+#7 E:\httpdocs\www\crm\system\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#9 {main}
+CRITICAL - 2024-07-22 12:33:29 --> Call to a member function getResult() on bool
+in APPPATH\Controllers\Clients.php on line 301.
+ 1 SYSTEMPATH\CodeIgniter.php(939): App\Controllers\Clients->leads_prospects('yearly')
+ 2 SYSTEMPATH\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Clients))
+ 3 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()

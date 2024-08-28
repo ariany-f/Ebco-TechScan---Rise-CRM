@@ -1,0 +1,24 @@
+ERROR - 2024-08-01 15:12:54 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-08-01 15:12:55 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-08-01 15:12:55 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+ERROR - 2024-08-01 15:13:07 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-08-01 15:13:07 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-08-01 15:13:07 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+ERROR - 2024-08-01 15:13:22 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-08-01 15:13:22 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-08-01 15:13:22 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+
+ERROR - 2024-08-01 15:30:28 --> ["10060 Uma tentativa de conex\u00e3o falhou porque o componente conectado n\u00e3o respondeu\r\ncorretamente ap\u00f3s um per\u00edodo de tempo ou a conex\u00e3o estabelecida falhou\r\nporque o host conectado n\u00e3o respondeu.\r\n"]
+ERROR - 2024-08-01 15:30:28 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-08-01 15:30:28 --> The following SMTP error was encountered: 10060 Uma tentativa de conexão falhou porque o componente conectado não respondeu
+corretamente após um período de tempo ou a conexão estabelecida falhou
+porque o host conectado não respondeu.
+

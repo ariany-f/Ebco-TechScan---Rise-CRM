@@ -6,14 +6,13 @@
 }
 .invoice-preview table {
   width: 100%;
-  margin-top: 40px;
 }
 .invoice-preview td, .invoice-preview th {
   padding: 6px 10px;
 }
-.invoice-preview *:not(.badge) {
+/* .invoice-preview *:not(.badge) {
   line-height: 20px !important;
-}
+} */
 .ribbon {
   position: absolute;
   left: -25px;

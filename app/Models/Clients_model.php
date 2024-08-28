@@ -13,6 +13,7 @@ class Clients_model extends Crud_model {
 
     function get_details($options = array()) {
         $clients_table = $this->db->prefixTable('clients');
+        $clients_status_table = $this->db->prefixTable('client_status');
         $projects_table = $this->db->prefixTable('projects');
         $users_table = $this->db->prefixTable('users');
         $invoices_table = $this->db->prefixTable('invoices');
@@ -62,6 +63,11 @@ class Clients_model extends Crud_model {
             $where .= " AND $clients_table.created_by=$created_by";
         }
 
+        $setor = $this->_get_clean_value($options, "setor");
+        if ($setor) {
+            $where .= " AND $clients_table.setor='$setor'";
+        }
+
         $show_own_clients_only_user_id = $this->_get_clean_value($options, "show_own_clients_only_user_id");
         if ($show_own_clients_only_user_id) {
             $where .= " AND ($clients_table.created_by=$show_own_clients_only_user_id OR $clients_table.owner_id=$show_own_clients_only_user_id)";
@@ -77,6 +83,10 @@ class Clients_model extends Crud_model {
             $where .= " AND FIND_IN_SET('$group_id', $clients_table.group_ids)";
         }
 
+        $status_ids = $this->_get_clean_value($options, "status_ids");
+        if ($status_ids) {
+            $where .= " AND FIND_IN_SET($clients_table.status_id,'$status_ids')";
+        }
         
         $invoice_rule_id = $this->_get_clean_value($options, "invoice_rule_id");
         if ($invoice_rule_id) {
@@ -157,6 +167,7 @@ class Clients_model extends Crud_model {
             $where .= " AND (";
             $where .= " $clients_table.id LIKE '%$search_by%' ESCAPE '!' ";
             $where .= " OR $clients_table.company_name LIKE '%$search_by%' ESCAPE '!' ";
+            $where .= " OR $clients_table.cnpj LIKE '%$search_by%' ESCAPE '!' ";
             $where .= " OR CONCAT($users_table.first_name, ' ', $users_table.last_name) LIKE '%$search_by%' ESCAPE '!' ";
 
             if ($leads_only) {
@@ -171,30 +182,312 @@ class Clients_model extends Crud_model {
         }
 
 
-        $sql = "SELECT SQL_CALC_FOUND_ROWS $clients_table.*, CONCAT($users_table.first_name, ' ', $users_table.last_name) AS primary_contact, $users_table.email AS primary_contact_email, $users_table.id AS primary_contact_id, $users_table.image AS contact_avatar,  project_table.total_projects, $payment_value_select AS payment_received $select_custom_fieds,
-                IF((($invoice_value_select > $payment_value_select) AND ($invoice_value_select - $payment_value_select) <0.05), $payment_value_select, $invoice_value_select) AS invoice_value,
-                (SELECT GROUP_CONCAT($invoice_rules_table.title) FROM $invoice_rules_table WHERE FIND_IN_SET($invoice_rules_table.id, $clients_table.invoice_rule_id)) AS invoice_rule_id,
-                (SELECT GROUP_CONCAT($client_groups_table.title) FROM $client_groups_table WHERE FIND_IN_SET($client_groups_table.id, $clients_table.group_ids)) AS client_groups, $lead_status_table.title AS lead_status_title,  $lead_status_table.color AS lead_status_color,
-                owner_details.owner_name, owner_details.owner_avatar
+        $sql = "SELECT SQL_CALC_FOUND_ROWS $clients_table.*, 
+        $clients_status_table.title AS status_title,  
+        $clients_status_table.color AS status_color,
+        CONCAT($users_table.first_name, ' ', $users_table.last_name) AS primary_contact, 
+        $users_table.email AS primary_contact_email, 
+        $users_table.id AS primary_contact_id, 
+        $users_table.image AS contact_avatar,  
+        project_table.total_projects, 
+        $payment_value_select AS payment_received 
+        $select_custom_fieds,
+        IF((($invoice_value_select > $payment_value_select) AND ($invoice_value_select - $payment_value_select) <0.05), $payment_value_select, $invoice_value_select) AS invoice_value,
+        (SELECT GROUP_CONCAT($invoice_rules_table.title) 
+         FROM $invoice_rules_table 
+         WHERE FIND_IN_SET($invoice_rules_table.id, $clients_table.invoice_rule_id)) AS invoice_rule_id,
+        (SELECT GROUP_CONCAT($client_groups_table.title) 
+         FROM $client_groups_table 
+         WHERE FIND_IN_SET($client_groups_table.id, $clients_table.group_ids)) AS client_groups, 
+        $lead_status_table.title AS lead_status_title,  
+        $lead_status_table.color AS lead_status_color,
+        owner_details.owner_name, 
+        owner_details.owner_avatar,
+        estimates_table.total_estimates_sent,
+        estimates_table.total_estimates_approved
         FROM $clients_table
+        LEFT JOIN $clients_status_table ON $clients_table.status_id = $clients_status_table.id 
         LEFT JOIN $users_table ON $users_table.client_id = $clients_table.id AND $users_table.deleted=0 AND $users_table.is_primary_contact=1 
-        LEFT JOIN (SELECT client_id, COUNT(id) AS total_projects FROM $projects_table WHERE deleted=0 AND project_type='client_project' GROUP BY client_id) AS project_table ON project_table.client_id= $clients_table.id
-        LEFT JOIN (SELECT client_id, SUM(payments_table.payment_received) as payment_received, $invoice_value_calculation_query as invoice_value FROM $invoices_table
-                   LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $invoices_table.tax_id
-                   LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $invoices_table.tax_id2 
-                   LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table3 ON tax_table3.id = $invoices_table.tax_id3 
-                   LEFT JOIN (SELECT invoice_id, SUM(amount) AS payment_received FROM $invoice_payments_table WHERE deleted=0 GROUP BY invoice_id) AS payments_table ON payments_table.invoice_id=$invoices_table.id AND $invoices_table.deleted=0 AND $invoices_table.status='not_paid'
-                   LEFT JOIN (SELECT invoice_id, SUM(total) AS invoice_value FROM $invoice_items_table WHERE deleted=0 GROUP BY invoice_id) AS items_table ON items_table.invoice_id=$invoices_table.id AND $invoices_table.deleted=0 AND $invoices_table.status='not_paid'
-                   WHERE $invoices_table.deleted=0 AND $invoices_table.status='not_paid'
-                   GROUP BY $invoices_table.client_id    
-                   ) AS invoice_details ON invoice_details.client_id= $clients_table.id 
+        LEFT JOIN (SELECT client_id, COUNT(id) AS total_projects 
+                FROM $projects_table 
+                WHERE deleted=0 AND project_type='client_project' 
+                GROUP BY client_id) AS project_table ON project_table.client_id= $clients_table.id
+        LEFT JOIN (SELECT client_id, SUM(payments_table.payment_received) as payment_received, 
+                        $invoice_value_calculation_query as invoice_value 
+                FROM $invoices_table
+                LEFT JOIN (SELECT $taxes_table.* 
+                            FROM $taxes_table) AS tax_table ON tax_table.id = $invoices_table.tax_id
+                LEFT JOIN (SELECT $taxes_table.* 
+                            FROM $taxes_table) AS tax_table2 ON tax_table2.id = $invoices_table.tax_id2 
+                LEFT JOIN (SELECT $taxes_table.* 
+                            FROM $taxes_table) AS tax_table3 ON tax_table3.id = $invoices_table.tax_id3 
+                LEFT JOIN (SELECT invoice_id, SUM(amount) AS payment_received 
+                            FROM $invoice_payments_table 
+                            WHERE deleted=0 
+                            GROUP BY invoice_id) AS payments_table ON payments_table.invoice_id=$invoices_table.id AND $invoices_table.deleted=0 AND $invoices_table.status='not_paid'
+                LEFT JOIN (SELECT invoice_id, SUM(total) AS invoice_value 
+                            FROM $invoice_items_table 
+                            WHERE deleted=0 
+                            GROUP BY invoice_id) AS items_table ON items_table.invoice_id=$invoices_table.id AND $invoices_table.deleted=0 AND $invoices_table.status='not_paid'
+                WHERE $invoices_table.deleted=0 AND $invoices_table.status='not_paid'
+                GROUP BY $invoices_table.client_id    
+                ) AS invoice_details ON invoice_details.client_id= $clients_table.id 
         LEFT JOIN $lead_status_table ON $clients_table.lead_status_id = $lead_status_table.id 
-        LEFT JOIN (SELECT $users_table.id, CONCAT($users_table.first_name, ' ', $users_table.last_name) AS owner_name, $users_table.image AS owner_avatar FROM $users_table WHERE $users_table.deleted=0 AND $users_table.user_type='staff') AS owner_details ON owner_details.id=$clients_table.owner_id
+        LEFT JOIN (SELECT $users_table.id, 
+                        CONCAT($users_table.first_name, ' ', $users_table.last_name) AS owner_name, 
+                        $users_table.image AS owner_avatar 
+                FROM $users_table 
+                WHERE $users_table.deleted=0 AND $users_table.user_type='staff') AS owner_details ON owner_details.id=$clients_table.owner_id
+        LEFT JOIN (SELECT client_id, 
+                        COUNT(CASE WHEN status='sent' OR status='accepted' THEN 1 END) AS total_estimates_sent, 
+                        COUNT(CASE WHEN status='accepted' THEN 1 END) AS total_estimates_approved 
+                FROM $estimates_table 
+                WHERE deleted=0 
+                GROUP BY client_id) AS estimates_table ON estimates_table.client_id = $clients_table.id
         $join_custom_fieds               
-        WHERE $clients_table.deleted=0 $where $custom_fields_where  
+        WHERE 1=1 $where $custom_fields_where  
         $order $limit_offset";
         $raw_query = $this->db->query($sql);
+
       
+        $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();
+
+        if ($limit) {
+            return array(
+                "data" => $raw_query->getResult(),
+                "recordsTotal" => $total_rows->found_rows,
+                "recordsFiltered" => $total_rows->found_rows,
+            );
+        } else {
+            return $raw_query;
+        }
+    }
+   
+    function new_clients($options = array()) {
+
+        $this->db->query('SET SQL_BIG_SELECTS=1');
+
+        $where = "";
+        $where_client = "";
+        $seller = $this->_get_clean_value($options, "seller_id");
+        if ($seller) {
+            $where .= " AND u.id=$seller";
+        }
+        
+        $start_date = $this->_get_clean_value($options, "start_date");
+        $end_date = $this->_get_clean_value($options, "end_date");
+        if ($start_date && $end_date) {
+            $where_client .= " AND (c.created_date BETWEEN '$start_date' AND '$end_date' AND STR_TO_DATE(c.client_migration_date, '%Y-%m-%d') IS NULL) OR (STR_TO_DATE(c.client_migration_date, '%Y-%m-%d') IS NOT NULL AND c.client_migration_date BETWEEN '$start_date' AND '$end_date')";
+         //   $where .= " AND cs.client_date BETWEEN '$start_date' AND '$end_date'";
+        }
+
+        $limit_offset = "";
+        $limit = $this->_get_clean_value($options, "limit");
+        if ($limit) {
+            $skip = $this->_get_clean_value($options, "skip");
+            $offset = $skip ? $skip : 0;
+            $limit_offset = " LIMIT $limit OFFSET $offset ";
+        }
+
+        $available_order_by_list = array(
+            'csi.Mes',
+            'csi.seller_name'
+        );
+
+        $order_by = get_array_value($available_order_by_list, $this->_get_clean_value($options, "order_by"));
+
+        if ($order_by) {
+            $order_dir = $this->_get_clean_value($options, "order_dir");
+            $order = " ORDER BY $order_by $order_dir ";
+        }
+
+        $sql = "WITH client_status AS (
+            SELECT
+                c.id,
+                c.owner_id,
+                IF(STR_TO_DATE(c.client_migration_date, '%Y-%m-%d') IS NULL, c.created_date, c.client_migration_date) AS client_date,
+                'Client' AS current_status
+            FROM
+                crm_clients c
+            WHERE
+                c.is_lead = 0 AND c.deleted = 0 $where_client
+        ),
+        clients_seller_info AS (
+            SELECT
+                cs.client_date,
+                u.id AS user_id,
+                CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type) AS seller_name
+            FROM
+                client_status cs
+            LEFT JOIN
+                crm_users u ON u.id = cs.owner_id
+            WHERE
+                1=1 $where
+        )
+        SELECT
+            DATE_FORMAT(csi.client_date, '%M') AS Mes,
+            csi.seller_name AS Vendedor,
+            COUNT(*) AS new_clients
+        FROM
+            clients_seller_info csi
+        GROUP BY
+            DATE_FORMAT(csi.client_date, '%M'),
+            DATE_FORMAT(csi.client_date, '%Y'),
+            csi.seller_name
+        $order $limit_offset;";
+
+        $raw_query = $this->db->query($sql);
+        $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();
+
+        $results = $raw_query->getResult();
+            
+        // Loop through results to fetch visit counts for each seller
+        foreach ($results as $i => $result) {
+            $seller_name = $result->Vendedor;
+            $visit_count = $this->get_visit_count_for_seller($seller_name, $start_date, $end_date);
+            $results[$i]->visit_count = $visit_count;
+        }
+
+        if ($limit) {
+            return array(
+                "data" => $results,
+                "recordsTotal" => $total_rows->found_rows,
+                "recordsFiltered" => $total_rows->found_rows,
+            );
+        } else {
+            return $raw_query;
+        }
+    }
+
+    function get_visit_count_for_seller($seller_name, $start_date, $end_date) {
+        // Implement logic to fetch visit count for a seller within given date range
+        $where_visit = "";
+    
+        if ($start_date && $end_date) {
+            $where_visit .= " AND crm_clients.client_migration_date BETWEEN '$start_date' AND '$end_date' ";
+        }
+
+        $collaborator_parts = explode("--::--", $seller_name);
+
+        $user_id = get_array_value($collaborator_parts, 0);
+
+        // Query to get visit count for the seller
+        $sql_visit_count = "SELECT COUNT(*) AS visit_count FROM crm_clients WHERE lead_source_id = 13 AND owner_id = ? $where_visit";
+        $query_visit_count = $this->db->query($sql_visit_count, [$user_id]);
+        $result_visit_count = $query_visit_count->getRow();
+
+        return $result_visit_count ? $result_visit_count->visit_count : 0;
+    }
+
+    function leads_prospects($options = array()) {
+
+        $this->db->query('SET SQL_BIG_SELECTS=1');
+
+        $where = "";
+        $seller = $this->_get_clean_value($options, "seller_id");
+        if ($seller) {
+            $where .= " AND cws.owner_id=$seller";
+        }
+        
+        $start_date = $this->_get_clean_value($options, "start_date");
+        $end_date = $this->_get_clean_value($options, "end_date");
+        if ($start_date && $end_date) {
+            $where .= " AND (( cws.client_migration_date BETWEEN '$start_date' AND '$end_date') OR (cws.created_date BETWEEN '$start_date' AND '$end_date'))";
+        }
+
+        $limit_offset = "";
+        $limit = $this->_get_clean_value($options, "limit");
+        if ($limit) {
+            $skip = $this->_get_clean_value($options, "skip");
+            $offset = $skip ? $skip : 0;
+            $limit_offset = " LIMIT $limit OFFSET $offset ";
+        }
+
+        $available_order_by_list = array(
+            'csi.seller_name',
+            'csi.client_migration_date'
+        );
+
+        $order_by = get_array_value($available_order_by_list, $this->_get_clean_value($options, "order_by"));
+
+        if ($order_by) {
+            $order_dir = $this->_get_clean_value($options, "order_dir");
+            $order = " ORDER BY $order_by $order_dir ";
+        }
+        
+        $sql = "WITH lead_status AS (
+            SELECT
+                ls.id AS lead_status_id,
+                ls.title AS lead_status_title
+            FROM
+                crm_lead_status ls
+        ),
+        clients_with_status AS (
+            SELECT
+                c.id,
+                c.is_lead,
+                c.last_lead_status,
+                c.created_date,
+                c.client_migration_date,
+                c.owner_id,
+                CASE
+                    WHEN c.is_lead = 1 AND s.lead_status_title LIKE 'Prospect%' THEN 'Prospect'
+                    WHEN c.is_lead = 1 THEN 'Lead'
+                    ELSE 'Client'
+                END AS current_status,
+                s.lead_status_title AS current_status_title
+            FROM
+                crm_clients c
+            LEFT JOIN
+                lead_status s ON c.lead_status_id = s.lead_status_id
+        ),
+        prospection_sellers AS (
+            SELECT
+                u.id AS user_id,
+                CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type) AS seller_name
+            FROM
+                crm_users u
+        ),
+        clients_seller_info AS (
+            SELECT
+                cws.id,
+                cws.current_status,
+                cws.current_status_title,
+                cws.client_migration_date,
+                cws.created_date,
+                cws.owner_id,
+                ps.user_id,
+                ps.seller_name,
+                CONCAT( CASE WHEN EXTRACT(MONTH FROM cws.client_migration_date) = 0 THEN EXTRACT(MONTH FROM cws.created_date) ELSE EXTRACT(MONTH FROM cws.client_migration_date) END, '/', CASE WHEN EXTRACT(YEAR FROM cws.client_migration_date) = 0 THEN EXTRACT(YEAR FROM cws.created_date) ELSE EXTRACT(YEAR FROM cws.client_migration_date) END) AS migration_date
+            FROM
+                clients_with_status cws
+            LEFT JOIN
+                prospection_sellers ps ON cws.owner_id = ps.user_id
+            WHERE
+                1=1 $where
+        )
+        SELECT
+            DATE_FORMAT(STR_TO_DATE(csi.migration_date, '%m/%Y'), '%M') AS 'Mes',
+            csi.seller_name as 'Vendedor',
+            COUNT(CASE WHEN csi.current_status = 'Lead' THEN 1 END) AS new_leads,
+            COUNT(CASE WHEN csi.current_status = 'Prospect' AND csi.client_migration_date IS NOT NULL THEN 1 END) AS new_prospects,
+            CONCAT(
+                ROUND(
+                    CASE 
+                        WHEN COUNT(CASE WHEN csi.current_status = 'Lead' THEN 1 END) = 0 THEN 0
+                        ELSE COUNT(CASE WHEN csi.current_status = 'Prospect' AND csi.client_migration_date IS NOT NULL THEN 1 END) * 100.0 / COUNT(CASE WHEN csi.current_status = 'Lead' THEN 1 END)
+                    END, 2
+                ), '%'
+            ) AS 'Conversao'
+        FROM
+            clients_seller_info csi
+        WHERE
+            csi.seller_name IS NOT NULL
+        GROUP BY
+            csi.migration_date, csi.seller_name
+            $order $limit_offset;";
+
+        $raw_query = $this->db->query($sql);
         $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();
 
         if ($limit) {
@@ -333,12 +626,12 @@ class Clients_model extends Crud_model {
 
         //delete the client and sub items
         //delete client
-        $delete_client_sql = "UPDATE $clients_table SET $clients_table.deleted=1 WHERE $clients_table.id=$client_id; ";
+        $delete_client_sql = "UPDATE $clients_table SET $clients_table.status_id=2 WHERE $clients_table.id=$client_id; ";
         $this->db->query($delete_client_sql);
 
         //delete contacts
-        $delete_contacts_sql = "UPDATE $users_table SET $users_table.deleted=1 WHERE $users_table.client_id=$client_id; ";
-        $this->db->query($delete_contacts_sql);
+        // $delete_contacts_sql = "UPDATE $users_table SET $users_table.deleted=1 WHERE $users_table.client_id=$client_id; ";
+        // $this->db->query($delete_contacts_sql);
 
         //delete the project files from directory
         $file_path = get_general_file_path("client", $client_id);
@@ -538,9 +831,48 @@ class Clients_model extends Crud_model {
         $client_groups = $this->_get_clean_value($options, "client_groups");
         $where .= $this->prepare_allowed_client_groups_query($clients_table, $client_groups);
 
-        $sql = "SELECT COUNT($clients_table.id) AS total
+        $sql = "SELECT COUNT(DISTINCT $clients_table.id) AS total
         FROM $clients_table 
         WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 $where";
+        return $this->db->query($sql)->getRow()->total;
+    }
+
+    function count_total_prospects($options = array(), $date_start = null, $date_end = null) {
+        $clients_table = $this->db->prefixTable('clients');
+        $tickets_table = $this->db->prefixTable('tickets');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+        $orders_table = $this->db->prefixTable('orders');
+        $proposals_table = $this->db->prefixTable('proposals');
+
+        $where = "";
+
+        $show_own_clients_only_user_id = $this->_get_clean_value($options, "show_own_clients_only_user_id");
+        if ($show_own_clients_only_user_id) {
+            $where .= " AND $clients_table.created_by=$show_own_clients_only_user_id";
+        }
+
+        $filter = $this->_get_clean_value($options, "filter");
+        if ($filter) {
+            $where .= $this->make_quick_filter_query($filter, $clients_table, $projects_table, $invoices_table, $taxes_table, $invoice_payments_table, $invoice_items_table, $estimates_table, $estimate_requests_table, $tickets_table, $orders_table, $proposals_table);
+        }
+        
+        if($date_start and $date_end)
+        {
+            $where .= " AND ($clients_table.client_migration_date BETWEEN '$date_start' and '$date_end' OR $clients_table.created_date BETWEEN '$date_start' and '$date_end')";
+        }
+
+        $client_groups = $this->_get_clean_value($options, "client_groups");
+        $where .= $this->prepare_allowed_client_groups_query($clients_table, $client_groups);
+
+        $sql = "SELECT COUNT(DISTINCT $clients_table.id) AS total
+        FROM $clients_table 
+        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=1 AND $clients_table.lead_status_id IN (2, 3, 4, 6, 7) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -552,6 +884,94 @@ class Clients_model extends Crud_model {
         WHERE $clients_table.deleted=0 AND $clients_table.currency!='' AND $clients_table.currency IS NOT NULL
         GROUP BY $clients_table.currency";
         return $this->db->query($sql);
+    }
+
+    function get_conversion_leads_prospects($options = array(), $date_start, $date_end) {
+
+        $clients_table = $this->db->prefixTable('clients');
+        $lead_status_table = $this->db->prefixTable('lead_status');
+            
+        // Inicializa a parte da cláusula WHERE
+        $whereClauses = ["1=1"];
+        $count = "COUNT(CASE WHEN (is_lead = 1 AND $lead_status_table.title LIKE 'Prospect%') OR (is_lead = 0 AND STR_TO_DATE(client_migration_date, '%Y-%m-%d') IS NOT NULL) THEN $clients_table.id END)";
+
+        // Adiciona os filtros de data se os parâmetros forem fornecidos
+        if ($date_end && $date_end != '') {
+            $whereClauses[] = "created_date <= '$date_end'";
+            $count  = "COUNT(CASE 
+                            WHEN '$date_start' IS NOT NULL AND '$date_end' IS NOT NULL THEN 
+                            CASE WHEN client_migration_date > '$date_end' OR ((is_lead = 1 AND $lead_status_table.title LIKE 'Prospect%') OR (is_lead = 0 AND STR_TO_DATE(client_migration_date, '%Y-%m-%d') IS NOT NULL)) THEN $clients_table.id END
+                        END)";
+        }
+
+        // Junta as cláusulas WHERE
+        $whereSql = implode(' AND ', $whereClauses);
+
+        // Prepara a query
+        $sql = "
+            SELECT 
+                ROUND(
+                    CASE 
+                        WHEN total_leads = 0 THEN 0
+                        ELSE (converted_prospects * 100.0) / total_leads
+                    END, 2
+                ) AS PercentualConversao
+            FROM (
+                SELECT 
+                    $count AS converted_prospects,
+                    COUNT($clients_table.id) AS total_leads
+                FROM $clients_table
+                LEFT JOIN $lead_status_table ON $lead_status_table.id = $clients_table.status_id
+                WHERE $whereSql
+            ) AS conversion_data
+        ";
+
+        $result = $this->db->query($sql)->getRow();
+
+        return $result ? $result->PercentualConversao : 0;
+    }
+
+    function get_conversion_prospects_clients($options = array(), $date_start, $date_end) {
+
+        $clients_table = $this->db->prefixTable('clients');
+            
+        // Inicializa a parte da cláusula WHERE
+        $whereClauses = ["1=1"];
+        $count = "COUNT(CASE WHEN is_lead = 0 AND STR_TO_DATE(client_migration_date, '%Y-%m-%d') IS NOT NULL THEN id END)";
+
+        // Adiciona os filtros de data se os parâmetros forem fornecidos
+        if ($date_end && $date_end != '') {
+            $whereClauses[] = "created_date <= '$date_end'";
+            $count  = "COUNT(CASE 
+                            WHEN '$date_start' IS NOT NULL AND '$date_end' IS NOT NULL THEN 
+                                CASE WHEN is_lead = 0 AND client_migration_date BETWEEN '$date_start' AND '$date_end' THEN id END
+                        END)";
+        }
+
+        // Junta as cláusulas WHERE
+        $whereSql = implode(' AND ', $whereClauses);
+
+        // Prepara a query
+        $sql = "
+            SELECT 
+                ROUND(
+                    CASE 
+                        WHEN total_prospects = 0 THEN 0
+                        ELSE (converted_clients * 100.0) / total_prospects
+                    END, 2
+                ) AS PercentualConversao
+            FROM (
+                SELECT 
+                    $count AS converted_clients,
+                    COUNT(id) AS total_prospects
+                FROM $clients_table
+                WHERE $whereSql
+            ) AS conversion_data
+        ";
+
+        $result = $this->db->query($sql)->getRow();
+
+        return $result ? $result->PercentualConversao : 0;
     }
 
     function count_total_leads($options = array(), $date_start = null, $date_end = null) {
@@ -570,7 +990,7 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT COUNT($clients_table.id) AS total
         FROM $clients_table 
-        WHERE $clients_table.deleted=0 AND $clients_table.lead_status_id <> 6 AND $clients_table.is_lead=1 $where";
+        WHERE $clients_table.deleted=0 AND $clients_table.lead_status_id=1 AND $clients_table.is_lead=1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -611,7 +1031,7 @@ class Clients_model extends Crud_model {
         GROUP BY $clients_table.lead_status_id
         ORDER BY total DESC";
 
-        $client_statuses = "SELECT COUNT($clients_table.id) AS total, 10 AS lead_status_id, 'Convertido a Cliente' AS 'title', 'navy' AS color, SUM($projects_table.price) AS projects_total
+        $client_statuses = "SELECT COUNT(DISTINCT $clients_table.id) AS total, 10 AS lead_status_id, 'Cliente' AS 'title', 'navy' AS color, SUM($projects_table.price) AS projects_total
         FROM $clients_table
         LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
         WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 $where";
@@ -632,11 +1052,14 @@ class Clients_model extends Crud_model {
 
         return $info;
     }
+
     function get_lead_sources($options = array(), $date_start = null, $date_end = null) {
         $clients_table = $this->db->prefixTable('clients');
         $lead_status_table = $this->db->prefixTable('lead_status');
         $lead_source_table = $this->db->prefixTable('lead_source');
         $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_items_table = $this->db->prefixTable('estimate_items');
 
         try {
             $this->db->query("SET sql_mode = ''");
@@ -652,27 +1075,56 @@ class Clients_model extends Crud_model {
 
         if($date_start and $date_end)
         {
-            $where .= " AND $projects_table.created_date BETWEEN '$date_start' and '$date_end'";
+            $where .= " AND ($clients_table.created_date BETWEEN '$date_start' and '$date_end' OR $clients_table.client_migration_date BETWEEN '$date_start' and '$date_end')";
         }
         
-        $converted_to_client = "SELECT COUNT($clients_table.id) AS total
+        $converted_to_client = "SELECT COUNT(DISTINCT $clients_table.id) AS total
         FROM $clients_table
-        LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
+        LEFT JOIN $estimates_table ON $estimates_table.client_id = $clients_table.id
         WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND $clients_table.lead_status_id!=0 $where";
 
-        $lead_sources = "SELECT COUNT(DISTINCT $clients_table.id) AS total, $clients_table.lead_source_id, COALESCE($lead_source_table.title, 'Outros') AS title, SUM($projects_table.price) AS projects_total
-        FROM $clients_table
-        LEFT JOIN $lead_source_table ON $lead_source_table.id = $clients_table.lead_source_id
-        LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
-        WHERE $clients_table.deleted=0 $where
-        GROUP BY $clients_table.lead_source_id
-        ORDER BY $lead_source_table.sort ASC";
+        $lead_sources = "SELECT
+                SUM(total_leads) AS total_leads,
+                SUM(total_clients) AS total_clients,
+                lead_source_id,
+                title,
+                SUM(projects_total) AS projects_total
+            FROM (
+                SELECT 
+                    0 AS total_leads,
+                    COUNT(DISTINCT $clients_table.id) AS total_clients,
+                    $clients_table.lead_source_id, 
+                    COALESCE($lead_source_table.title, 'Outro') AS title, 
+                    SUM($estimate_items_table.rate * $estimate_items_table.quantity) AS projects_total
+                FROM $clients_table
+                LEFT JOIN $lead_source_table ON $lead_source_table.id = $clients_table.lead_source_id
+                LEFT JOIN $estimates_table ON $estimates_table.client_id = $clients_table.id
+                LEFT JOIN $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
+                WHERE $clients_table.deleted = 0 AND $clients_table.is_lead = 0 $where
+                GROUP BY $clients_table.lead_source_id
+            UNION ALL
+            
+                SELECT 
+                    COUNT(DISTINCT $clients_table.id) AS total_leads,
+                    0 AS total_clients,
+                    $clients_table.lead_source_id, 
+                    COALESCE($lead_source_table.title, 'Outro') AS title, 
+                    SUM($estimate_items_table.rate * $estimate_items_table.quantity) AS projects_total
+                FROM $clients_table
+                LEFT JOIN $lead_source_table ON $lead_source_table.id = $clients_table.lead_source_id
+                LEFT JOIN $estimates_table ON $estimates_table.client_id = $clients_table.id
+                LEFT JOIN $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
+                WHERE $clients_table.deleted = 0 AND $clients_table.is_lead = 1 $where
+                GROUP BY $clients_table.lead_source_id
+            ) AS combined
+            GROUP BY title
+        ";
 
         $total_sells = "SELECT SUM($projects_table.price) AS total, $clients_table.lead_status_id, $clients_table.currency_symbol
         FROM $projects_table
         INNER JOIN $clients_table ON $clients_table.id = $projects_table.client_id
         LEFT JOIN $lead_status_table ON $lead_status_table.id = $clients_table.lead_status_id
-        WHERE $clients_table.deleted=0 $where
+        WHERE $clients_table.deleted=0 AND $projects_table.deleted=0 $where
         ";
 
         $info = new \stdClass();
@@ -682,5 +1134,16 @@ class Clients_model extends Crud_model {
         $info->total_sells = to_currency($total_sells_result->total, $total_sells_result->currency_symbol);
 
         return $info;
+    }
+    
+    function get_statuses() {
+        $clients_table = $this->db->prefixTable('clients');
+        $client_status_table = $this->db->prefixTable('client_status');
+        $client_statuses = "SELECT COUNT($clients_table.id) AS total, $clients_table.status_id, $client_status_table.title, $client_status_table.color
+        FROM $clients_table
+        LEFT JOIN $client_status_table ON $client_status_table.id = $clients_table.status_id
+        GROUP BY $clients_table.status_id
+        ORDER BY $client_status_table.sort ASC";
+        return $this->db->query($client_statuses)->getResult();
     }
 }

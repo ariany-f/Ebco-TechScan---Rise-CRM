@@ -34,4 +34,22 @@
         }
         ?>
     </span>
+    <div class="mt-5">
+        <?php
+            $files1 = is_dir("./files/timeline_files/estimates/" . $estimate_info->id) ? scandir("./files/timeline_files/estimates/" . $estimate_info->id) : [];
+        ?>
+        <?php if(!empty($files1)): ?>
+            <h6>Arquivos anexados anteriormente</h6>
+            <div style="display: flex;width: 100%;flex-wrap: wrap;">
+                <?php foreach($files1 as $file): ?>
+                    <?php if($file!= 'index.html' && isset($file) && $file != '..' && $file != '.' && !empty(trim($file))): ?>
+                        <div style="display: flex;justify-content: center;align-items: center;">
+                            <?php echo anchor(get_uri("files/timeline_files/estimates/" . $estimate_info->id . '/' . $file), "<i data-feather='eye' class='icon-16'></i> " . $file, array("title" => app_lang('see_file') . ': ' . $file, "target" => "_blank", "style" => "border: 1px solid lightgrey;border-radius: 5px;width: 200px;text-overflow: ellipsis;white-space: nowrap;overflow: hidden;", "class" => "p-2 mb-1")); ?>
+                            <?php echo ajax_anchor(get_uri("estimate/delete_file/" . $estimate_info->id. '/' . $file), '<i data-feather="trash" class="icon-16"></i> Excluir', array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>

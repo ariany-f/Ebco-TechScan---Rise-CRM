@@ -6,6 +6,9 @@ use App\Controllers\App_Controller;
 use App\Libraries\Pdf;
 use App\Libraries\Clean_data;
 use App\Libraries\Outlook_smtp;
+use App\Libraries\Html2Pdf;
+use App\Libraries\Mpdf;
+use App\Libraries\DomPdf;
 
 /**
  * use this to print link location
@@ -665,12 +668,19 @@ if (!function_exists('send_app_mail')) {
             }
 
             //send email
+            $ci = new App_Controller();
             if ($email->send()) {
+                $ci->LogEmails_model->create_log(array("email" => $to, "cc" => $cc, "bcc" => $bcc, "subject" => $subject, "message" => $message, "result" => "Enviado com sucesso!"));
                 return true;
             } else {
                 //show error message in none production version
                 if (ENVIRONMENT !== 'production') {
+                    $ci->LogEmails_model->create_log(array("email" => $to, "cc" => $cc, "bcc" => $bcc, "subject" => $subject, "message" => $message, "result" => $email->printDebugger()));
                     throw new \Exception($email->printDebugger());
+                }
+                else
+                {
+                    $ci->LogEmails_model->create_log(array("email" => $to, "cc" => $cc, "bcc" => $bcc, "subject" => $subject, "message" => $message, "result" => $email->printDebugger()));
                 }
                 return false;
             }
@@ -772,7 +782,37 @@ if (!function_exists('get_team_member_profile_link')) {
             return js_anchor($name, $attributes);
         }
     }
+}
 
+/**
+ * team members profile anchor. only clickable to team members
+ * client's will see a none clickable link
+ * 
+ * @param string $id
+ * @param string $name
+ * @param array $attributes
+ * @return html link
+ */
+if (!function_exists('translate_month_name')) {
+
+    function translate_month_name($name = "") {
+        $months = [
+            'January' => 'Janeiro',
+            'February' => 'Fevereiro',
+            'March' => 'Março',
+            'April' => 'Abril',
+            'May' => 'Maio',
+            'June' => 'Junho',
+            'July' => 'Julho',
+            'August' => 'Agosto',
+            'September' => 'Setembro',
+            'October' => 'Outubro',
+            'November' => 'Novembro',
+            'December' => 'Dezembro'
+        ];
+    
+        return $months[$name] ?? $name;
+    }
 }
 
 
@@ -825,7 +865,10 @@ if (!function_exists('get_invoice_status_label')) {
         } else if ($invoice_info->payment_received > 0 && $invoice_info->payment_received < $invoice_info->invoice_value) {
             $invoice_status_class = "bg-primary";
             $status = "partially_paid";
-        } else if ($invoice_info->status === "draft") {
+        } else if ($invoice_info->status === "in_revision") {
+            $invoice_status_class = "bg-secondary";
+            $status = "in_revision";
+        }else if ($invoice_info->status === "draft") {
             $invoice_status_class = "bg-secondary";
             $status = "draft";
         }
@@ -925,32 +968,54 @@ if (!function_exists('prepare_invoice_pdf')) {
 if (!function_exists('prepare_estimate_pdf')) {
 
     function prepare_estimate_pdf($estimate_data, $mode = "download") {
-        $pdf = new Pdf();
-        $pdf->setPrintHeader(false);
-        $pdf->setPrintFooter(false);
-        $pdf->SetCellPadding(1.5);
-        $pdf->setImageScale(1.42);
-        $pdf->AddPage();
+        $pdf = new Html2Pdf('P', 'A4', 'en', true, 'UTF-8', array(0, 0, 0, 0));
+    
+        $pdf->setDefaultFont("helvetica");
+        $pdf->pdf->SetDisplayMode('fullwidth');
+        $pdf->pdf->setPrintHeader(false);
+        $pdf->pdf->setPrintFooter(false);
+        $pdf->pdf->setImageScale(0.5);
+            
 
         if ($estimate_data) {
 
             $estimate_data["mode"] = clean_data($mode);
 
-            $html = view("estimates/estimate_pdf", $estimate_data);
+            $estimate_info = get_array_value($estimate_data, "estimate_info");
+
+            $postdata = http_build_query(
+                array(
+                    'buttons' => false
+                )
+            );
+            
+            $opts = array('http' =>
+                array(
+                    'method'  => 'GET',
+                    'header'  => 'Content-Type: application/x-www-form-urlencoded',
+                    'content' => $postdata
+                )
+            );
+            
+           
+            $url = 'http://'.$_SERVER['HTTP_HOST']."/crm/estimate/download_pdf_direct/" . $estimate_info->id . "/" . $estimate_info->public_key . '/1';
+            $context = stream_context_create($opts);
+            file_get_contents($url, false, $context);
+
             if ($mode != "html") {
-                $pdf->writeHTML($html, true, false, true, false, '');
+             //  $pdf->writeHTML($html);
             }
 
-            $estimate_info = get_array_value($estimate_data, "estimate_info");
             $pdf_file_name = app_lang("estimate") . "-$estimate_info->id.pdf";
 
             if ($mode === "download") {
                 $pdf->SetTitle($pdf_file_name);
                 $pdf->Output($pdf_file_name, "D");
             } else if ($mode === "send_email") {
-                $temp_download_path = getcwd() . "/" . get_setting("temp_file_path") . $pdf_file_name;
-                $pdf->Output($temp_download_path, "F");
-                return $temp_download_path;
+                $temp_file_path = get_setting("temp_file_path");
+                $target_path = getcwd() . '/' . $temp_file_path;
+                $target_file = $target_path . 'Proposta_' . $estimate_info->id . '.pdf';
+                return $target_file;
             } else if ($mode === "view") {
                 $pdf->SetTitle($pdf_file_name);
                 $pdf->Output($pdf_file_name, "I");
@@ -990,6 +1055,7 @@ if (!function_exists('prepare_order_pdf')) {
 
             $order_info = get_array_value($order_data, "order_info");
             $pdf_file_name = app_lang("order") . "-$order_info->id.pdf";
+            
 
             if ($mode === "download") {
                 $pdf->Output($pdf_file_name, "D");
@@ -2447,7 +2513,8 @@ if (!function_exists('prepare_allowed_members_array')) {
  */
 if (!function_exists('prepare_estimate_view')) {
 
-    function prepare_estimate_view($estimate_data) {
+    function prepare_estimate_view($estimate_data, $buttons = 1) {
+       
         if ($estimate_data) {
             $estimate_info = get_array_value($estimate_data, "estimate_info");
             
@@ -2469,7 +2536,7 @@ if (!function_exists('prepare_estimate_view')) {
             $parser_data["ESTIMATE_DATE"] = format_to_date($estimate_info->estimate_date, false);
             $parser_data["ESTIMATE_EXPIRY_DATE"] = format_to_date($estimate_info->valid_until, false);
             $parser_data["ESTIMATE_ITEMS"] = view("estimates/estimate_parts/estimate_items_table", $estimate_data);
-            $parser_data["ESTIMATE_NOTE"] = $estimate_info->note;
+            $parser_data["ESTIMATE_NOTE"] = (!empty(trim($estimate_info->note)) ? $estimate_info->note : 'Não se aplica');
             $parser_data["APP_TITLE"] = get_setting("app_title");
 
             $parser_data["COMPANY_INFO"] = view("estimates/estimate_parts/estimate_from");
@@ -2533,9 +2600,9 @@ if (!function_exists('prepare_estimate_view')) {
             $content = remove_custom_field_titles_from_variables($estimate_info->content);
             $estimate_view = $parser->setData($parser_data)->renderString($content ?? '<br/><br/><br/>Volte para a aba "Editor de Propostas" e selecione um modelo de proposta para começar');
             $estimate_view = htmlspecialchars_decode($estimate_view);
-            $estimate_view = process_images_from_content($estimate_view);
-
+            $estimate_view = process_images_from_content($estimate_view);          
             return $estimate_view;
+           
         }
     }
 

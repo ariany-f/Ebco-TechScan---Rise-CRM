@@ -257,7 +257,14 @@ if (!function_exists('move_temp_file')) {
         }
 
         //remove unsupported values from the file name
-        $new_filename = $filename_prefix . preg_replace('/\s+/', '-', $file_name);
+        if($related_to != 'estimate')
+        {
+
+            $new_filename = $filename_prefix . preg_replace('/\s+/', '-', $file_name);
+        }
+        else {
+            $new_filename = $file_name;
+        }
 
         $new_filename = str_replace("’", "-", $new_filename);
         $new_filename = str_replace("'", "-", $new_filename);

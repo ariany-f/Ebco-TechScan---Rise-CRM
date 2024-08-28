@@ -67,6 +67,7 @@
         initWYSIWYGEditor("#contract-view", {
             height: 600,
             toolbar: [
+                ['paperSize',['paperSize']], // The Button
                 ['style', ['style']],
                 ['font', ['bold', 'italic', 'underline', 'clear']],
                 ['fontname', ['fontname']],

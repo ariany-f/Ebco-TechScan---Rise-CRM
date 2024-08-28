@@ -29,6 +29,20 @@
         </div>
         <div class="form-group">
             <div class="row">
+                <label for="is_bidding"class="col-md-3"> <?php echo app_lang('is_bidding'); ?>
+                    <?php
+                    echo form_checkbox(
+                        "is_bidding",
+                        "1", 
+                        $model_info->is_bidding ?? false, 
+                        ""
+                    );
+                    ?>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
                 <label for="estimate_date" class=" col-md-3"><?php echo app_lang('estimate_date'); ?></label>
                 <div class="col-md-9">
                     <?php
@@ -110,26 +124,26 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <div class="row">
-                <label for="tax_id" class=" col-md-3"><?php echo app_lang('tax'); ?></label>
+                <label for="tax_id" class=" col-md-3"><?php //echo app_lang('tax'); ?></label>
                 <div class="col-md-9">
                     <?php
-                    echo form_dropdown("tax_id", $taxes_dropdown, array($model_info->tax_id), "class='select2 tax-select2'");
+                    //echo form_dropdown("tax_id", $taxes_dropdown, array($model_info->tax_id), "class='select2 tax-select2'");
                     ?>
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="row">
-                <label for="tax_id" class=" col-md-3"><?php echo app_lang('second_tax'); ?></label>
+                <label for="tax_id" class=" col-md-3"><?php //echo app_lang('second_tax'); ?></label>
                 <div class="col-md-9">
                     <?php
-                    echo form_dropdown("tax_id2", $taxes_dropdown, array($model_info->tax_id2), "class='select2 tax-select2'");
+                    //echo form_dropdown("tax_id2", $taxes_dropdown, array($model_info->tax_id2), "class='select2 tax-select2'");
                     ?>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="form-group">
             <div class="row">
                 <label for="estimate_note" class=" col-md-3"><?php echo app_lang('payment_conditions') ; ?></label>
@@ -234,13 +248,30 @@
                 if (typeof RELOAD_VIEW_AFTER_UPDATE !== "undefined" && RELOAD_VIEW_AFTER_UPDATE) {
                     location.reload();
                 } else {
-                    window.location = "<?php echo site_url('estimates/view'); ?>/" + result.id;
+                    if(!<?php echo $model_info->id ?>)
+                    {
+                        window.location = "<?php echo site_url('estimates/view'); ?>/" + result.id;
+                    }
+                    else
+                    {
+                        var oTable = $('#monthly-estimate-table').dataTable();
+                        // to reload
+                        oTable.api().ajax.reload();
+                        var oTable = $('#yearly-estimate-table').dataTable();
+                        // to reload
+                        oTable.api().ajax.reload();
+                    }
+                   
                 }
             }
         });
         $("#estimate-form .tax-select2").select2();
         $("#estimate-form .estimate-type-select2").select2();
         $("#estimate_client_id").select2();
+
+        setTimeout(() => {
+            $("input[name='custom_field_5']").mask('###0.00', { reverse: true });
+        }, 1000);
 
         $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});
 

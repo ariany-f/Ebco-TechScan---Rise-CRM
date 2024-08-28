@@ -48,6 +48,7 @@ class Notification_processor extends App_Controller {
         $activity_log_id = get_array_value($data, "activity_log_id");
 
         $options = array(
+            "description" => get_array_value($data, "description") ?? "",
             "project_id" => get_array_value($data, "project_id"),
             "task_id" => get_array_value($data, "task_id"),
             "project_comment_id" => get_array_value($data, "project_comment_id"),

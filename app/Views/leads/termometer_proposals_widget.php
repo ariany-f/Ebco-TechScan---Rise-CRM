@@ -1,6 +1,6 @@
 <div class="card bg-white">
     <div class="card-header clearfix">
-        <i data-feather="layers" class="icon-16"></i> &nbsp;<?php echo app_lang("termometer_proposals"); ?>
+        <i data-feather="thermometer" class="icon-16"></i> &nbsp;<?php echo app_lang("termometer_proposals"); ?>
     </div>
     <div class="card-body rounded-bottom widget-box" id="termometer-proposals-widget">
         <div class="row">

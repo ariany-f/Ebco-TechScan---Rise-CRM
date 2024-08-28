@@ -106,6 +106,37 @@ class Crud_model extends Model {
         return $this->db_builder->getWhere($where, $limit, $offset);
     }
 
+    function get_all_regex($where = array(), $limit = 1000000, $offset = 0, $regex_pattern = null, $sort_by_field = null) {
+        $where = $this->escape_array($where);
+        $where_in = get_array_value($where, "where_in");
+    
+        if ($where_in) {
+            foreach ($where_in as $key => $value) {
+                $this->db_builder->whereIn($key, $value);
+            }
+            unset($where["where_in"]);
+        }
+    
+        // Verifica se há um padrão de expressão regular fornecido
+        if ($regex_pattern) {
+            foreach ($where as $key => $value) {
+                // Aplica o LIKE com o padrão de expressão regular
+                $this->db_builder->like($key, $regex_pattern);
+            }
+        } else {
+            // Se não houver padrão de expressão regular, aplica condições normais
+            foreach ($where as $key => $value) {
+                $this->db_builder->where($key, $value);
+            }
+        }
+    
+        if ($sort_by_field) {
+            $this->db_builder->orderBy($sort_by_field, 'ASC');
+        }
+    
+        return $this->db_builder->get(null, $limit, $offset);
+    }
+
     function ci_save(&$data = array(), $id = 0) {
         //allowed fields should be assigned
         $db_fields = $this->db->getFieldNames($this->table);

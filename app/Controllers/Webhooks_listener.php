@@ -6,6 +6,22 @@ use App\Libraries\Stripe;
 
 class Webhooks_listener extends App_Controller {
 
+    function upload_file(){
+        $temp_file = $_FILES['file']['tmp_name'];
+        $file_name = $_FILES['file']['name'];
+        $mime_type = $_FILES['file']['type'];
+        $temp_file_path = get_setting("temp_file_path");
+        $target_path = getcwd() . '/' . $temp_file_path;
+        if (!is_dir($target_path)) {
+            if (!mkdir($target_path, 0777, true)) {
+                echo ('Failed to create file folders.');die;
+            }
+        }
+        $target_file = $target_path . $file_name;
+        copy($temp_file, $target_file);
+        echo $target_file;die;
+    }
+
     function bitbucket($key) {
         //save bitbucket commit as a activity log of tasks by bitbucket webhook
         //the commit message should be ending with #task_id. ex: Added webhook #233

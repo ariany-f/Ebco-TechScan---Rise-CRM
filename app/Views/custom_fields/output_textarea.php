@@ -1,1 +1,1 @@
-<?php echo nl2br($value ? process_images_from_content($value) : ""); ?>
+<div style=" display: -webkit-box;-webkit-line-clamp: 5;-webkit-box-orient: vertical;  overflow: hidden;text-overflow: ellipsis;max-height: 7.5em; /* Ajuste conforme a altura da linha */"><?php echo nl2br($value ? process_images_from_content($value) : ""); ?></div>

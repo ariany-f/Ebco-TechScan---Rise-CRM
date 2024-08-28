@@ -136,6 +136,7 @@
         initWYSIWYGEditor("#description", {
             height: 250,
             toolbar: [
+                ['paperSize',['paperSize']], // The Button
                 ['style', ['style']],
                 ['font', ['bold', 'italic', 'underline', 'clear']],
                 ['fontname', ['fontname']],

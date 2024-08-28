@@ -14,6 +14,12 @@ if (!function_exists('to_currency')) {
         $thousand_separator = get_setting("thousand_separator");
         $number = is_null($number) ? 0 : $number;
 
+        if (is_string($number)) {
+            // Converte a string para float corretamente
+         //   $number = str_replace([".", ","], ['', '.'], $number);
+         //   $number = floatval($number);
+        }
+
         if (get_setting("no_of_decimals") == "0") {
             $no_of_decimals = 0;
         }
@@ -91,7 +97,7 @@ if (!function_exists('to_decimal_format')) {
 if (!function_exists('unformat_currency')) {
 
     function unformat_currency($currency = "") {
-// remove everything except a digit "0-9", a comma ",", and a dot "."
+        // remove everything except a digit "0-9", a comma ",", and a dot "."
         $new_money = preg_replace('/[^\d,-\.]/', '', $currency);
         $decimal_separator = get_setting("decimal_separator");
         if ($decimal_separator === ",") {

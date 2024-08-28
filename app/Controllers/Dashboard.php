@@ -222,7 +222,22 @@ class Dashboard extends Security_Controller {
 
         if ($this->login_user->is_admin || $access_client->access_type) {
             $widget["total_clients"] = true;
+            $widget["total_prospects"] = true;
             $widget["total_contacts"] = true;
+            $widget["total_emmited_estimates"] = true;
+            $widget["total_approved_estimates"] = true;
+            $widget["total_conversion_estimates"] = true;
+            $widget["total_conversion_leads_prospects"] = true;
+            $widget["total_conversion_prospects_clients"] = true;
+            $widget["total_emmited_bidding_estimates"] = true;
+            $widget["total_approved_bidding_estimates"] = true;
+            $widget["total_amount_estimates"] = true;
+            $widget["total_conversion_bidding_estimates"] = true;
+            $widget["total_amount_bidding_estimates"] = true;
+            $widget["total_amount_estimates_rx"] = true;
+            $widget["total_amount_estimates_se"] = true;
+            $widget["total_amount_estimates_vistoria"] = true;
+            $widget["total_amount_estimates_colete"] = true;
         }
 
         if ($show_lead && ($this->login_user->is_admin || $access_leads->access_type)) {
@@ -259,6 +274,12 @@ class Dashboard extends Security_Controller {
             $widget["projects_overview"] = true;
             $widget["all_tasks_overview"] = true;
             $widget["my_tasks_overview"] = true;
+            $widget["sellers_estimates_list"] = true;
+            $widget["pos_venda_sellers_estimates_list"] = true;
+            $widget["coligadas_estimates_list"] = true;
+            $widget["new_clients_list"] = true;
+            $widget['leads_prospects_list'] = true;
+            
         }
 
         if ($show_announcement) {
@@ -528,6 +549,66 @@ class Dashboard extends Security_Controller {
             $columns[] = array("total_clients");
         }
 
+        if (count($columns) < 4 && get_array_value($widgets, "total_prospects")) {
+            $columns[] = array("total_prospects");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_emmited_estimates")) {
+            $columns[] = array("total_emmited_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_emmited_bidding_estimates")) {
+            $columns[] = array("total_emmited_bidding_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_approved_estimates")) {
+            $columns[] = array("total_approved_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_conversion_estimates")) {
+            $columns[] = array("total_conversion_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_conversion_leads_prospects")) {
+            $columns[] = array("total_conversion_leads_prospects");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_conversion_prospects_clients")) {
+            $columns[] = array("total_conversion_prospects_clients");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_conversion_bidding_estimates")) {
+            $columns[] = array("total_conversion_bidding_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_approved_bidding_estimates")) {
+            $columns[] = array("total_approved_bidding_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_amount_estimates")) {
+            $columns[] = array("total_amount_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_amount_bidding_estimates")) {
+            $columns[] = array("total_amount_bidding_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_amount_estimates_rx")) {
+            $columns[] = array("total_amount_estimates_rx");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_amount_estimates_se")) {
+            $columns[] = array("total_amount_estimates_se");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_amount_estimates_vistoria")) {
+            $columns[] = array("total_amount_estimates_vistoria");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_amount_estimates_colete")) {
+            $columns[] = array("total_amount_estimates_colete");
+        }
+
         if (count($columns) < 4 && get_array_value($widgets, "total_leads")) {
             $columns[] = array("total_leads");
         }
@@ -535,7 +616,6 @@ class Dashboard extends Security_Controller {
         if (count($columns) < 4 && get_array_value($widgets, "total_contacts")) {
             $columns[] = array("total_contacts");
         }
-
 
         if (count($columns) < 4 && get_array_value($widgets, "new_posts")) {
             $columns[] = array("new_posts");
@@ -894,6 +974,21 @@ class Dashboard extends Security_Controller {
                 "pending_leave_approval",
                 "draft_invoices",
                 "total_clients",
+                "total_prospects",
+                "total_emmited_estimates",
+                "total_approved_estimates",
+                "total_conversion_estimates",
+                "total_conversion_leads_prospects",
+                "total_conversion_prospects_clients",
+                "total_emmited_bidding_estimates",
+                "total_approved_bidding_estimates",
+                "total_conversion_bidding_estimates",
+                "total_amount_estimates",
+                "total_amount_bidding_estimates",
+                "total_amount_estimates_rx",
+                "total_amount_estimates_se",
+                "total_amount_estimates_vistoria",
+                "total_amount_estimates_colete",
                 "total_contacts",
                 "open_tickets_list",
                 "total_leads",
@@ -911,6 +1006,11 @@ class Dashboard extends Security_Controller {
                 "sellers_conversions_overview",
                 "termometer_proposals",
                 "my_tasks_overview",
+                "sellers_estimates_list",
+                "pos_venda_sellers_estimates_list",
+                "coligadas_estimates_list",
+                "new_clients_list",
+                "leads_prospects_list",
             );
         } else {
             $default_widgets_array = array(
@@ -1189,16 +1289,67 @@ class Dashboard extends Security_Controller {
                 return active_members_on_projects_widget();
             } else if ($widget == "draft_invoices") {
                 return draft_invoices_widget();
-            } else if ($widget == "total_clients" || $widget == "total_contacts" || $widget == "latest_online_client_contacts") {
+            } else if (
+                $widget == "total_clients" || 
+                $widget == "total_prospects" || 
+                $widget == "total_contacts" || 
+                $widget == "latest_online_client_contacts" || 
+                $widget == "total_emmited_estimates" || 
+                $widget == "total_approved_estimates" || 
+                $widget == "total_conversion_estimates" || 
+                $widget == "total_conversion_leads_prospects" || 
+                $widget == "total_conversion_prospects_clients" || 
+                $widget == "total_emmited_bidding_estimates" || 
+                $widget == "total_approved_bidding_estimates" || 
+                $widget == "total_conversion_bidding_estimates" || 
+                $widget == "total_amount_estimates" || 
+                $widget == "total_amount_bidding_estimates" || 
+                $widget == "total_amount_estimates_rx" || 
+                $widget == "total_amount_estimates_se" || 
+                $widget == "total_amount_estimates_vistoria" || 
+                $widget == "total_amount_estimates_colete"
+            ) {
                 $show_own_clients_only_user_id = $this->show_own_clients_only_user_id();
                 $this->init_permission_checker("client");
                 if ($widget == "total_clients") {
                     return total_clients_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_prospects") {
+                    return total_prospects_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
                 } else if ($widget == "total_contacts") {
                     return total_contacts_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
                 } else if ($widget == "latest_online_client_contacts") {
                     return active_members_and_clients_widget("client", $show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_emmited_estimates") {
+                    return total_emmited_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                }  else if ($widget == "total_approved_estimates") {
+                    return total_approved_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_conversion_estimates") {
+                    return total_conversion_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_conversion_leads_prospects") {
+                    return total_conversion_leads_prospects_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_conversion_prospects_clients") {
+                    return total_conversion_prospects_clients_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_emmited_bidding_estimates") {
+                    return total_emmited_bidding_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                }  else if ($widget == "total_approved_bidding_estimates") {
+                    return total_approved_bidding_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_conversion_bidding_estimates") {
+                    return total_conversion_bidding_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_amount_estimates") {
+                    return total_amount_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                }  else if ($widget == "total_amount_bidding_estimates") {
+                    return total_amount_bidding_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_amount_estimates_rx") {
+                    return total_amount_estimates_rx_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_amount_estimates_se") {
+                    return total_amount_estimates_se_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_amount_estimates_vistoria") {
+                    return total_amount_estimates_vistoria_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "total_amount_estimates_colete") {
+                    return total_amount_estimates_colete_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
                 }
+                
+
             } else if ($widget == "open_tickets_list") {
                 return open_tickets_list_widget();
             } else if ($widget == "total_leads") {
@@ -1239,6 +1390,16 @@ class Dashboard extends Security_Controller {
                 return termometer_proposals_widget();
             } else if ($widget == "my_tasks_overview") {
                 return tasks_overview_widget("my_tasks_overview");
+            } else if ($widget == "coligadas_estimates_list") {
+                return coligadas_estimates_list_widget();
+            } else if ($widget == "sellers_estimates_list") {
+                return sellers_estimates_list_widget();
+            } else if ($widget == "pos_venda_sellers_estimates_list") {
+                return pos_venda_sellers_estimates_list_widget();
+            }  else if ($widget == "new_clients_list") {
+                return new_clients_list_widget();
+            } else if ($widget == "leads_prospects_list") {
+                return leads_prospects_list_widget();
             }
 
             $plugin_widget = $this->_get_plugin_widgets($widget);

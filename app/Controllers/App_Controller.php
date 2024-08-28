@@ -32,6 +32,7 @@ class App_Controller extends Controller {
     public $Milestones_model;
     public $Task_status_model;
     public $Tasks_model;
+    public $LogEmails_model;
     public $Project_comments_model;
     public $Activity_logs_model;
     public $Project_files_model;
@@ -137,6 +138,7 @@ class App_Controller extends Controller {
             'Milestones_model',
             'Task_status_model',
             'Tasks_model',
+            'LogEmails_model',
             'Project_comments_model',
             'Activity_logs_model',
             'Project_files_model',

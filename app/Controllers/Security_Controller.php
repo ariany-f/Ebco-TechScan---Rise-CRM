@@ -703,6 +703,17 @@ class Security_Controller extends App_Controller {
         }
     }
 
+    protected function _get_setor_select2_data($show_header = false) {
+        $setor = array();
+        if ($show_header) {
+            $setor[] = array("id" => "", "text" => "- " . app_lang("setor") . " -");
+        }
+       
+        $setor[] = array("id" => "public", "text" => app_lang("public"));
+        $setor[] = array("id" => "private", "text" => app_lang("private"));
+        return $setor;
+    }
+
     protected function get_team_members_dropdown($is_filter = false) {
         $team_members = $this->Users_model->get_all_where(array("user_type" => "staff", "deleted" => 0, "status" => "active"))->getResult();
 

@@ -3,6 +3,7 @@
 $estimate_statuses_dropdown = array(
     array("id" => "", "text" => "- " . app_lang("status") . " -"),
     array("id" => "draft", "text" => app_lang("draft")),
+    array("id" => "in_revision", "text" => app_lang("in_revision")),
     array("id" => "sent", "text" => app_lang("sent")),
     array("id" => "accepted", "text" => app_lang("accepted")),
     array("id" => "declined", "text" => app_lang("declined"))

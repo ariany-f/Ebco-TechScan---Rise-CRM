@@ -1,7 +1,7 @@
 <div id="page-content" class="clearfix">
     <div style="max-width: 1000px; margin: auto;">
         <div class="page-title clearfix mt25">
-            <h1><?php echo get_estimate_id($estimate_info->id); ?></h1>
+            <h1><?php echo get_estimate_id($estimate_info->id) . ' - ' . $estimate_info->estimate_number; ?></h1>
             <div class="title-button-group">
                 <span class="dropdown inline-block mt15">
                     <button class="btn btn-info text-white dropdown-toggle caret mt0 mb0" type="button" data-bs-toggle="dropdown" aria-expanded="true">
@@ -9,23 +9,34 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <!-- <li role="presentation"><?php //echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id), "<i data-feather='download' class='icon-16'></i> " . app_lang('download_pdf'), array("title" => app_lang('download_pdf'), "class" => "dropdown-item")); ?> </li> -->
+                        <li role="presentation"><?php echo anchor(get_uri("estimate/download_pdf/" . $estimate_info->id . "/" . $estimate_info->public_key), "<i data-feather='download' class='icon-16'></i> " . app_lang('download_pdf'), array("title" => app_lang('download_pdf'), "target" => "_blank",  "class" => "dropdown-item")); ?> </li>
                         <!-- <li role="presentation"><?php //echo anchor(get_uri("estimates/download_pdf/" . $estimate_info->id . "/view"), "<i data-feather='file-text' class='icon-16'></i> " . app_lang('view_pdf'), array("title" => app_lang('view_pdf'), "target" => "_blank", "class" => "dropdown-item")); ?> </li> -->
                         <li role="presentation"><?php echo anchor(get_uri("estimates/preview/" . $estimate_info->id . "/1"), "<i data-feather='search' class='icon-16'></i> " . app_lang('estimate_preview'), array("title" => app_lang('estimate_preview'), "target" => "_blank", "class" => "dropdown-item")); ?> </li>
                         <li role="presentation"><?php echo anchor(get_uri("estimate/preview/" . $estimate_info->id . "/" . $estimate_info->public_key), "<i data-feather='external-link' class='icon-16'></i> " . app_lang('estimate') . " " . app_lang("url"), array("target" => "_blank", "class" => "dropdown-item")); ?> </li>
                         <!-- <li role="presentation"><?php //echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('print_estimate'), array('title' => app_lang('print_estimate'), 'id' => 'print-estimate-btn', "class" => "dropdown-item")); ?> </li> -->
-                        <li role="presentation"><?php echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('download_pdf'), array('title' => app_lang('download_pdf'), 'id' => 'print-estimate-btn', "class" => "dropdown-item")); ?> </li>
+                        <!-- <li role="presentation"><?php //echo js_anchor("<i data-feather='printer' class='icon-16'></i> " . app_lang('download_pdf'), array('title' => app_lang('download_pdf'), 'id' => 'print-estimate-btn', "class" => "dropdown-item")); ?> </li> -->
                         <li role="presentation" class="dropdown-divider"></li>
                         <li role="presentation"><?php echo modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i> " . app_lang('edit_estimate'), array("title" => app_lang('edit_estimate'), "data-post-id" => $estimate_info->id, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
                         <li role="presentation"><?php echo modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='copy' class='icon-16'></i> " . app_lang('clone_estimate'), array("data-post-is_clone" => true, "data-post-id" => $estimate_info->id, "title" => app_lang('clone_estimate'), "class" => "dropdown-item")); ?></li>
-
+                        <?php
+                        if ($estimate_status != "in_revision") { ?>
+                            <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/in_revision"), "<i data-feather='edit' class='icon-16'></i> " . app_lang('mark_as_revision'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                        <?php
+                        }
+                        ?>
                         <?php
                         if ($estimate_status == "draft" || $estimate_status == "sent") {
                             ?>
                             <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/accepted"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
-                            <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                            <!-- <li role="presentation"><?php //echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li> -->
+                            <li role="presentation"><?php echo modal_anchor(get_uri("estimate/reject_estimate_modal_form/" . $estimate_info->id), "<i data-feather='x' class='icon-16'></i> " . app_lang('mark_as_declined'), array("title" => app_lang('mark_as_declined'), "data-post-id" => $estimate_info->id, "data-post-is_lead" => true, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
+                        <?php } else if ($estimate_status == "in_revision") {
+                        ?>
+                            <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/sent"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_sent'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
                         <?php } else if ($estimate_status == "accepted") {
                             ?>
-                            <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                            <li role="presentation"><?php echo modal_anchor(get_uri("estimate/reject_estimate_modal_form/" . $estimate_info->id), "<i data-feather='x' class='icon-16'></i> " . app_lang('mark_as_declined'), array("title" => app_lang('mark_as_declined'), "data-post-id" => $estimate_info->id, "data-post-is_lead" => true, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
+                            <!-- <li role="presentation"><?php //echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li> -->
                             <?php
                         } else if ($estimate_status == "declined") {
                             ?>
@@ -63,6 +74,23 @@
                 </span>
             </div>
         </div>
+        <?php if((!empty($estimate_info->rejected_reason)) && $estimate_status == 'declined') : ?>
+            <?php
+                $signer_info = @unserialize($estimate_info->meta_data);
+                if (!($signer_info && is_array($signer_info))) {
+                    $signer_info = array();
+                }
+                ?>
+
+            <div class="bg-white p15 no-border m0 rounded-bottom">
+                <div><strong>Motivo Rejeição: </strong><?php echo $estimate_info->rejected_reason ?></div>
+            
+                <?php if ($estimate_status === "declined" && ($signer_info || $estimate_info->accepted_by)) { ?>
+                    <div><strong><?php echo app_lang("rejected_name"); ?>: </strong><?php echo $estimate_info->accepted_by ? get_client_contact_profile_link($estimate_info->accepted_by, $estimate_info->signer_name) : get_array_value($signer_info, "name"); ?></div>
+                    <div><strong><?php echo app_lang("rejected_email"); ?>: </strong><?php echo $estimate_info->signer_email ? $estimate_info->signer_email : get_array_value($signer_info, "email"); ?></div>
+                <?php } ?>
+            </div>
+        <?php endif; ?>
         <div id="estimate-status-bar">
             <?php echo view("estimates/estimate_status_bar"); ?>
         </div>
@@ -123,8 +151,6 @@
                             </div>
                         </div>
 
-                        <p class="b-t b-info pt10 m15 pb10"><?php echo nl2br($estimate_info->note ? process_images_from_content($estimate_info->note) : ""); ?></p>
-
                         <?php
                         if (get_setting("enable_comments_on_estimates") && !($estimate_info->status === "draft")) {
                             echo view("estimates/comment_form");
@@ -172,7 +198,9 @@
     </div>
 </div>
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.0/purify.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script type="text/javascript">
     //RELOAD_VIEW_AFTER_UPDATE = true;
@@ -248,6 +276,23 @@
             }, 400);
         });
 
+        
+        // window.jsPDF = window.jspdf.jsPDF;
+        // var doc = new jsPDF();
+
+        // const addFooters = (doc) => {
+        //     const pageCount = doc.internal.getNumberOfPages()
+
+        //     doc.setFont('helvetica', 'italic')
+        //     doc.setFontSize(8)
+        //     for (var i = 1; i <= pageCount; i++) {
+        //         doc.setPage(i)
+        //         doc.text('Data de Emissão ' + $("#estimate_date").val() + ' Página ' + String(i) + ' de ' + String(pageCount), doc.internal.pageSize.width / 2, 287, {
+        //         align: 'center'
+        //     })
+        //     }
+        // }
+
         //print estimate
         $("#print-estimate-btn").click(function () {
             appLoader.show();
@@ -255,17 +300,80 @@
             $.ajax({
                 url: "<?php echo get_uri('estimate/print_estimate/' . $estimate_info->id . '/' . $estimate_info->public_key) ?>",
                 dataType: 'json',
+                data: {buttons: false},
                 success: function (result) {
                     if (result.success) {
                         let div = result.print_view;
-                        document.body.innerHTML = div; //add estimate's print view to the page
-                        let noButtonsDiv = document.body.getElementsByClassName('invoice-preview-container')[0].innerHTML;
-                        document.body.innerHTML = noButtonsDiv;
-                        $("html").css({"overflow": "visible"});
+                       // document.body.innerHTML = div; //add estimate's print view to the page
+                      //  document.body.innerHTML = div; //add estimate's print view to the page
+                      //  let noButtonsDiv = document.body.getElementsByClassName('invoice-preview-container')[0].innerHTML;
+                        
+                        // doc.html(div, {
+                        //     html2canvas: {
+                        //     },
+                        //     compress: true,
+                        //     putOnlyUsedFonts: true,
+                        //     orientation: 'p',
+                        //     unit: 'mm',
+                        //     format: 'a4',
+                        //     autoPaging: 'text',
+                        //     margin: [10, 0, 15 ,0], // the default is [0, 0, 0, 0]
+                        //     callback: function(doc) {
+                        //         // Save the PDF
+                        //         addFooters(doc)
+                        //         doc.save('Proposta ' + <?php //echo $estimate_info->id ?> + '.pdf');
+                        //     },
+                        //     x: 0,
+                        //     y: 0,
+                        //     width: 210, //target width in the PDF document
+                        //     windowWidth: 810 //window width in CSS pixels
+                        // });
 
-                        setTimeout(function () {
-                            window.print();
-                        }, 200);
+                     //   const noButtonsDiv = document.querySelector('#my-table');
+                               
+                        //window.devicePixelRatio = 5;
+                        const options = {
+                            margin: [45, 15, 15, 25],
+                            filename: 'Proposta <?php echo $estimate_info->id ?>.pdf',
+                            pagebreak: { mode: ['avoid-all', 'css', 'legacy'], avoid: 'img'},
+                            html2canvas: {scale: 2, letterRendering: true},
+                            jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true, format: 'letter', compressPDF: true, pagesplit: true}
+                        };
+                        //.save() Download PDF
+                        html2pdf().set(options).from(div).toPdf().get('pdf').then((pdf) => {
+                            
+                            
+                            const e = pdf.internal.collections.addImage_images;
+                            console.log(e)
+                            for (let i in e) {
+                                e[i].height <= 20 ? pdf.deletePage(+i + 1) : null;
+                            }
+                            
+                            // handle your result here...
+                            var totalPages = pdf.internal.getNumberOfPages();
+
+
+                            for (let i = 1; i <= totalPages; i++) {
+                                // set footer to every page
+                                pdf.setPage(i);
+                                // set footer font
+                                //pdf.setFont('helvetica', 'normal')
+                                pdf.setFontSize(10);
+                                pdf.setTextColor(0, 0, 0);
+                                var img = new Image()
+                                img.src = "<?php echo get_uri('assets/images/header.png') ?>"
+                                pdf.addImage(img, 'png', -20, -115, 850, 160)
+                                
+                                pdf.text(pdf.internal.pageSize.getWidth() - 80, 20, 'Página ' + String(i) + ' de ' + String(totalPages) + '', 'left');
+                                
+                                pdf.text(15, pdf.internal.pageSize.getHeight() - 15, 'Data de Emissão ' + $("#estimate_date").val(), 'left');
+                                pdf.text(pdf.internal.pageSize.getWidth() - 80, pdf.internal.pageSize.getHeight() - 15, 'Página ' + String(i) + ' de ' + String(totalPages) + '', 'left');
+                            }
+                        }).outputPdf('bloburl').then((result) => {
+                            window.open(result, '_blank');
+                        });
+                               
+
                     } else {
                         appAlert.error(result.message);
                     }
@@ -303,7 +411,8 @@ load_css(array(
     "assets/js/summernote/summernote.css",
 ));
 load_js(array(
-    "assets/js/summernote/summernote.min.js",
+    "assets/js/summernote/summernote.min.js", 
+    "assets/js/summernote-paper-size-master/summernote-paper-size.js",
 ));
 ?>
 

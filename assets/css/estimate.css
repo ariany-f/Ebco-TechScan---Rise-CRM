@@ -1,0 +1,202 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900');
+
+html, body, div, span, applet, object, iframe,
+            h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+            a, abbr, acronym, address, big, cite, code,
+            del, dfn, em, img, ins, kbd, q, s, samp,
+            small, strike, strong, sub, sup, tt, var,
+            b, u, i, center,
+            dl, dt, dd, ol, ul, li,
+            fieldset, form, label, legend,
+            table, caption, tbody, tfoot, thead, tr, th, td,
+            article, aside, canvas, details, embed, 
+            figure, figcaption, footer, header, hgroup, 
+            menu, nav, output, ruby, section, summary,
+            time, mark, audio, video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
+            }
+            /* HTML5 display-role reset for older browsers */
+            article, aside, details, figcaption, figure, 
+            footer, header, hgroup, menu, nav, section {
+                display: block;
+            }
+            body {
+                line-height: 1;
+            }
+            ol, ul {
+                list-style: none;
+            }
+            hr.vertical {
+                width: 5px;
+                height: 40vh;
+                background-color: black;
+                border: 1px solid lightgrey;
+                margin: 0 10px;
+            }
+            blockquote, q {
+                quotes: none;
+            }
+            blockquote:before, blockquote:after,
+            q:before, q:after {
+                content: '';
+                content: none;
+            }
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+
+            /** Personalizado */
+
+            :root {
+                --primary-color: #1f497d;
+                --secondary-table-color: #cacfe1;
+            }
+            body {
+                font-family: "Montserrat", sans-serif;
+                font-weight:400;
+                margin: 0 auto;
+                color: var(--primary-color);
+                font-size: 12px;
+                line-height: 14px;
+            }
+            body b {
+                font-weight: 700;
+            }
+            body table {
+                margin: 0 auto;
+                word-spacing: 2px;
+                max-width: 98%;
+            }
+            body table td{
+                box-sizing: border-box;
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            table {
+                font-family: "Montserrat", sans-serif;
+            }
+            table tr {
+                text-align: center;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-weight:700;
+            }
+            table tr:not(.header) td {
+                padding-top: .5rem;
+                padding-bottom: .5rem;
+            }
+            table .title {
+                font-size: 16px;
+                line-height: 18px;
+            }
+            table .subtitle {
+                font-size: 14px;
+                line-height: 16px;
+                text-align: left;
+            }
+            table .content {
+                text-align: justify;
+                font-size: 14px;
+                line-height: 16px;
+            }
+            a {
+                display: inline-block;
+            }
+            table .content td{
+                padding-top: 0!important;
+                color: rgb(70, 70, 70);
+            }
+            table .assinatura img{
+                width: 50%;
+            }      
+            table .image-centro td {
+                padding-top: 1rem!important;
+                clear: both;
+            }
+            table .image-centro img{
+                width: 50%;
+            }
+            table img {
+                margin: 0 auto;
+            }
+            table .bordered-table td {
+                border: 1px outset var(--primary-color);
+                border-radius: 5px;
+                display: grid;
+                text-align: left;
+                width: 100%;
+                padding: 1rem;
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+            table.no-gut {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+            table.items, table.items td{
+                min-width: 100%;
+                border: .8px solid #ededed;
+                height: 2rem;
+                padding: 0 !important;
+                vertical-align: middle;
+                line-height: 14px;
+                font-size: 13px;
+            }
+            table.items .table-header {
+                line-height: 20px!important;
+                height: 2.2rem;
+                background-color: var(--primary-color); 
+                color: #fff;
+            }
+            table.items .table-header td{
+                border: .8px solid #395577!important;
+            }
+            table.items .table-sum {
+                background-color: var(--secondary-table-color); 
+                line-height: 20px;
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+            table.items .table-content {
+                line-height: 20px;
+                font-size: 14px;
+            }
+            .page-break {
+                page-break-inside: avoid;
+                page-break-after: always;
+            }
+            .page-break>td {
+                padding: 0!important;
+            }
+
+            /* #marker {
+                top: 1340px;
+                position: absolute;
+                display: block;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background-color: grey;
+                margin: 25px 0;
+            }
+
+            #marker:after{
+                content: ' ';
+                position: absolute;
+                width: 100%;
+                height: 5px;
+                top: -5px;
+                color: white;
+                background-color: #7a7a7a;
+                text-align: center;
+                box-shadow: inset 0px -11px 4px 4px grey;
+            } */

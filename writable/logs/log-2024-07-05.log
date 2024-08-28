@@ -1,0 +1,30 @@
+CRITICAL - 2024-07-05 12:22:27 --> syntax error, unexpected 'return' (T_RETURN)
+in APPPATH\Helpers\general_helper.php on line 673.
+ 1 APPPATH\Controllers\App_Controller.php(93): helper([...])
+ 2 APPPATH\Controllers\Security_Controller.php(17): App\Controllers\App_Controller->__construct()
+ 3 APPPATH\Controllers\Messages.php(8): App\Controllers\Security_Controller->__construct()
+ 4 SYSTEMPATH\CodeIgniter.php(911): App\Controllers\Messages->__construct()
+ 5 SYSTEMPATH\CodeIgniter.php(494): CodeIgniter\CodeIgniter->createController()
+ 6 SYSTEMPATH\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(80): CodeIgniter\CodeIgniter->run()
+ERROR - 2024-07-05 12:30:25 --> mysqli_sql_exception: Unknown column 'to' in 'field list' in E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php:295
+Stack trace:
+#0 E:\httpdocs\www\crm\system\Database\MySQLi\Connection.php(295): mysqli->query('INSERT INTO `cr...', 0)
+#1 E:\httpdocs\www\crm\system\Database\BaseConnection.php(691): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cr...')
+#2 E:\httpdocs\www\crm\system\Database\BaseConnection.php(605): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cr...')
+#3 E:\httpdocs\www\crm\system\Database\BaseBuilder.php(2309): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cr...', Array, false)
+#4 E:\httpdocs\www\crm\app\Models\Crud_model.php(230): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 E:\httpdocs\www\crm\app\Models\LogEmails_model.php(23): App\Models\Crud_model->ci_save(Array)
+#6 E:\httpdocs\www\crm\app\Helpers\general_helper.php(673): App\Models\LogEmails_model->create_log(Array)
+#7 E:\httpdocs\www\crm\app\Controllers\Estimates.php(1040): send_app_mail('ariany_f@hotmai...', 'Nova Proposta', '<table border="...', Array)
+#8 E:\httpdocs\www\crm\system\CodeIgniter.php(939): App\Controllers\Estimates->send_estimate()
+#9 E:\httpdocs\www\crm\system\CodeIgniter.php(504): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Estimates))
+#10 E:\httpdocs\www\crm\system\CodeIgniter.php(369): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 E:\httpdocs\www\crm\index.php(80): CodeIgniter\CodeIgniter->run()
+#12 {main}
+ERROR - 2024-07-05 12:32:31 --> 
+ERROR - 2024-07-05 12:32:31 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-07-05 12:32:31 --> 
+ERROR - 2024-07-05 12:33:18 --> 
+ERROR - 2024-07-05 12:33:18 --> Email: Unable to send email using SMTP. Your server might not be configured to send mail using this method.
+ERROR - 2024-07-05 12:33:18 --> 

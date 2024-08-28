@@ -93,8 +93,10 @@ class Custom_fields_model extends Crud_model {
             crm_custom_fields.placeholder,
             crm_custom_fields.example_variable_name,
             IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
-                                    AND LOCATE('crm_', crm_custom_fields.options) >= 1), (SELECT GROUP_CONCAT(mock.first_name)
-                        FROM $foreign_table_options_custom_field->options AS mock), crm_custom_fields.options) AS options,
+                                    AND LOCATE('crm_', crm_custom_fields.options) >= 1), (SELECT GROUP_CONCAT(CONCAT(mock.id, ':', mock.first_name) SEPARATOR ',')
+                 FROM $foreign_table_options_custom_field->options AS mock), 
+                crm_custom_fields.options
+            ) AS options,
             crm_custom_fields.field_type,
             crm_custom_fields.related_to,
             crm_custom_fields.sort,
@@ -189,8 +191,10 @@ class Custom_fields_model extends Crud_model {
                     crm_custom_fields.placeholder,
                     crm_custom_fields.example_variable_name,
                     IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
-                                AND LOCATE('crm_', crm_custom_fields.options) >= 1), (SELECT GROUP_CONCAT(mock.first_name)
-                    FROM $foreign_table_options_custom_field->options AS mock), crm_custom_fields.options) AS options,
+                                AND LOCATE('crm_', crm_custom_fields.options) >= 1),(SELECT GROUP_CONCAT(CONCAT(mock.id, ':', mock.first_name) SEPARATOR ',')
+                 FROM $foreign_table_options_custom_field->options AS mock), 
+                crm_custom_fields.options
+            ) AS options,
                     crm_custom_fields.field_type,
                     crm_custom_fields.related_to,
                     crm_custom_fields.sort,
@@ -274,7 +278,17 @@ class Custom_fields_model extends Crud_model {
 
         $options = explode(',', $options);
         foreach ($options as $option) {
-            $groups_dropdown[] = array("id" => $option, "text" => $option);
+            if (strpos($option, ':') !== false) {
+                $op = explode(":", $option);
+                $id = $op[0];
+                $name = $op[1];
+            }
+            else
+            {
+                $id = $option;
+                $name = $option;
+            }
+            $groups_dropdown[] = array("id" => $id, "text" => $name);
         }
 
         return json_encode($groups_dropdown);
@@ -319,8 +333,10 @@ class Custom_fields_model extends Crud_model {
                 crm_custom_fields.id,
                 crm_custom_fields.title,
                 IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
-                            AND LOCATE('crm_', crm_custom_fields.options) >= 1), (SELECT GROUP_CONCAT(mock.first_name)
-                FROM $foreign_table_options_custom_field->options AS mock), crm_custom_fields.options) AS options
+                            AND LOCATE('crm_', crm_custom_fields.options) >= 1),(SELECT GROUP_CONCAT(CONCAT(mock.id, ':', mock.first_name) SEPARATOR ',')
+                 FROM $foreign_table_options_custom_field->options AS mock), 
+                crm_custom_fields.options
+            ) AS options
                 FROM $custom_fields_table
                 WHERE $custom_fields_table.related_to='$related_to' AND $custom_fields_table.add_filter=1 AND $custom_fields_table.deleted=0 AND ($custom_fields_table.field_type='select' OR $custom_fields_table.field_type='multi_select') $where    
                 ORDER by $custom_fields_table.sort ASC";

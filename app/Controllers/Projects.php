@@ -1125,7 +1125,6 @@ class Projects extends Security_Controller {
     }
 
     /* load project overview section */
-
     function overview($project_id) {
         validate_numeric_value($project_id);
         $this->access_only_team_members();

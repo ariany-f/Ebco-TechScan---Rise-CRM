@@ -6,7 +6,8 @@
             </div>
             <div class="widget-details">
                 <h1><?php echo $total; ?></h1>
-                <span class="bg-transparent-white"><?php echo app_lang("total_clients"); ?></span>
+                <span class="bg-transparent-white"><?php echo app_lang("total_clients"); ?></span><br/>
+                <small style="color:#adb5bd;">* Não filtrável (Reflete a situação atual da base)</small>
             </div>
         </div>
     </div>

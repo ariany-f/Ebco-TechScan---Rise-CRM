@@ -45,7 +45,7 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
             <div style="display: flex;">
                 <!-- Filtro para Datas dos gráficos -->
                 <div class="row" style="align-items: center;">
-                    <label for="daterange" class="col-md-2">Filtrar Datas </label>
+                    <label for="daterange" class="col-md-2">Filtrar Período</label>
                     <div class="col-md-6">
                         <input class="form-control" type="text" name="daterange" id="date_range" value="" />
                         <input type="hidden" id="date_start" value="">

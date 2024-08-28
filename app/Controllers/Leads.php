@@ -1096,9 +1096,12 @@ class Leads extends Security_Controller {
             }
         
             //check duplicate cnpj, if found then show an error message
-            if ($this->Clients_model->is_duplicate_cnpj($data["cnpj"], $client_id)) {
-                echo json_encode(array("success" => false, 'message' => app_lang("account_already_exists_for_your_company_name")));
-                exit();
+            if($data["cnpj"] != '')
+            {
+                if ($this->Clients_model->is_duplicate_cnpj($data["cnpj"], $client_id)) {
+                    echo json_encode(array("success" => false, 'message' => app_lang("account_already_exists_for_your_company_cnpj")));
+                    exit();
+                }
             }
 
             $save_client_id = $this->Clients_model->ci_save($data, $client_id);

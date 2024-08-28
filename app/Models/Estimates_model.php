@@ -30,6 +30,10 @@ class Estimates_model extends Crud_model {
         if ($client_id) {
             $where .= " AND $estimates_table.client_id=$client_id";
         }
+        $is_bidding = $this->_get_clean_value($options, "is_bidding");
+        if ($is_bidding) {
+            $where .= " AND $estimates_table.is_bidding=$is_bidding";
+        }
 
         $start_date = $this->_get_clean_value($options, "start_date");
         $end_date = $this->_get_clean_value($options, "end_date");
@@ -96,6 +100,19 @@ class Estimates_model extends Crud_model {
         $join_custom_fieds
         WHERE $estimates_table.deleted=0 $where $custom_fields_where";
         return $this->db->query($sql);
+    }
+    
+
+    function is_duplicate_code($estimate_number, $id = 0) {
+
+        $result = $this->get_all_regex(array("estimate_number" => $estimate_number), 1000000, 0, $estimate_number);
+
+
+        if (count($result->getResult()) && $result->getRow()->id != $id) {
+            return $result->getRow();
+        } else {
+            return false;
+        }
     }
 
     function get_estimate_total_summary($estimate_id = 0) {
@@ -244,4 +261,519 @@ class Estimates_model extends Crud_model {
         return $this->db->query($sql);
     }
 
+    /**
+     * Adicionar custom field para o cf-4 ao buscar vendedores
+     */
+    function get_sellers_estimates($options = array()) {
+
+        $this->db->query('SET SQL_BIG_SELECTS=1');
+
+        $where = "";
+        $seller = $this->_get_clean_value($options, "seller_id");
+        if ($seller) {
+            $where .= " AND u.id=$seller";
+        }
+
+        $pos = $this->_get_clean_value($options, "pos");
+        if ($pos) {
+            $where .= " AND u.role_id=10";
+        }
+        else
+        {
+            $where .= " AND u.role_id <> 10";
+        }
+        
+        $month = $this->_get_clean_value($options, "month");
+        if ($month) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%m') =$month";
+        }
+
+        $year = $this->_get_clean_value($options, "year");
+        if ($year) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%Y') =$year";
+        }
+        
+        $start_date = $this->_get_clean_value($options, "start_date");
+        $end_date = $this->_get_clean_value($options, "end_date");
+        if ($start_date && $end_date) {
+            $where .= " AND (e.estimate_date BETWEEN '$start_date' AND '$end_date') ";
+        }
+
+        $limit_offset = "";
+        $limit = $this->_get_clean_value($options, "limit");
+        if ($limit) {
+            $skip = $this->_get_clean_value($options, "skip");
+            $offset = $skip ? $skip : 0;
+            $limit_offset = " LIMIT $limit OFFSET $offset ";
+        }
+
+        $available_order_by_list = array(
+            'main_data.Mes',
+            'main_data.Vendedor'
+        );
+
+        $order_by = get_array_value($available_order_by_list, $this->_get_clean_value($options, "order_by"));
+
+        if ($order_by) {
+            $order_dir = $this->_get_clean_value($options, "order_dir");
+            $order = " ORDER BY $order_by $order_dir ";
+        }
+
+        $sql = "SELECT 
+            DATE_FORMAT(STR_TO_DATE(main_data.Mes, '%Y-%m'), '%M') AS 'Mes',
+            main_data.Vendedor,
+            main_data.PropostasEmitidas AS 'Propostas_Emitidas',
+            main_data.PropostasFechadas AS 'Propostas_Fechadas',
+            main_data.PercentualConversao AS 'Conversao',
+            CONCAT('R$', FORMAT(IFNULL(valor_data.ValorEmitido, 0), 2, 'de_DE')) AS 'Valor_Emitido',
+            CONCAT('R$', FORMAT(IFNULL(valor_data.ValorFechado, 0), 2, 'de_DE')) AS 'Valor_Fechado'
+        FROM
+            (
+                SELECT 
+                    DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
+                    CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type) AS 'Vendedor',
+                    COUNT(DISTINCT e.id) AS 'PropostasEmitidas',
+                    SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) AS 'PropostasFechadas',
+                    CONCAT(ROUND(SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(DISTINCT e.id), 0), 2), '%') AS 'PercentualConversao'
+                FROM 
+                    crm_estimates e
+                JOIN 
+                    crm_users u ON e.created_by = u.id
+                WHERE 
+                    e.deleted = 0
+                    $where 
+                GROUP BY 
+                    DATE_FORMAT(e.estimate_date, '%Y-%m'), CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type)
+            ) AS main_data
+        LEFT JOIN 
+            (
+                SELECT 
+                    DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
+                    CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type) AS 'Vendedor',
+                    SUM(ei.quantity * ei.rate) AS 'ValorEmitido',
+                    SUM(CASE WHEN e.status = 'accepted' THEN ei.quantity * ei.rate ELSE 0 END) AS 'ValorFechado'
+                FROM 
+                    crm_estimates e
+                JOIN 
+                    crm_users u ON e.created_by = u.id
+                LEFT JOIN 
+                    crm_estimate_items ei ON e.id = ei.estimate_id
+                LEFT JOIN 
+                    crm_custom_field_values cfv ON e.id = cfv.related_to_id AND cfv.related_to_type = 'estimates'
+                LEFT JOIN 
+                    crm_custom_fields cf ON cfv.custom_field_id = cf.id AND cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+                WHERE 
+                    e.deleted = 0
+                    $where
+                GROUP BY 
+                    DATE_FORMAT(e.estimate_date, '%Y-%m'), CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type)
+            ) AS valor_data
+        ON main_data.Mes = valor_data.Mes AND main_data.Vendedor = valor_data.Vendedor
+        $order $limit_offset;";
+
+        $raw_query = $this->db->query($sql);
+        $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();
+
+        if ($limit) {
+            return array(
+                "data" => $raw_query->getResult(),
+                "recordsTotal" => $total_rows->found_rows,
+                "recordsFiltered" => $total_rows->found_rows,
+            );
+        } else {
+            return $raw_query;
+        }
+    }
+
+    function get_conversion_data($options = array(), $date_start, $date_end) {
+        $where = "";
+        
+        $month = $this->_get_clean_value($options, "month");
+        if ($month) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%m') = $month";
+        }
+    
+        $year = $this->_get_clean_value($options, "year");
+        if ($year) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%Y') = $year";
+        }
+        
+        if ($date_start && $date_end) {
+            $where .= " AND (e.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+    
+        $sql = "
+            SELECT 
+                ROUND(
+                    (SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) * 100.0) / NULLIF(COUNT(DISTINCT e.id), 0), 
+                    2
+                ) AS 'PercentualConversao'
+            FROM 
+                crm_estimates e
+            WHERE 
+                e.deleted = 0
+                AND e.is_bidding = 0
+                $where
+        ";
+    
+        $result = $this->db->query($sql)->getRow();
+    
+        return $result ? $result->PercentualConversao : 0;
+    }
+    
+
+    function get_conversion_bidding_data($options = array()) {
+        $where = "";
+        
+        $month = $this->_get_clean_value($options, "month");
+        if ($month) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%m') = $month";
+        }
+    
+        $year = $this->_get_clean_value($options, "year");
+        if ($year) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%Y') = $year";
+        }
+        
+        $start_date = $this->_get_clean_value($options, "start_date");
+        $end_date = $this->_get_clean_value($options, "end_date");
+        if ($start_date && $end_date) {
+            $where .= " AND (e.estimate_date BETWEEN '$start_date' AND '$end_date') ";
+        }
+    
+        $sql = "
+            SELECT 
+                ROUND(
+                    (SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) * 100.0) / NULLIF(COUNT(DISTINCT e.id), 0), 
+                    2
+                ) AS 'PercentualConversao'
+            FROM 
+                crm_estimates e
+            WHERE 
+                e.deleted = 0
+                AND e.is_bidding = 1
+                $where
+        ";
+    
+        $result = $this->db->query($sql)->getRow();
+    
+        return $result ? $result->PercentualConversao : 0;
+    }
+    
+
+    function get_coligadas_estimates($options = array()) {
+        
+        $this->db->query('SET SQL_BIG_SELECTS=1');
+        
+        $where = "";  
+
+        $coligada = $this->_get_clean_value($options, "coligada");
+        if ($coligada) {
+            $where .= " AND e.company_id=$coligada";
+        }
+      
+        $month = $this->_get_clean_value($options, "month");
+        if ($month) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%m') =$month";
+        }
+
+        $year = $this->_get_clean_value($options, "year");
+        if ($year) {
+            $where .= " AND DATE_FORMAT(e.estimate_date, '%Y') =$year";
+        }
+        
+        $start_date = $this->_get_clean_value($options, "start_date");
+        $end_date = $this->_get_clean_value($options, "end_date");
+        if ($start_date && $end_date) {
+            $where .= " AND (e.estimate_date BETWEEN '$start_date' AND '$end_date') ";
+        }
+
+        $limit_offset = "";
+        $limit = $this->_get_clean_value($options, "limit");
+        if ($limit) {
+            $skip = $this->_get_clean_value($options, "skip");
+            $offset = $skip ? $skip : 0;
+            $limit_offset = " LIMIT $limit OFFSET $offset ";
+        }
+
+        $available_order_by_list = array(
+            'main_data.Mes'
+        );
+
+        $order_by = get_array_value($available_order_by_list, $this->_get_clean_value($options, "order_by"));
+
+        if ($order_by) {
+            $order_dir = $this->_get_clean_value($options, "order_dir");
+            $order = " ORDER BY $order_by $order_dir ";
+        }
+
+        $sql = "SELECT 
+                    DATE_FORMAT(STR_TO_DATE(main_data.Mes, '%Y-%m'), '%M') AS 'Mes',
+                    main_data.company_id AS 'ID_Empresa',
+                    main_data.company_name AS 'Nome_Empresa',
+                    main_data.PropostasEmitidas AS 'Propostas_Emitidas',
+                    main_data.PropostasFechadas AS 'Propostas_Fechadas',
+                    main_data.PercentualConversao AS 'Conversao',
+                    CONCAT('R$', FORMAT(IFNULL(valor_data.ValorEmitido, 0), 2, 'de_DE')) AS 'Valor_Emitido',
+                    CONCAT('R$', FORMAT(IFNULL(valor_data.ValorFechado, 0), 2, 'de_DE')) AS 'Valor_Fechado'
+                FROM
+                    (
+                        SELECT 
+                            DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
+                            e.company_id,
+                            c.name AS 'company_name',
+                            COUNT(DISTINCT e.id) AS 'PropostasEmitidas',
+                            SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) AS 'PropostasFechadas',
+                            CONCAT(ROUND(SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(DISTINCT e.id), 0), 2), '%') AS 'PercentualConversao'
+                        FROM 
+                            crm_estimates e
+                        JOIN 
+                            crm_company c ON e.company_id = c.id
+                        WHERE 
+                            e.deleted = 0
+                            $where
+                        GROUP BY 
+                            DATE_FORMAT(e.estimate_date, '%Y-%m'), e.company_id, c.name
+                    ) AS main_data
+                LEFT JOIN 
+                    (
+                        SELECT 
+                            DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
+                            e.company_id,
+                            SUM(ei.quantity * ei.rate) AS 'ValorEmitido',
+                            SUM(CASE WHEN e.status = 'accepted' THEN ei.quantity * ei.rate ELSE 0 END) AS 'ValorFechado'
+                        FROM 
+                            crm_estimates e
+                        JOIN 
+                            crm_company c ON e.company_id = c.id
+                        LEFT JOIN 
+                            crm_estimate_items ei ON e.id = ei.estimate_id
+                        LEFT JOIN 
+                            crm_custom_field_values cfv ON e.id = cfv.related_to_id AND cfv.related_to_type = 'estimates'
+                        LEFT JOIN 
+                            crm_custom_fields cf ON cfv.custom_field_id = cf.id AND cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+                        WHERE 
+                            e.deleted = 0
+                            $where
+                        GROUP BY 
+                            DATE_FORMAT(e.estimate_date, '%Y-%m'), e.company_id
+                    ) AS valor_data
+                ON main_data.Mes = valor_data.Mes AND main_data.company_id = valor_data.company_id
+            $order $limit_offset;";
+
+        $raw_query = $this->db->query($sql);
+        $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();
+
+        if ($limit) {
+            return array(
+                "data" => $raw_query->getResult(),
+                "recordsTotal" => $total_rows->found_rows,
+                "recordsFiltered" => $total_rows->found_rows,
+            );
+        } else {
+            return $raw_query;
+        }
+    }
+
+    function count_total_emmited_estimates($options = array(), $date_start = null, $date_end = null) {
+        $clients_table = $this->db->prefixTable('clients');
+        $tickets_table = $this->db->prefixTable('tickets');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+        $orders_table = $this->db->prefixTable('orders');
+        $proposals_table = $this->db->prefixTable('proposals');
+
+        $where = "";
+
+        if ($date_start && $date_end) {
+            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+
+
+        $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
+        FROM $estimates_table 
+        WHERE $estimates_table.deleted=0 AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 0 $where";
+        return $this->db->query($sql)->getRow()->total;
+    }
+
+    function count_total_approved_estimates($options = array(), $date_start = null, $date_end = null) {
+        $clients_table = $this->db->prefixTable('clients');
+        $tickets_table = $this->db->prefixTable('tickets');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+        $orders_table = $this->db->prefixTable('orders');
+        $proposals_table = $this->db->prefixTable('proposals');
+
+        $where = "";
+        
+        if ($date_start && $date_end) {
+            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+
+
+        $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
+        FROM $estimates_table 
+        WHERE $estimates_table.deleted=0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 0 $where";
+        return $this->db->query($sql)->getRow()->total;
+    }
+
+    function count_total_emmited_bidding_estimates($options = array(), $date_start = null, $date_end = null) {
+        $clients_table = $this->db->prefixTable('clients');
+        $tickets_table = $this->db->prefixTable('tickets');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+        $orders_table = $this->db->prefixTable('orders');
+        $proposals_table = $this->db->prefixTable('proposals');
+
+        $where = "";
+        
+        if ($date_start && $date_end) {
+            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+
+
+        $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
+        FROM $estimates_table 
+        WHERE $estimates_table.deleted=0 AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 1 $where";
+        return $this->db->query($sql)->getRow()->total;
+    }
+
+    function count_total_approved_bidding_estimates($options = array(), $date_start = null, $date_end = null) {
+        $clients_table = $this->db->prefixTable('clients');
+        $tickets_table = $this->db->prefixTable('tickets');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+        $orders_table = $this->db->prefixTable('orders');
+        $proposals_table = $this->db->prefixTable('proposals');
+
+        $where = "";
+        
+        if ($date_start && $date_end) {
+            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+
+
+        $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
+        FROM $estimates_table 
+        WHERE $estimates_table.deleted=0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where";
+        return $this->db->query($sql)->getRow()->total;
+    }
+
+    function count_total_amount_estimates($options = array(), $date_start = null, $date_end = null) {
+        $clients_table = $this->db->prefixTable('clients');
+        $tickets_table = $this->db->prefixTable('tickets');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+        $orders_table = $this->db->prefixTable('orders');
+        $proposals_table = $this->db->prefixTable('proposals');
+        $estimate_items_table = $this->db->prefixTable('estimate_items');
+        
+        $where = "";
+
+        $item = $this->_get_clean_value($options, "item");
+        if ($item) {
+            $item_txt = "AND (";
+            foreach($item as $k => $it)
+            {
+                $item_txt .= "($estimate_items_table.title LIKE '%$it%' OR $estimate_items_table.description LIKE '%$it%')";
+
+                if(($k+1) < count($item))
+                {
+                    $item_txt .= " OR";
+                }
+                else
+                {
+                    $item_txt .= ")";
+                }
+            }
+            $where .= $item_txt;
+        }
+        
+        if ($date_start && $date_end) {
+            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+
+
+        
+        $sql = "SELECT SUM($estimate_items_table.quantity * $estimate_items_table.rate) AS total
+                FROM $estimate_items_table
+                INNER JOIN $estimates_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 0
+                WHERE $estimate_items_table.deleted = 0 $where";
+        
+        return $this->db->query($sql)->getRow()->total;
+    }
+    
+    function count_total_amount_bidding_estimates($options = array(), $date_start = null, $date_end = null) {
+        $clients_table = $this->db->prefixTable('clients');
+        $tickets_table = $this->db->prefixTable('tickets');
+        $invoices_table = $this->db->prefixTable('invoices');
+        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $invoice_items_table = $this->db->prefixTable('invoice_items');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $projects_table = $this->db->prefixTable('projects');
+        $estimates_table = $this->db->prefixTable('estimates');
+        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
+        $orders_table = $this->db->prefixTable('orders');
+        $proposals_table = $this->db->prefixTable('proposals');
+        $estimate_items_table = $this->db->prefixTable('estimate_items');
+        
+        $where = "";
+
+        $item = $this->_get_clean_value($options, "item");
+        if ($item) {
+            $item_txt = "AND (";
+            foreach($item as $k => $it)
+            {
+                $item_txt .= "($estimate_items_table.title LIKE '%$it%' OR $estimate_items_table.description LIKE '%$it%')";
+
+                if(($k+1) < count($item))
+                {
+                    $item_txt .= " OR";
+                }
+                else
+                {
+                    $item_txt .= ")";
+                }
+            }
+            $where .= $item_txt;
+        }
+
+        
+        if ($date_start && $date_end) {
+            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+
+        
+        $sql = "SELECT SUM($estimate_items_table.quantity * $estimate_items_table.rate) AS total
+                FROM $estimate_items_table
+                INNER JOIN $estimates_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1
+                WHERE $estimate_items_table.deleted = 0 $where";
+        
+        return $this->db->query($sql)->getRow()->total;
+    }
 }
