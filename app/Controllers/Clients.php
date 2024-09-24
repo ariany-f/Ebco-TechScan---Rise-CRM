@@ -255,7 +255,7 @@ class Clients extends Security_Controller {
         $collaborator_id = get_array_value($collaborator_parts, 0);
         $collaborator_name = get_array_value($collaborator_parts, 1);
 
-        $image_url = get_avatar(get_array_value($collaborator_parts, 2));
+        $image_url = get_avatar(get_array_value($collaborator_parts, 2), $collaborator_name);
 
         $collaboratr_image = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='$collaborator_name'></span> $collaborator_name";
        
@@ -320,7 +320,7 @@ class Clients extends Security_Controller {
         $collaborator_id = get_array_value($collaborator_parts, 0);
         $collaborator_name = get_array_value($collaborator_parts, 1);
 
-        $image_url = get_avatar(get_array_value($collaborator_parts, 2));
+        $image_url = get_avatar(get_array_value($collaborator_parts, 2), $collaborator_name);
 
         $collaboratr_image = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='$collaborator_name'></span> $collaborator_name";
        
@@ -421,7 +421,7 @@ class Clients extends Security_Controller {
     private function _make_row($data, $custom_fields) {
 
 
-        $image_url = get_avatar($data->contact_avatar);
+        $image_url = get_avatar($data->contact_avatar, $data->primary_contact);
         $contact = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='...'></span> $data->primary_contact";
         $primary_contact = get_client_contact_profile_link($data->primary_contact_id, $contact);
 
@@ -786,7 +786,7 @@ class Clients extends Security_Controller {
     private function _make_file_row($data) {
         $file_icon = get_file_icon(strtolower(pathinfo($data->file_name, PATHINFO_EXTENSION)));
 
-        $image_url = get_avatar($data->uploaded_by_user_image);
+        $image_url = get_avatar($data->uploaded_by_user_image, $data->uploaded_by_user_name);
         $uploaded_by = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='...'></span> $data->uploaded_by_user_name";
 
         if ($data->uploaded_by_user_type == "staff") {
@@ -1447,7 +1447,7 @@ class Clients extends Security_Controller {
     /* prepare a row of contact list table */
 
     private function _make_contact_row($data, $custom_fields, $hide_primary_contact_label = false) {
-        $image_url = get_avatar($data->image);
+        $image_url = get_avatar($data->image, ($data->first_name . ' ' . $data->last_name));
         $user_avatar = "<span class='avatar avatar-xs'><img src='$image_url' alt='...'></span>";
         $full_name = $data->first_name . " " . $data->last_name . " ";
         $primary_contact = "";
@@ -1467,10 +1467,19 @@ class Clients extends Security_Controller {
 
         $client_info = $this->Clients_model->get_one($data->client_id);
 
+        if($client_info->is_lead)
+        {
+           $client_link = anchor(get_uri("leads/view/" . $data->client_id), $client_info->company_name);
+        }
+        else
+        {
+            $client_link = anchor(get_uri("clients/view/" . $data->client_id), $client_info->company_name);
+        }
+
         $row_data = array(
             $user_avatar,
             $contact_link,
-            anchor(get_uri("clients/view/" . $data->client_id), $client_info->company_name),
+            $client_link,
             $data->job_title,
             $data->email,
             $data->phone ? $data->phone : "-",

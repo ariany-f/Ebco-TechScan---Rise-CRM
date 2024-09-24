@@ -1870,6 +1870,7 @@ $lang["assignee"] = "Cessionária";
 $lang["upload_and_crop"] = "Carregar e cortar";
 
 $lang["active_members_on_projects"] = "Membros ativos em projetos";
+$lang["clients_has_new_projects"] = "Clientes com propostas fechadas";
 
 /* Version 2.6.1 */
 
@@ -1882,6 +1883,7 @@ $lang["re_captcha_info_text"] = "Antes de fazer logout, abra um novo navegador e
 $lang["yes_assigned_tickets_only"] = "Sim, apenas tickets atribuídos";
 $lang["no_such_custom_field_found"] = "Não há campo personalizado encontrado.";
 $lang["open_in_google_calendar"] = "Abra no google calendar";
+$lang["export_to_outlook"] = "Exportar para Outlook";
 
 $lang["enable_embedded_form_to_get_tickets"] = "Habilitar formulário incorporado para obter tickets";
 $lang["submit_your_request"] = "Envie sua solicitação";

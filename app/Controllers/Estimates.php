@@ -454,6 +454,8 @@ class Estimates extends Security_Controller {
         $this->access_only_allowed_members();
 
         $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
+        
+        $seller_ids = $this->request->getPost('seller_ids') ? implode(",", $this->request->getPost('seller_ids')) : "";
 
         $options = array(
             "status" => $this->request->getPost("status"),
@@ -462,6 +464,7 @@ class Estimates extends Security_Controller {
             "is_bidding" => $this->request->getPost("is_bidding"),
             "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
             "custom_fields" => $custom_fields,
+            "seller_ids" => $seller_ids,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("estimates", $this->login_user->is_admin, $this->login_user->user_type)
         );
 
@@ -580,7 +583,7 @@ class Estimates extends Security_Controller {
                 foreach( $collaborators_array as $user )
                 {
                     $user_info = $this->Users_model->get_one($user);
-                    $user_result .= "<div class='user-avatar avatar-30 avatar-circle' data-bs-toggle='tooltip' title='" . $user_info->first_name .' '.$user_info->last_name . "'><img alt='' src='" . get_avatar($user_info->image) . "'></div>";
+                    $user_result .= "<div class='user-avatar avatar-30 avatar-circle' data-bs-toggle='tooltip' title='" . $user_info->first_name .' '.$user_info->last_name . "'><img alt='' src='" . get_avatar($user_info->image, ($user_info->first_name .' '.$user_info->last_name)) . "'></div>";
                 }
                 $row_data[] = "<div class='w100 avatar-group'>" .  $user_result . "</div>";
             }
@@ -1815,7 +1818,7 @@ class Estimates extends Security_Controller {
         $collaborator_id = get_array_value($collaborator_parts, 0);
         $collaborator_name = get_array_value($collaborator_parts, 1);
 
-        $image_url = get_avatar(get_array_value($collaborator_parts, 2));
+        $image_url = get_avatar(get_array_value($collaborator_parts, 2), $collaborator_name);
 
         $collaboratr_image = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='$collaborator_name'></span> $collaborator_name";
        

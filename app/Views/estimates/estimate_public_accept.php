@@ -60,14 +60,31 @@
                         </div>
                         <hr>
                     </div>
-                    <div class="d-flex">
-                        <div class="col-6" style="padding: 0 25px;">
+                    <div class="d-flex" style="max-height: 60vh;">
+                        <div class="col-6" style="padding: 0 25px;overflow-y: scroll;">
                             <?php if (isset($estimate_info->custom_fields) && $estimate_info->custom_fields) {
                                 foreach ($estimate_info->custom_fields as $field) {
                                     if($field->title !== "Termômetro" && $field->title !== "Valor Estimado")
                                     {
                                         if ($field->value) {
-                                            echo "<span style='display: flex;flex-direction: column;gap: 3px;'>" . $field->title . ": <b style='font-size:1rem;padding-top:5px;'>" . $field->value . "</b></span><br />";
+                                            
+                                            if($field->title === "Vendedor")
+                                            {
+                                                // Converte a string de opções em um array
+                                                $optionsArray = explode(',', $field->options);
+                                                $nomeVendedor = null;
+        
+                                                foreach ($optionsArray as $option) {
+                                                    list($id, $name) = explode(':', $option, 2);
+                                                    if ($id == $field->value) {
+                                                        echo "<span style='display: flex;flex-direction: column;gap: 3px;'>" . $field->title . ": <b style='font-size:1rem;padding-top:5px;line-height: 1.1rem;'>" .  trim($name) . "</b></span><br />";
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                echo "<span style='display: flex;flex-direction: column;gap: 3px;'>" . $field->title . ": <b style='font-size:1rem;padding-top:5px;line-height: 1.1rem;'>" . $field->value . "</b></span><br />";
+                                            }
                                         }
                                     }
                                 }

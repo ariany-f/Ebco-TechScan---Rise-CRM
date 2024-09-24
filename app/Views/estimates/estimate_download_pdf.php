@@ -190,7 +190,18 @@
                 page-break-inside: avoid;
                 page-break-after: always;
             }
-            
+            img:not(.max-logo-size) {
+                page-break-inside: avoid;
+                max-width: 100%;  /* Ajuste para não exceder o tamanho da célula */
+                max-height: 100%; /* Ajuste para não exceder o tamanho da célula */
+                height: auto;
+                width: auto;
+                display: block; /* Evita espaços extras abaixo da imagem */
+
+            }
+            tr:has(img), td:has(img) {
+                page-break-inside: avoid;
+            }
             .page-break>td {
                 padding: 0!important;
             }
@@ -238,16 +249,13 @@
                                 //.save() Download PDF
                                 html2pdf().set(options).from(noButtonsDiv).toPdf().get('pdf').then((pdf) => {
                                    
-                                    
                                     const e = pdf.internal.collections.addImage_images;
-                                    console.log(e)
                                     for (let i in e) {
                                         e[i].height <= 20 ? pdf.deletePage(+i + 1) : null;
                                     }
                                     
                                     // handle your result here...
                                     var totalPages = pdf.internal.getNumberOfPages();
-
 
                                     for (let i = 1; i <= totalPages; i++) {
                                         // set footer to every page

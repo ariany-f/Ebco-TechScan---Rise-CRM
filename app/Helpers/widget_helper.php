@@ -1210,6 +1210,33 @@ if (!function_exists('total_emmited_estimates_widget')) {
 }
 
 /**
+ * get total rejected estimates
+ * 
+ * @return html
+ */
+if (!function_exists('total_rejected_estimates_widget')) {
+
+    function total_rejected_estimates_widget($show_own_clients_only_user_id = "", $allowed_client_groups = "") {
+        $Estimates_model = model("App\Models\Estimates_model");
+          
+        $date_start = null;
+        $date_end = null;
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
+            $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
+            $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+
+        $view_data["total"] = $Estimates_model->count_total_rejected_estimates(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $template = new Template();
+        return $template->view("estimates/widgets/total_rejected_estimates_widget", $view_data);
+    }
+
+}
+
+/**
  * get total conversion estimates
  * 
  * @return html
@@ -2491,6 +2518,124 @@ if (!function_exists('pos_venda_sellers_estimates_list_widget')) {
     }
 }
 
+/**
+ * PROPOSTAS RASCUNHO POR VENDEDOR
+ * 
+ * @return html
+ */
+if (!function_exists('estimates_draft_by_seller_widget')) {
+
+    function estimates_draft_by_seller_widget() {
+        $Estimates_model = model("App\Models\Estimates_model");
+        $Custom_fields_model = model("App\Models\Custom_fields_model");
+
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        $custom_fields = $Custom_fields_model->get_available_fields_for_table("estimates", true, true);
+      
+        $options = array(
+            "status" => 'draft',
+            "is_bidding" => 0,
+            "custom_fields" => $custom_fields
+        );
+                
+        $custom_headers = $Custom_fields_model->get_custom_field_headers_for_table("estimates", true, true);
+            // Remover a vírgula inicial
+        $jsonData = ltrim($custom_headers, ',');
+
+        // Adicionar colchetes para transformar em um JSON válido
+        $jsonData = '[' . $jsonData . ']';
+
+        // Decodificar o JSON para um array PHP
+        $arrayData = json_decode($jsonData, true);
+
+        // Verificar se a decodificação foi bem-sucedida
+        if (json_last_error() === JSON_ERROR_NONE) {
+            // Iterar pelo array e substituir objetos indesejados
+            foreach ($arrayData as &$item) {
+                if (!in_array($item['title'], ['Termômetro', 'Valor Estimado'])) {
+                    // Substituir o objeto por um novo JSON
+                    $item = ['visible' => false, 'searchable' => false];
+                }
+            }
+
+            // Codificar de volta para JSON
+            $jsonResult = json_encode($arrayData);
+
+            // Remover os colchetes e adicionar a vírgula no início
+            $jsonResult = ',' . trim($jsonResult, '[]');
+
+            // Exibir o resultado
+            $view_data["custom_field_headers"] = $jsonResult;
+        }
+
+        $view_data['data'] = $Estimates_model->get_details($options)->getResult();
+        $template = new Template();
+
+        return $template->view("estimates/widgets/estimates_draft_by_seller_widget", $view_data);
+    }
+}
+
+
+/**
+ * PROPOSTAS ENVIADAS POR VENDEDOR
+ * 
+ * @return html
+ */
+if (!function_exists('estimates_sent_by_seller_widget')) {
+
+    function estimates_sent_by_seller_widget() {
+        $Estimates_model = model("App\Models\Estimates_model");
+        $Custom_fields_model = model("App\Models\Custom_fields_model");
+
+        $queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $queries);
+
+        $custom_fields = $Custom_fields_model->get_available_fields_for_table("estimates", true, true);
+      
+        $options = array(
+            "status" => 'sent',
+            "is_bidding" => 0,
+            "custom_fields" => $custom_fields
+        );
+                
+        $custom_headers = $Custom_fields_model->get_custom_field_headers_for_table("estimates", true, true);
+            // Remover a vírgula inicial
+        $jsonData = ltrim($custom_headers, ',');
+
+        // Adicionar colchetes para transformar em um JSON válido
+        $jsonData = '[' . $jsonData . ']';
+
+        // Decodificar o JSON para um array PHP
+        $arrayData = json_decode($jsonData, true);
+
+        // Verificar se a decodificação foi bem-sucedida
+        if (json_last_error() === JSON_ERROR_NONE) {
+            // Iterar pelo array e substituir objetos indesejados
+            foreach ($arrayData as &$item) {
+                if (!in_array($item['title'], ['Termômetro', 'Valor Estimado'])) {
+                    // Substituir o objeto por um novo JSON
+                    $item = ['visible' => false, 'searchable' => false];
+                }
+            }
+
+            // Codificar de volta para JSON
+            $jsonResult = json_encode($arrayData);
+
+            // Remover os colchetes e adicionar a vírgula no início
+            $jsonResult = ',' . trim($jsonResult, '[]');
+
+            // Exibir o resultado
+            $view_data["custom_field_headers"] = $jsonResult;
+        }
+
+        $view_data['data'] = $Estimates_model->get_details($options)->getResult();
+        $template = new Template();
+
+        return $template->view("estimates/widgets/estimates_sent_by_seller_widget", $view_data);
+    }
+}
 
 /**
  * PROPOSTAS EMITIDASxFECHADAS POR COLIGADA

@@ -142,7 +142,7 @@ class Messages extends Security_Controller {
     /* prepare a row of message list table */
 
     private function _make_row($data, $mode = "", $return_only_message = false, $online_status = false) {
-        $image_url = get_avatar($data->user_image);
+        $image_url = get_avatar($data->user_image, $data->user_name);
         $created_at = format_to_relative_time($data->created_at);
         $message_id = $data->main_message_id;
         $label = "";

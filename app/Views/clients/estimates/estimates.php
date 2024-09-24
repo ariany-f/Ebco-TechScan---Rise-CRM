@@ -31,6 +31,7 @@
                 {title: "<?php echo app_lang("estimate_type") ?>", "iDataSort": 2, "class": "w20p"},
                 {title: "<?php echo app_lang("amount") ?>", "class": "text-right w20p"},
                 {title: "<?php echo app_lang("status") ?>", "class": "text-center w20p"},
+                {visible: false, searchable: false},
                 {visible: showCommentOption, title: '<i data-feather="message-circle" class="icon-16"></i>', "class": "text-center w50"}
                 <?php echo $custom_field_headers; ?>,
                 {visible: false}

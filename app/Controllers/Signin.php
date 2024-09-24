@@ -110,6 +110,7 @@ class Signin extends App_Controller {
     }
 
     function sign_out() {
+       
         $this->Users_model->sign_out();
     }
 

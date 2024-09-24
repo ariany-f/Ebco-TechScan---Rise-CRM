@@ -1391,7 +1391,7 @@ class Projects extends Security_Controller {
     /* prepare a row of project member list */
 
     private function _make_project_member_row($data, $can_send_message_to_client = false) {
-        $member_image = "<span class='avatar avatar-sm'><img src='" . get_avatar($data->member_image) . "' alt='...'></span> ";
+        $member_image = "<span class='avatar avatar-sm'><img src='" . get_avatar($data->member_image, $data->member_name) . "' alt='...'></span> ";
 
         if ($data->user_type == "staff") {
             $member = get_team_member_profile_link($data->user_id, $member_image);
@@ -1881,7 +1881,7 @@ class Projects extends Security_Controller {
     /* prepare a row of timesheet list table */
 
     private function _make_timesheet_row($data, $custom_fields) {
-        $image_url = get_avatar($data->logged_by_avatar);
+        $image_url = get_avatar($data->logged_by_avatar, $data->logged_by_user);
         $user = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt=''></span> $data->logged_by_user";
 
         $start_time = $data->start_time;
@@ -2011,7 +2011,7 @@ class Projects extends Security_Controller {
             $task_title = "-";
 
             if ($group_by != "task") {
-                $image_url = get_avatar($data->logged_by_avatar);
+                $image_url = get_avatar($data->logged_by_avatar, $data->logged_by_user);
                 $user = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt=''></span> $data->logged_by_user";
 
                 $member = get_team_member_profile_link($data->user_id, $user);
@@ -3751,7 +3751,7 @@ class Projects extends Security_Controller {
         $assigned_to = "-";
 
         if ($data->assigned_to) {
-            $image_url = get_avatar($data->assigned_to_avatar);
+            $image_url = get_avatar($data->assigned_to_avatar, $data->assigned_to_user);
             $assigned_to_user = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='...'></span> $data->assigned_to_user";
             $assigned_to = get_team_member_profile_link($data->assigned_to, $assigned_to_user);
 
@@ -3850,7 +3850,7 @@ class Projects extends Security_Controller {
                 $collaborator_id = get_array_value($collaborator_parts, 0);
                 $collaborator_name = get_array_value($collaborator_parts, 1);
 
-                $image_url = get_avatar(get_array_value($collaborator_parts, 2));
+                $image_url = get_avatar(get_array_value($collaborator_parts, 2), $collaborator_name);
                 $user_type = get_array_value($collaborator_parts, 3);
 
                 $collaboratr_image = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='...'></span>";
@@ -4451,7 +4451,7 @@ class Projects extends Security_Controller {
     private function _make_file_row($data, $custom_fields) {
         $file_icon = get_file_icon(strtolower(pathinfo($data->file_name, PATHINFO_EXTENSION)));
 
-        $image_url = get_avatar($data->uploaded_by_user_image);
+        $image_url = get_avatar($data->uploaded_by_user_image, $data->uploaded_by_user_name);
         $uploaded_by = "<span class='avatar avatar-xs mr10'><img src='$image_url' alt='...'></span> $data->uploaded_by_user_name";
 
         if ($data->uploaded_by_user_type == "staff") {
@@ -5196,7 +5196,7 @@ class Projects extends Security_Controller {
         $user_result = array();
         foreach ($timesheet_users_result AS $user) {
             $time = convert_seconds_to_time_format($user->total_sec);
-            $user_result[] = "<div class='user-avatar avatar-30 avatar-circle' data-bs-toggle='tooltip' title='" . $user->user_name . " - " . $time . "'><img alt='' src='" . get_avatar($user->user_avatar) . "'></div>";
+            $user_result[] = "<div class='user-avatar avatar-30 avatar-circle' data-bs-toggle='tooltip' title='" . $user->user_name . " - " . $time . "'><img alt='' src='" . get_avatar($user->user_avatar, $user->user_name) . "'></div>";
         }
 
         $days_of_month = date("t", strtotime($start_date));

@@ -23,7 +23,11 @@
                         <?php echo anchor(get_uri("events/show_event_in_google_calendar/$model_info->google_event_id"), app_lang("open_in_google_calendar"), array("target" => "_blank")); ?>
                     </div>
                 <?php } ?>
-
+                <?php if ($model_info->outlook_event_id) { ?>
+                    <div class="float-end pb10 ">
+                        Evento importado do Outlook
+                    </div>
+                <?php } ?>
             </div>
 
             <?php if ($status) { ?>
@@ -67,7 +71,7 @@
 
             <div class="col-md-12 pt10 pb10">
                 <?php
-                $image_url = get_avatar($model_info->created_by_avatar);
+                $image_url = get_avatar($model_info->created_by_avatar, $model_info->created_by_name);
                 echo "<span class='avatar avatar-xs mr10'><img src='$image_url' alt=''></span><span>" . get_team_member_profile_link($model_info->created_by, $model_info->created_by_name, array("class" => "dark strong")) . "</span>";
                 ?>
             </div>

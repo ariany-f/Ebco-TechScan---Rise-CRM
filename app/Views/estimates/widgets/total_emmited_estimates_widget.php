@@ -6,7 +6,7 @@
             </div>
             <div class="widget-details">
                 <h1><?php echo $total; ?></h1>
-                <span class="bg-transparent-white"><?php echo app_lang("total_emmited_estimates"); ?></span>
+                <span class="bg-transparent-white"><?php echo $login_user->is_admin ? app_lang("total_emmited_estimates") : 'Total Propostas Emitidas por Você no Período'; ?></span>
             </div>
         </div>
     </div>

@@ -31,8 +31,16 @@ class Estimates_model extends Crud_model {
             $where .= " AND $estimates_table.client_id=$client_id";
         }
         $is_bidding = $this->_get_clean_value($options, "is_bidding");
-        if ($is_bidding) {
-            $where .= " AND $estimates_table.is_bidding=$is_bidding";
+        if (!empty($is_bidding)) {
+            if($is_bidding == 0)
+            {
+
+                $where .= " AND ($estimates_table.is_bidding=$is_bidding OR $estimates_table.is_bidding IS NULL)";
+            }
+            else
+            {
+                $where .= " AND $estimates_table.is_bidding=$is_bidding";
+            }
         }
 
         $start_date = $this->_get_clean_value($options, "start_date");
@@ -60,6 +68,31 @@ class Estimates_model extends Crud_model {
         $status = $this->_get_clean_value($options, "status");
         if ($status) {
             $where .= " AND $estimates_table.status='$status'";
+        }
+
+        $estrajoin = "";
+
+        $seller_ids = $this->_get_clean_value($options, "seller_ids");
+        if ($seller_ids) {
+            $where_us = " AND us.id=".$seller_ids." ";
+            $estrajoin = " JOIN 
+                    crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+                JOIN 
+                    crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+                JOIN 
+                    crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us";
+        }
+
+        $custom_field_filter = $this->_get_clean_value($options, "custom_field_filter");
+        if ($custom_field_filter && isset($custom_field_filter["4"])) {
+            $where_us = " AND us.id=".$custom_field_filter["4"]." ";
+            $estrajoin = " JOIN 
+                    crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+                JOIN 
+                    crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+                JOIN 
+                    crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us";
+            unset($options['custom_field_filter']['4']);
         }
 
         $exclude_draft = $this->_get_clean_value($options, "exclude_draft");
@@ -98,6 +131,7 @@ class Estimates_model extends Crud_model {
         LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $estimates_table.tax_id2 
         LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value, $items_table.files AS estimate_files FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
         $join_custom_fieds
+        $estrajoin
         WHERE $estimates_table.deleted=0 $where $custom_fields_where";
         return $this->db->query($sql);
     }
@@ -107,11 +141,24 @@ class Estimates_model extends Crud_model {
 
         $result = $this->get_all_regex(array("estimate_number" => $estimate_number), 1000000, 0, $estimate_number);
 
-
-        if (count($result->getResult()) && $result->getRow()->id != $id) {
-            return $result->getRow();
-        } else {
+        if(count($result->getResult()) > 1)
+        {
+            foreach($result->getResult() as $result)
+            {
+                if($result->deleted == 0)
+                {
+                    return $result;
+                }
+            }
             return false;
+        }
+        else
+        {
+            if (count($result->getResult()) && $result->getRow()->id != $id) {
+                return $result->getRow();
+            } else {
+                return false;
+            }
         }
     }
 
@@ -271,16 +318,16 @@ class Estimates_model extends Crud_model {
         $where = "";
         $seller = $this->_get_clean_value($options, "seller_id");
         if ($seller) {
-            $where .= " AND u.id=$seller";
+            $where .= " AND (u.id=$seller OR us.id=$seller)";
         }
 
         $pos = $this->_get_clean_value($options, "pos");
         if ($pos) {
-            $where .= " AND u.role_id=10";
+            $where .= " AND (CASE WHEN us.id IS NOT NULL THEN us.role_id ELSE u.role_id END) = 10";
         }
         else
         {
-            $where .= " AND u.role_id <> 10";
+            $where .= " AND (CASE WHEN us.id IS NOT NULL THEN us.role_id ELSE u.role_id END) <> 10";
         }
         
         $month = $this->_get_clean_value($options, "month");
@@ -331,42 +378,80 @@ class Estimates_model extends Crud_model {
             (
                 SELECT 
                     DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
-                    CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type) AS 'Vendedor',
+                        CONCAT(
+                            IFNULL(us.id, u.id), '--::--', 
+                            IFNULL(us.first_name, u.first_name), ' ', 
+                            IFNULL(us.last_name, u.last_name), '--::--', 
+                            IFNULL(us.image, COALESCE(u.image, '')), '--::--', 
+                            IFNULL(us.user_type, u.user_type)
+                        ) AS 'Vendedor',
                     COUNT(DISTINCT e.id) AS 'PropostasEmitidas',
                     SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) AS 'PropostasFechadas',
                     CONCAT(ROUND(SUM(CASE WHEN e.status = 'accepted' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(DISTINCT e.id), 0), 2), '%') AS 'PercentualConversao'
                 FROM 
                     crm_estimates e
                 JOIN 
+                    crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+                JOIN 
+                    crm_custom_field_values cfvu ON e.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+                JOIN 
+                    crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0
+                JOIN 
                     crm_users u ON e.created_by = u.id
                 WHERE 
                     e.deleted = 0
+                    AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                     $where 
                 GROUP BY 
-                    DATE_FORMAT(e.estimate_date, '%Y-%m'), CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type)
+                    DATE_FORMAT(e.estimate_date, '%Y-%m'), CONCAT(
+                            IFNULL(us.id, u.id), '--::--', 
+                            IFNULL(us.first_name, u.first_name), ' ', 
+                            IFNULL(us.last_name, u.last_name), '--::--', 
+                            IFNULL(us.image, COALESCE(u.image, '')), '--::--', 
+                            IFNULL(us.user_type, u.user_type)
+                        )
             ) AS main_data
         LEFT JOIN 
             (
                 SELECT 
                     DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
-                    CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type) AS 'Vendedor',
+                        CONCAT(
+                            IFNULL(us.id, u.id), '--::--', 
+                            IFNULL(us.first_name, u.first_name), ' ', 
+                            IFNULL(us.last_name, u.last_name), '--::--', 
+                            IFNULL(us.image, COALESCE(u.image, '')), '--::--', 
+                            IFNULL(us.user_type, u.user_type)
+                        ) AS 'Vendedor',
                     SUM(ei.quantity * ei.rate) AS 'ValorEmitido',
-                    SUM(CASE WHEN e.status = 'accepted' THEN ei.quantity * ei.rate ELSE 0 END) AS 'ValorFechado'
+                    SUM(CASE WHEN e.status = 'accepted' THEN COALESCE(ei.quantity * ei.rate, cfv.value) ELSE 0 END) AS 'ValorFechado'
                 FROM 
                     crm_estimates e
+                JOIN 
+                    crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+                JOIN 
+                    crm_custom_field_values cfvu ON e.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+                JOIN 
+                    crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0
                 JOIN 
                     crm_users u ON e.created_by = u.id
                 LEFT JOIN 
                     crm_estimate_items ei ON e.id = ei.estimate_id
                 LEFT JOIN 
-                    crm_custom_field_values cfv ON e.id = cfv.related_to_id AND cfv.related_to_type = 'estimates'
+                    crm_custom_fields cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
                 LEFT JOIN 
-                    crm_custom_fields cf ON cfv.custom_field_id = cf.id AND cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+                    crm_custom_field_values cfv ON e.id = cfv.related_to_id AND cfv.custom_field_id = cf.id AND cfv.related_to_type = 'estimates'
                 WHERE 
                     e.deleted = 0
+                    AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                     $where
                 GROUP BY 
-                    DATE_FORMAT(e.estimate_date, '%Y-%m'), CONCAT(u.id, '--::--', u.first_name, ' ', u.last_name, '--::--', COALESCE(u.image, ''), '--::--', u.user_type)
+                    DATE_FORMAT(e.estimate_date, '%Y-%m'), CONCAT(
+                            IFNULL(us.id, u.id), '--::--', 
+                            IFNULL(us.first_name, u.first_name), ' ', 
+                            IFNULL(us.last_name, u.last_name), '--::--', 
+                            IFNULL(us.image, COALESCE(u.image, '')), '--::--', 
+                            IFNULL(us.user_type, u.user_type)
+                        )
             ) AS valor_data
         ON main_data.Mes = valor_data.Mes AND main_data.Vendedor = valor_data.Vendedor
         $order $limit_offset;";
@@ -412,7 +497,7 @@ class Estimates_model extends Crud_model {
                 crm_estimates e
             WHERE 
                 e.deleted = 0
-                AND e.is_bidding = 0
+                AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                 $where
         ";
     
@@ -531,6 +616,7 @@ class Estimates_model extends Crud_model {
                             crm_company c ON e.company_id = c.id
                         WHERE 
                             e.deleted = 0
+                            AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                             $where
                         GROUP BY 
                             DATE_FORMAT(e.estimate_date, '%Y-%m'), e.company_id, c.name
@@ -541,7 +627,7 @@ class Estimates_model extends Crud_model {
                             DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
                             e.company_id,
                             SUM(ei.quantity * ei.rate) AS 'ValorEmitido',
-                            SUM(CASE WHEN e.status = 'accepted' THEN ei.quantity * ei.rate ELSE 0 END) AS 'ValorFechado'
+                            SUM(CASE WHEN e.status = 'accepted' THEN COALESCE(ei.quantity * ei.rate, cfv.value) ELSE 0 END) AS 'ValorFechado'
                         FROM 
                             crm_estimates e
                         JOIN 
@@ -549,11 +635,12 @@ class Estimates_model extends Crud_model {
                         LEFT JOIN 
                             crm_estimate_items ei ON e.id = ei.estimate_id
                         LEFT JOIN 
-                            crm_custom_field_values cfv ON e.id = cfv.related_to_id AND cfv.related_to_type = 'estimates'
+                            crm_custom_fields cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
                         LEFT JOIN 
-                            crm_custom_fields cf ON cfv.custom_field_id = cf.id AND cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+                            crm_custom_field_values cfv ON e.id = cfv.related_to_id AND cfv.custom_field_id = cf.id AND cfv.related_to_type = 'estimates'
                         WHERE 
                             e.deleted = 0
+                            AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                             $where
                         GROUP BY 
                             DATE_FORMAT(e.estimate_date, '%Y-%m'), e.company_id
@@ -573,73 +660,98 @@ class Estimates_model extends Crud_model {
         } else {
             return $raw_query;
         }
+    }  
+    
+    function login_user_id() {
+        $session = \Config\Services::session();
+        return $session->has("user_id") ? $session->get("user_id") : "";
     }
 
     function count_total_emmited_estimates($options = array(), $date_start = null, $date_end = null) {
-        $clients_table = $this->db->prefixTable('clients');
-        $tickets_table = $this->db->prefixTable('tickets');
-        $invoices_table = $this->db->prefixTable('invoices');
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $taxes_table = $this->db->prefixTable('taxes');
-        $projects_table = $this->db->prefixTable('projects');
         $estimates_table = $this->db->prefixTable('estimates');
-        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
-        $orders_table = $this->db->prefixTable('orders');
-        $proposals_table = $this->db->prefixTable('proposals');
 
-        $where = "";
+        $where = $where_us = "";
 
         if ($date_start && $date_end) {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
+        if(!$this->login_user->is_admin)
+        {
+           $where_us .= " AND us.id=".$this->login_user_id()." ";
+        }
+
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        WHERE $estimates_table.deleted=0 AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 0 $where";
+        JOIN 
+            crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+        JOIN 
+            crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+        JOIN 
+            crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
+        WHERE $estimates_table.deleted=0 AND $estimates_table.status IN ('draft', 'sent', 'accepted', 'rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
+        return $this->db->query($sql)->getRow()->total;
+    }
+
+    function count_total_rejected_estimates($options = array(), $date_start = null, $date_end = null) {
+        $estimates_table = $this->db->prefixTable('estimates');
+
+        $where = $where_us = "";
+
+        if ($date_start && $date_end) {
+            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+        }
+
+        if(!$this->login_user->is_admin)
+        {
+            $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
+        }
+
+
+        $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
+        FROM $estimates_table 
+        JOIN 
+            crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+        JOIN 
+            crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+        JOIN 
+            crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
+        WHERE $estimates_table.deleted=0 AND $estimates_table.status IN ('rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
     function count_total_approved_estimates($options = array(), $date_start = null, $date_end = null) {
-        $clients_table = $this->db->prefixTable('clients');
-        $tickets_table = $this->db->prefixTable('tickets');
-        $invoices_table = $this->db->prefixTable('invoices');
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $taxes_table = $this->db->prefixTable('taxes');
-        $projects_table = $this->db->prefixTable('projects');
         $estimates_table = $this->db->prefixTable('estimates');
-        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
-        $orders_table = $this->db->prefixTable('orders');
-        $proposals_table = $this->db->prefixTable('proposals');
 
-        $where = "";
+        $where = $where_us = "";
         
         if ($date_start && $date_end) {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
+        if(!$this->login_user->is_admin)
+        {
+           $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
+        }
+
+
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
-        FROM $estimates_table 
-        WHERE $estimates_table.deleted=0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 0 $where";
+        FROM $estimates_table   
+        JOIN 
+            crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+        JOIN 
+            crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+        JOIN 
+            crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
+        WHERE $estimates_table.deleted=0 AND $estimates_table.status = 'accepted' AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
     function count_total_emmited_bidding_estimates($options = array(), $date_start = null, $date_end = null) {
-        $clients_table = $this->db->prefixTable('clients');
-        $tickets_table = $this->db->prefixTable('tickets');
-        $invoices_table = $this->db->prefixTable('invoices');
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $taxes_table = $this->db->prefixTable('taxes');
-        $projects_table = $this->db->prefixTable('projects');
         $estimates_table = $this->db->prefixTable('estimates');
-        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
-        $orders_table = $this->db->prefixTable('orders');
-        $proposals_table = $this->db->prefixTable('proposals');
-
+      
         $where = "";
         
         if ($date_start && $date_end) {
@@ -654,17 +766,7 @@ class Estimates_model extends Crud_model {
     }
 
     function count_total_approved_bidding_estimates($options = array(), $date_start = null, $date_end = null) {
-        $clients_table = $this->db->prefixTable('clients');
-        $tickets_table = $this->db->prefixTable('tickets');
-        $invoices_table = $this->db->prefixTable('invoices');
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $taxes_table = $this->db->prefixTable('taxes');
-        $projects_table = $this->db->prefixTable('projects');
         $estimates_table = $this->db->prefixTable('estimates');
-        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
-        $orders_table = $this->db->prefixTable('orders');
-        $proposals_table = $this->db->prefixTable('proposals');
 
         $where = "";
         
@@ -680,100 +782,127 @@ class Estimates_model extends Crud_model {
     }
 
     function count_total_amount_estimates($options = array(), $date_start = null, $date_end = null) {
-        $clients_table = $this->db->prefixTable('clients');
-        $tickets_table = $this->db->prefixTable('tickets');
-        $invoices_table = $this->db->prefixTable('invoices');
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $taxes_table = $this->db->prefixTable('taxes');
-        $projects_table = $this->db->prefixTable('projects');
         $estimates_table = $this->db->prefixTable('estimates');
-        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
-        $orders_table = $this->db->prefixTable('orders');
-        $proposals_table = $this->db->prefixTable('proposals');
         $estimate_items_table = $this->db->prefixTable('estimate_items');
+        $custom_fields_table = $this->db->prefixTable('custom_fields');
+        $custom_field_values_table = $this->db->prefixTable('custom_field_values');
         
-        $where = "";
-
+        $where = [];
+        $parameters = [];
+        
         $item = $this->_get_clean_value($options, "item");
         if ($item) {
-            $item_txt = "AND (";
-            foreach($item as $k => $it)
-            {
-                $item_txt .= "($estimate_items_table.title LIKE '%$it%' OR $estimate_items_table.description LIKE '%$it%')";
-
-                if(($k+1) < count($item))
-                {
-                    $item_txt .= " OR";
-                }
-                else
-                {
-                    $item_txt .= ")";
-                }
+            $item_conditions = [];
+            foreach ($item as $it) {
+                $item_conditions[] = "($estimate_items_table.title LIKE ? OR $estimate_items_table.description LIKE ?)";
+                $parameters[] = "%$it%";
+                $parameters[] = "%$it%";
             }
-            $where .= $item_txt;
+            $where[] = "(" . implode(" OR ", $item_conditions) . ")";
         }
         
+        $date_start = $this->_get_clean_value($options, "date_start");
+        $date_end = $this->_get_clean_value($options, "date_end");
         if ($date_start && $date_end) {
-            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+            $where[] = "($estimates_table.estimate_date BETWEEN ? AND ?)";
+            $parameters[] = $date_start;
+            $parameters[] = $date_end;
         }
-
-
         
-        $sql = "SELECT SUM($estimate_items_table.quantity * $estimate_items_table.rate) AS total
-                FROM $estimate_items_table
-                INNER JOIN $estimates_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 0
-                WHERE $estimate_items_table.deleted = 0 $where";
+        $where_clause = $where ? " AND " . implode(" AND ", $where) : "";
         
-        return $this->db->query($sql)->getRow()->total;
+        // $sql = "SELECT 
+        //             SUM($estimate_items_table.quantity * $estimate_items_table.rate) AS total
+        //         FROM 
+        //             $estimates_table
+        //         LEFT JOIN 
+        //             $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimate_items_table.deleted = 0
+        //         WHERE 
+        //             $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' $where_clause";
+
+        $sql = "SELECT 
+                SUM(total_value) AS total
+            FROM (
+                SELECT 
+                    $estimates_table.id AS estimate_id,
+                    COALESCE(
+                        MAX(cfv.value), 
+                        0
+                    ) AS total_value
+                FROM 
+                    $estimates_table
+                LEFT JOIN 
+                    $custom_fields_table cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+                LEFT JOIN 
+                    $custom_field_values_table cfv ON $estimates_table.id = cfv.related_to_id 
+                        AND cfv.custom_field_id = cf.id 
+                        AND cfv.related_to_type = 'estimates'
+                LEFT JOIN 
+                    $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id 
+                        AND $estimate_items_table.deleted = 0
+                WHERE 
+                    $estimates_table.deleted = 0 
+                    AND $estimates_table.status = 'accepted'
+                    AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL)
+                    $where_clause
+                GROUP BY 
+                    $estimates_table.id
+            ) AS subquery;";
+        
+             
+        
+        $query = $this->db->query($sql, $parameters);
+        $result = $query->getRow();
+        
+        return $result ? $result->total : 0;
     }
     
     function count_total_amount_bidding_estimates($options = array(), $date_start = null, $date_end = null) {
-        $clients_table = $this->db->prefixTable('clients');
-        $tickets_table = $this->db->prefixTable('tickets');
-        $invoices_table = $this->db->prefixTable('invoices');
-        $invoice_payments_table = $this->db->prefixTable('invoice_payments');
-        $invoice_items_table = $this->db->prefixTable('invoice_items');
-        $taxes_table = $this->db->prefixTable('taxes');
-        $projects_table = $this->db->prefixTable('projects');
         $estimates_table = $this->db->prefixTable('estimates');
-        $estimate_requests_table = $this->db->prefixTable('estimate_requests');
-        $orders_table = $this->db->prefixTable('orders');
-        $proposals_table = $this->db->prefixTable('proposals');
         $estimate_items_table = $this->db->prefixTable('estimate_items');
+        $custom_fields_table = $this->db->prefixTable('custom_fields');
+        $custom_field_values_table = $this->db->prefixTable('custom_field_values');
         
-        $where = "";
-
+        $where = [];
+        $parameters = [];
+        
         $item = $this->_get_clean_value($options, "item");
         if ($item) {
-            $item_txt = "AND (";
-            foreach($item as $k => $it)
-            {
-                $item_txt .= "($estimate_items_table.title LIKE '%$it%' OR $estimate_items_table.description LIKE '%$it%')";
-
-                if(($k+1) < count($item))
-                {
-                    $item_txt .= " OR";
-                }
-                else
-                {
-                    $item_txt .= ")";
-                }
+            $item_conditions = [];
+            foreach ($item as $it) {
+                $item_conditions[] = "($estimate_items_table.title LIKE ? OR $estimate_items_table.description LIKE ?)";
+                $parameters[] = "%$it%";
+                $parameters[] = "%$it%";
             }
-            $where .= $item_txt;
+            $where[] = "(" . implode(" OR ", $item_conditions) . ")";
         }
-
         
+        $date_start = $this->_get_clean_value($options, "date_start");
+        $date_end = $this->_get_clean_value($options, "date_end");
         if ($date_start && $date_end) {
-            $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
+            $where[] = "($estimates_table.estimate_date BETWEEN ? AND ?)";
+            $parameters[] = $date_start;
+            $parameters[] = $date_end;
         }
-
         
-        $sql = "SELECT SUM($estimate_items_table.quantity * $estimate_items_table.rate) AS total
-                FROM $estimate_items_table
-                INNER JOIN $estimates_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1
-                WHERE $estimate_items_table.deleted = 0 $where";
+        $where_clause = $where ? " AND " . implode(" AND ", $where) : "";
         
-        return $this->db->query($sql)->getRow()->total;
+        $sql = "SELECT 
+                    SUM(COALESCE($estimate_items_table.quantity * $estimate_items_table.rate, cfv.value)) AS total
+                FROM 
+                    $estimates_table
+                LEFT JOIN 
+                    $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimate_items_table.deleted = 0
+                LEFT JOIN 
+                    $custom_fields_table cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+                LEFT JOIN 
+                    $custom_field_values_table cfv ON $estimates_table.id = cfv.related_to_id AND cfv.custom_field_id = cf.id AND cfv.related_to_type = 'estimates'
+                WHERE 
+                    $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where_clause";
+        
+        $query = $this->db->query($sql, $parameters);
+        $result = $query->getRow();
+        
+        return $result ? $result->total : 0;
     }
 }

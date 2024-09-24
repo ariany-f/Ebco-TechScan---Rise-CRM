@@ -15,7 +15,7 @@ class Dashboard extends Security_Controller {
     public function index() {
 
         $view_data["dashboards"] = array();
-        
+       
         if($this->login_user->is_admin)
         {
             $dashboards = $this->Dashboards_model->get_details(array("user_id" => $this->login_user->id));
@@ -225,6 +225,7 @@ class Dashboard extends Security_Controller {
             $widget["total_prospects"] = true;
             $widget["total_contacts"] = true;
             $widget["total_emmited_estimates"] = true;
+            $widget["total_rejected_estimates"] = true;
             $widget["total_approved_estimates"] = true;
             $widget["total_conversion_estimates"] = true;
             $widget["total_conversion_leads_prospects"] = true;
@@ -276,6 +277,8 @@ class Dashboard extends Security_Controller {
             $widget["my_tasks_overview"] = true;
             $widget["sellers_estimates_list"] = true;
             $widget["pos_venda_sellers_estimates_list"] = true;
+            $widget["estimates_draft_by_seller"] = true;
+            $widget["estimates_sent_by_seller"] = true;
             $widget["coligadas_estimates_list"] = true;
             $widget["new_clients_list"] = true;
             $widget['leads_prospects_list'] = true;
@@ -555,6 +558,10 @@ class Dashboard extends Security_Controller {
 
         if (count($columns) < 4 && get_array_value($widgets, "total_emmited_estimates")) {
             $columns[] = array("total_emmited_estimates");
+        }
+
+        if (count($columns) < 4 && get_array_value($widgets, "total_rejected_estimates")) {
+            $columns[] = array("total_rejected_estimates");
         }
 
         if (count($columns) < 4 && get_array_value($widgets, "total_emmited_bidding_estimates")) {
@@ -976,6 +983,7 @@ class Dashboard extends Security_Controller {
                 "total_clients",
                 "total_prospects",
                 "total_emmited_estimates",
+                "total_rejected_estimates",
                 "total_approved_estimates",
                 "total_conversion_estimates",
                 "total_conversion_leads_prospects",
@@ -1008,6 +1016,8 @@ class Dashboard extends Security_Controller {
                 "my_tasks_overview",
                 "sellers_estimates_list",
                 "pos_venda_sellers_estimates_list",
+                "estimates_draft_by_seller",
+                "estimates_sent_by_seller",
                 "coligadas_estimates_list",
                 "new_clients_list",
                 "leads_prospects_list",
@@ -1295,6 +1305,7 @@ class Dashboard extends Security_Controller {
                 $widget == "total_contacts" || 
                 $widget == "latest_online_client_contacts" || 
                 $widget == "total_emmited_estimates" || 
+                $widget == "total_rejected_estimates" || 
                 $widget == "total_approved_estimates" || 
                 $widget == "total_conversion_estimates" || 
                 $widget == "total_conversion_leads_prospects" || 
@@ -1321,6 +1332,8 @@ class Dashboard extends Security_Controller {
                     return active_members_and_clients_widget("client", $show_own_clients_only_user_id, $this->allowed_client_groups);
                 } else if ($widget == "total_emmited_estimates") {
                     return total_emmited_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                }  else if ($widget == "total_rejected_estimates") {
+                    return total_rejected_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
                 }  else if ($widget == "total_approved_estimates") {
                     return total_approved_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
                 } else if ($widget == "total_conversion_estimates") {
@@ -1396,7 +1409,11 @@ class Dashboard extends Security_Controller {
                 return sellers_estimates_list_widget();
             } else if ($widget == "pos_venda_sellers_estimates_list") {
                 return pos_venda_sellers_estimates_list_widget();
-            }  else if ($widget == "new_clients_list") {
+            } else if ($widget == "estimates_draft_by_seller") {
+                return estimates_draft_by_seller_widget();
+            } else if ($widget == "estimates_sent_by_seller") {
+                return estimates_sent_by_seller_widget();
+            } else if ($widget == "new_clients_list") {
                 return new_clients_list_widget();
             } else if ($widget == "leads_prospects_list") {
                 return leads_prospects_list_widget();

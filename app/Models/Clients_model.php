@@ -278,7 +278,6 @@ class Clients_model extends Crud_model {
         $end_date = $this->_get_clean_value($options, "end_date");
         if ($start_date && $end_date) {
             $where_client .= " AND (c.created_date BETWEEN '$start_date' AND '$end_date' AND STR_TO_DATE(c.client_migration_date, '%Y-%m-%d') IS NULL) OR (STR_TO_DATE(c.client_migration_date, '%Y-%m-%d') IS NOT NULL AND c.client_migration_date BETWEEN '$start_date' AND '$end_date')";
-         //   $where .= " AND cs.client_date BETWEEN '$start_date' AND '$end_date'";
         }
 
         $limit_offset = "";
@@ -364,18 +363,25 @@ class Clients_model extends Crud_model {
         $where_visit = "";
     
         if ($start_date && $end_date) {
-            $where_visit .= " AND crm_clients.client_migration_date BETWEEN '$start_date' AND '$end_date' ";
+            $where_visit .= " AND crm_events.start_date BETWEEN '$start_date' AND '$end_date' ";
         }
-
+    
         $collaborator_parts = explode("--::--", $seller_name);
-
         $user_id = get_array_value($collaborator_parts, 0);
-
-        // Query to get visit count for the seller
-        $sql_visit_count = "SELECT COUNT(*) AS visit_count FROM crm_clients WHERE lead_source_id = 13 AND owner_id = ? $where_visit";
-        $query_visit_count = $this->db->query($sql_visit_count, [$user_id]);
+    
+        // Query to get visit count for the seller in crm_events table
+        $sql_visit_count = "
+            SELECT COUNT(*) AS visit_count 
+            FROM crm_events 
+            WHERE (created_by = ? OR FIND_IN_SET(CONCAT('member:', ?), share_with) OR FIND_IN_SET(share_with, 'all'))
+                AND FIND_IN_SET('1', labels) > 0
+                AND deleted = 0
+              $where_visit
+        ";
+    
+        $query_visit_count = $this->db->query($sql_visit_count, [$user_id, $user_id]);
         $result_visit_count = $query_visit_count->getRow();
-
+    
         return $result_visit_count ? $result_visit_count->visit_count : 0;
     }
 
@@ -789,9 +795,9 @@ class Clients_model extends Crud_model {
         $client_groups = $this->_get_clean_value($options, "client_groups");
         $where .= $this->prepare_allowed_client_groups_query($clients_table, $client_groups);
 
-        $sql = "SELECT $clients_table.id, $clients_table.company_name AS title
+        $sql = "SELECT $clients_table.id, CONCAT($clients_table.company_name, ' - ', $clients_table.cnpj) AS title
         FROM $clients_table  
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND $clients_table.company_name LIKE '%$search%' ESCAPE '!' $where
+        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND ($clients_table.company_name LIKE '%$search%' OR $clients_table.cnpj LIKE '%$search%' ESCAPE '!') $where
         ORDER BY $clients_table.company_name ASC
         LIMIT 0, 10";
 

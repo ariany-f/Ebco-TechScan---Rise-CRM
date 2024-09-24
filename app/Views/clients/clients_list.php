@@ -11,7 +11,7 @@
 $statuses = array();
 foreach ($client_statuses as $status) {
     $is_selected = false;
-    if ($status->title != "Ativo") {
+    if ($status->title == "Ativo") {
         $is_selected = true;
     }
     $statuses[] = array("text" => ($status->title), "value" => $status->status_id, "isChecked" => $is_selected);

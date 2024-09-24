@@ -147,16 +147,7 @@ class Estimate extends Security_Controller {
         $estimate_info = $this->Estimates_model->get_details($options)->getRow();
 
         $estimate_info->custom_fields = $this->Custom_fields_model->get_combined_details("estimates", $estimate_id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
-        
-        // echo '<pre>';
-        // print_r($estimate_info);die;
-
-        // foreach ($custom_fields as $field) {
-        //     $cf_id = "cfv_" . $field->id;
-        
-        //     $estimate_info->custom_fields->{$field->title} = $estimate_info->$cf_id;      
-        // }
-        
+      
         if ($estimate_info->public_key !== $public_key) {
             show_404();
         }

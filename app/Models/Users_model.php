@@ -106,7 +106,7 @@ class Users_model extends Crud_model {
         } catch (\Exception $ex) {
             log_message('error', '[ERROR] {exception}', ['exception' => $ex]);
         }
-
+        
         if (isset($_SERVER['HTTP_COOKIE'])) {
             $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
             foreach($cookies as $cookie) {
@@ -116,7 +116,7 @@ class Users_model extends Crud_model {
                 setcookie($name, '', time()-1000, '/');
             }
         }
-
+       
         $session = \Config\Services::session();
         $session->destroy();
         app_redirect('signin');
@@ -125,6 +125,7 @@ class Users_model extends Crud_model {
     function get_details($options = array()) {
         $users_table = $this->db->prefixTable('users');
         $team_member_job_info_table = $this->db->prefixTable('team_member_job_info');
+        $general_files_table = $this->db->prefixTable('general_files');
         $clients_table = $this->db->prefixTable('clients');
         $roles_table = $this->db->prefixTable('roles');
 
@@ -251,10 +252,10 @@ class Users_model extends Crud_model {
 
         //prepare full query string
         $sql = "SELECT SQL_CALC_FOUND_ROWS $users_table.*, $roles_table.title AS role_title,
-            $team_member_job_info_table.date_of_hire, $team_member_job_info_table.salary, crm_general_files.file_name AS signature_file, $team_member_job_info_table.salary_term $select_custom_fieds
+            $team_member_job_info_table.date_of_hire, $team_member_job_info_table.salary, COALESCE($general_files_table.file_name, '') AS signature_file, $team_member_job_info_table.salary_term $select_custom_fieds
         FROM $users_table
         LEFT JOIN $team_member_job_info_table ON $team_member_job_info_table.user_id=$users_table.id
-        LEFT JOIN crm_general_files ON crm_general_files.user_id = $users_table.id
+        LEFT JOIN $general_files_table ON $general_files_table.user_id = $users_table.id AND $general_files_table.deleted=0
         LEFT JOIN $clients_table ON $clients_table.id=$users_table.client_id
         LEFT JOIN $roles_table ON $roles_table.id=$users_table.role_id
         $join_custom_fieds    
@@ -347,7 +348,7 @@ class Users_model extends Crud_model {
             $user_id = 0;
         }
 
-        $sql = "SELECT $users_table.id, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,
+        $sql = "SELECT $users_table.id, $users_table.outlook_calendar_authorized, $users_table.user_type, $users_table.is_admin, $users_table.role_id, $users_table.email,
             $users_table.first_name, $users_table.last_name, $users_table.image, $users_table.message_checked_at, $users_table.notification_checked_at, $users_table.client_id, $users_table.enable_web_notification,
             $users_table.is_primary_contact, $users_table.sticky_note, $users_table.language,
             $roles_table.title as role_title, $roles_table.permissions,

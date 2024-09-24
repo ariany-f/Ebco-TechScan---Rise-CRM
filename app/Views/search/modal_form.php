@@ -106,7 +106,7 @@
             //serch result selected, redirect to the details view
             if (this.value) {
                 var location = "",
-                        searchFieldValue = $searchField.val();
+                    searchFieldValue = $searchField.val();
 
                 if (searchFieldValue === "todo") {
                     $("#show_todo_hidden").attr("data-post-id", this.value);

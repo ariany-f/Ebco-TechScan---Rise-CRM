@@ -47,14 +47,15 @@
             columns: [
                 {title: '<?php echo app_lang("month") ?>', "class": titleColumnClass},
                 {title: '<?php echo app_lang("seller") ?>', "class": titleColumnClass},
-                {title: '<?php echo app_lang("new") . ' ' . app_lang("clients") ?>', "class": "w15p"},
-                {title: '<?php echo app_lang("visits") ?>', "class": "w15p"}
+                {title: '<?php echo app_lang("new") . ' ' . app_lang("clients") ?>', "class": "w15p text-right"},
+                {title: '<?php echo app_lang("visits") ?>', "class": "w15p text-right"}
             ],
             printColumns: combineCustomFieldsColumns([0, 1, 2, 3]),
             xlsColumns: combineCustomFieldsColumns([0, 1, 2, 3]),
             rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 $('td:eq(0)', nRow).attr("style", "border-left:5px solid " + aData[0] + " !important;");
-            }
+            },
+            summation: [{column: 2, dataType: 'number'}, {column: 3,  dataType: 'number'}]
         });
 
         $("#new_clients_table").appTable({
@@ -68,14 +69,15 @@
             ],
             columns: [
                 {title: '<?php echo app_lang("seller") ?>', "class": titleColumnClass},
-                {title: '<?php echo app_lang("new") . ' ' . app_lang("clients") ?>', "class": "w15p"},
-                {title: '<?php echo app_lang("visits") ?>', "class": "w15p"}
+                {title: '<?php echo app_lang("new") . ' ' . app_lang("clients") ?>', "class": "w15p text-right"},
+                {title: '<?php echo app_lang("visits") ?>', "class": "w15p text-right"}
             ],
             printColumns: combineCustomFieldsColumns([0, 1, 2]),
             xlsColumns: combineCustomFieldsColumns([0, 1, 2]),
             rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 $('td:eq(0)', nRow).attr("style", "border-left:5px solid " + aData[0] + " !important;");
-            }
+            },
+            summation: [{column: 1, dataType: 'number'}, {column: 2,  dataType: 'number'}]
         });
     });
 </script>
