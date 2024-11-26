@@ -76,7 +76,7 @@
                     }
                 }
                 ?>
-
+            <button class="btn btn-default round mr10" id="print-estimate-btn"><i data-feather='printer' class='icon-16'></i> Imprimir</button>
             <div class="invoice-preview">
                 <?php if((!isset($buttons)) || $buttons): ?>
                     <div id="estimate-preview" class="invoice-preview-container bg-white mt15">
@@ -87,7 +87,7 @@
                         </div>
                     </div>
                 <?php endif; ?>
-                
+             
                 <?php if(!$show_acceptance || $show_acceptance === 0) : ?>
                     <?php echo $estimate_preview; ?>
                 <?php endif; ?>
@@ -126,3 +126,19 @@
     });
 </script>
 <?php endif; ?>
+
+<script>
+    $(document).ready(function () {
+        $("#print-estimate-btn").click(function () {
+            var $element = $(".invoice-preview #my-table");
+            var element = $element.get(0);
+            var w = window.open('', '_blank', 'width=800,height=600');
+            w.document.write("<style>body{margin:0; padding:0;}</style>");
+            w.document.write('<link rel="stylesheet" href="https://uniebco.com.br/crm/assets/css/estimate.css?ver=4.5.8" />'); 
+            w.document.write('<link rel="stylesheet" href="https://uniebco.com.br/crm/assets/css/invoice.css?ver=4.5.8" />'); // Linke seu CSS se necessário
+            w.document.write(element.outerHTML);
+            w.print();
+            w.document.close();
+        });
+    });
+</script>

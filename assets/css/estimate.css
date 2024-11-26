@@ -126,6 +126,7 @@ html, body, div, span, applet, object, iframe,
             }
             table img {
                 margin: 0 auto;
+                max-width: 100%;
             }
             table .bordered-table td {
                 border: 1px outset var(--primary-color);
