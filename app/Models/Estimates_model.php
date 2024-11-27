@@ -348,11 +348,11 @@ class Estimates_model extends Crud_model {
 
         $pos = $this->_get_clean_value($options, "pos");
         if ($pos) {
-            $where .= " AND (CASE WHEN us.id IS NOT NULL THEN us.role_id ELSE u.role_id END) = 10";
+            $where .= " AND (CASE WHEN us.id IS NOT NULL THEN us.role_id ELSE u.role_id END) IN (10, 12)";
         }
         else
         {
-            $where .= " AND (CASE WHEN us.id IS NOT NULL THEN us.role_id ELSE u.role_id END) <> 10";
+            $where .= " AND (CASE WHEN us.id IS NOT NULL THEN us.role_id ELSE u.role_id END) NOT IN (10, 12)";
         }
         
         $month = $this->_get_clean_value($options, "month");

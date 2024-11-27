@@ -192,7 +192,7 @@ class Custom_fields_model extends Crud_model {
                     crm_custom_fields.example_variable_name,
                     IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
                                 AND LOCATE('crm_', crm_custom_fields.options) >= 1),(SELECT GROUP_CONCAT(CONCAT(mock.id, ':', mock.first_name) SEPARATOR ',')
-                 FROM $foreign_table_options_custom_field->options AS mock), 
+                 FROM $foreign_table_options_custom_field->options AS mock WHERE mock.deleted = 0 AND mock.status = 'active' AND mock.user_type = 'staff'), 
                 crm_custom_fields.options
             ) AS options,
                     crm_custom_fields.field_type,
@@ -218,6 +218,8 @@ class Custom_fields_model extends Crud_model {
                     WHERE $custom_fields_table.deleted=0 AND $custom_fields_table.related_to = '$related_to' $where
                     ORDER by $custom_fields_table.sort ASC";
             }
+
+         log_message("1", "TEST", array($sql));
 
         return $this->db->query($sql);
     }

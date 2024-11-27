@@ -2261,7 +2261,7 @@ if (!function_exists('sellers_overview_widget')) {
         $date_start = null;
         $date_end = null;
 
-        $options["role_id"] = [6, 8, 9, 10];
+        $options["role_id"] = [6, 8, 9, 10, 12];
 
         if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
             $options["show_own_leads_only_user_id"] = false;
@@ -2297,7 +2297,7 @@ if (!function_exists('sellers_leads_overview_widget')) {
         $date_start = null;
         $date_end = null;
 
-        $options["role_id"] = [6, 8, 9, 10];
+        $options["role_id"] = [6, 8, 9, 10, 12];
 
         if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
             $options["show_own_leads_only_user_id"] = false;
@@ -2333,7 +2333,7 @@ if (!function_exists('sellers_conversions_overview_widget')) {
         $date_start = null;
         $date_end = null;
 
-        $options["role_id"] = [6, 8, 9, 10];
+        $options["role_id"] = [6, 8, 9, 10, 12];
 
         if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
             $options["show_own_leads_only_user_id"] = false;
