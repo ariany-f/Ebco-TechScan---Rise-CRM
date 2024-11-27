@@ -389,6 +389,7 @@ class Clients extends Security_Controller {
        
         $status = $this->request->getPost('status_id') ? implode(",", $this->request->getPost('status_id')) : "";
         $options = array(
+            "deleted" => 0,
             "custom_fields" => $custom_fields,
             "status_ids" => $status,
             "custom_field_filter" => $this->prepare_custom_field_filter_values("clients", $this->login_user->is_admin, $this->login_user->user_type),

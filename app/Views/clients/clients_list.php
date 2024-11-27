@@ -42,7 +42,6 @@ foreach ($client_statuses as $status) {
     source: '<?php echo_uri("clients/list_data") ?>',
             serverSide: true,
             filterDropdown: [
-            {name: "group_id", class: "w200", options: <?php echo $groups_dropdown; ?>},
             {name: "setor", class: "w200", options: <?php echo $setor_dropdown; ?>},
             <?php if ($login_user->is_admin || get_array_value($login_user->permissions, "client") === "all") { ?>
                             {name: "created_by", class: "w200", options: <?php echo $team_members_dropdown; ?>},

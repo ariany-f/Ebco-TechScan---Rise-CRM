@@ -83,6 +83,7 @@ class Clients_model extends Crud_model {
             $where .= " AND FIND_IN_SET('$group_id', $clients_table.group_ids)";
         }
 
+
         $status_ids = $this->_get_clean_value($options, "status_ids");
         if ($status_ids) {
             $where .= " AND FIND_IN_SET($clients_table.status_id,'$status_ids')";
@@ -245,7 +246,7 @@ class Clients_model extends Crud_model {
                 WHERE deleted=0 
                 GROUP BY client_id) AS estimates_table ON estimates_table.client_id = $clients_table.id
         $join_custom_fieds               
-        WHERE 1=1 $where $custom_fields_where  
+        WHERE $clients_table.deleted = 0 $where $custom_fields_where  
         $order $limit_offset";
         $raw_query = $this->db->query($sql);
 
@@ -660,7 +661,7 @@ class Clients_model extends Crud_model {
 
     function is_duplicate_cnpj($cnpj, $id = 0) {
 
-        $result = $this->get_all_where(array("REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '')" => preg_replace('/\D/', '', $cnpj), "deleted" => 0));
+        $result = $this->get_all_where(array("REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '')" => preg_replace('/\D/', '', $cnpj) . '%', "deleted" => 0));
         if (count($result->getResult()) && $result->getRow()->id != $id) {
             return $result->getRow();
         } else {
