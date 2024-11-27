@@ -96,6 +96,25 @@ class Clients extends Security_Controller {
         return $this->template->view('clients/modal_form', $view_data);
     }
 
+    function formatCNPJ($cnpj) {
+        // Remove qualquer caractere que não seja número
+        $cnpj = preg_replace('/\D/', '', $cnpj);
+    
+        // Verifica se o CNPJ possui 14 dígitos
+        if (strlen($cnpj) === 14) {
+            // Adiciona a máscara ao CNPJ
+            return preg_replace(
+                '/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/',
+                '$1.$2.$3/$4-$5',
+                $cnpj
+            );
+        }
+    
+        // Retorna o CNPJ original se não tiver 14 dígitos
+        return $cnpj;
+    }
+    
+
     /* insert or update a client */
 
     function save() {
@@ -118,7 +137,7 @@ class Clients extends Security_Controller {
         $data = array(
             "company_name" => $company_name,
             "setor" => $this->request->getPost('setor'),
-            "cnpj" => $this->request->getPost('cnpj'),
+            "cnpj" => $this->formatCNPJ($this->request->getPost('cnpj')),
             "limit_date_for_nota_fiscal" => $this->request->getPost('limit_date_for_nota_fiscal'),
             "city_subscription" => $this->request->getPost('city_subscription'),
             "state_subscription" => $this->request->getPost('state_subscription'),

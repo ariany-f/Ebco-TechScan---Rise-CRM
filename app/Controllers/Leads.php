@@ -86,6 +86,24 @@ class Leads extends Security_Controller {
         return $team_members_dropdown;
     }
 
+    function formatCNPJ($cnpj) {
+        // Remove qualquer caractere que não seja número
+        $cnpj = preg_replace('/\D/', '', $cnpj);
+    
+        // Verifica se o CNPJ possui 14 dígitos
+        if (strlen($cnpj) === 14) {
+            // Adiciona a máscara ao CNPJ
+            return preg_replace(
+                '/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/',
+                '$1.$2.$3/$4-$5',
+                $cnpj
+            );
+        }
+    
+        // Retorna o CNPJ original se não tiver 14 dígitos
+        return $cnpj;
+    }
+
     /* insert or update a lead */
 
     function save() {
@@ -101,7 +119,7 @@ class Leads extends Security_Controller {
 
         $data = array(
             "company_name" => $this->request->getPost('company_name'),
-            "cnpj" => $this->request->getPost('cnpj'),
+            "cnpj" => $this->formatCNPJ($this->request->getPost('cnpj')),
             "state_subscription" => $this->request->getPost('state_subscription'),
             "city_subscription" => $this->request->getPost('city_subscription'),
             "lead_interested" => $this->request->getPost('lead_interested'),
@@ -1061,7 +1079,7 @@ class Leads extends Security_Controller {
 
             $data = array(
                 "company_name" => $company_name,
-                "cnpj" => $this->request->getPost('cnpj'),
+                "cnpj" => $this->formatCNPJ($this->request->getPost('cnpj')),
                 "city_subscription" => $this->request->getPost('city_subscription'),
                 "state_subscription" => $this->request->getPost('state_subscription'),
                 "lead_interested" => $this->request->getPost('lead_interested'),

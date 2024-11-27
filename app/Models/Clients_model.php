@@ -660,7 +660,7 @@ class Clients_model extends Crud_model {
 
     function is_duplicate_cnpj($cnpj, $id = 0) {
 
-        $result = $this->get_all_where(array("cnpj" => $cnpj, "deleted" => 0));
+        $result = $this->get_all_where(array("REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '')" => preg_replace('/\D/', '', $cnpj), "deleted" => 0));
         if (count($result->getResult()) && $result->getRow()->id != $id) {
             return $result->getRow();
         } else {
