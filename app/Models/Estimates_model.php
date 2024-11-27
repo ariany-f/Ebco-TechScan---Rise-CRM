@@ -70,6 +70,12 @@ class Estimates_model extends Crud_model {
             $where .= " AND $estimates_table.status='$status'";
         }
 
+        $statuses = $this->_get_clean_value($options, "statuses");
+        if ($statuses) {
+            $where .= " AND (FIND_IN_SET($estimates_table.status, '$statuses')) ";
+        }
+
+
         $estrajoin = "";
 
         $seller_ids = $this->_get_clean_value($options, "seller_ids");

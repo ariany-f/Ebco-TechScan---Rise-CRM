@@ -231,6 +231,94 @@ class Team_members extends Security_Controller {
         }
     }
 
+    /* open migrate member data modal */
+
+    function migrate_modal_form() {
+        $this->access_only_admin_or_member_creator();
+
+        $this->validate_submitted_data(array(
+            "id" => "numeric"
+        ));
+
+        $view_data['role_dropdown'] = $this->_get_roles_dropdown();
+
+        $id = $this->request->getPost('id');
+        $options = array(
+            "id" => $id,
+        );
+
+        $view_data['model_info'] = $this->Users_model->get_details($options)->getRow();
+
+        $team_members = $this->Users_model->get_all_where(array("deleted" => 0, "status" => "active", "user_type" => "staff"))->getResult();
+        $members_dropdown = array();
+
+        foreach ($team_members as $team_member) {
+            $members_dropdown[] = array("id" => $team_member->id, "text" => $team_member->first_name . " " . $team_member->last_name);
+        }
+
+        $view_data['members_dropdown'] = json_encode($members_dropdown);
+
+        $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("team_members", 0, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
+
+        return $this->template->view('team_members/migrate_modal_form', $view_data);
+    }
+
+    function migrate_data() {
+        global $db;
+        $this->access_only_admin_or_member_creator();
+        
+        $this->validate_submitted_data(array(
+            "member" => "required",
+            "member_id" => "required"
+        ));
+
+        $member_to = $this->request->getPost('member');
+        $member_from = $this->request->getPost('member_id');
+        $transfer_estimates = $this->request->getPost('transfer_estimates');
+
+        /**
+         * Pegar clientes do membro  
+         * */
+        $clients = $this->Clients_model->get_all_where(array('owner_id' => $member_from))->getResult();
+
+        foreach($clients as $client) {
+            $client_id = $client->id;
+
+            $data_client = [
+                "owner_id" => $member_to
+            ];
+            
+            $save_id = $this->Clients_model->ci_save($data_client, $client_id);
+            if(!$save_id) {
+                echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+            }
+        }
+
+        /** Alterar vendedor das propostas */
+        if($transfer_estimates) {
+            $options = [
+                "seller_ids" => $member_from,
+                "statuses" => array("draft", "sent")
+            ];
+            $estimates = $this->Estimates_model->get_details($options)->getResult();
+
+            foreach($estimates as $estimate)
+            {
+                $estimate_id = $estimate->id;
+                $data_estimate = [
+                    "cf-4" => $member_to
+                ];
+                
+                $save_id = $this->Estimates_model->ci_save($data_estimate, $estimate_id);
+                if(!$save_id) {
+                    echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+                }
+            }
+        }
+
+        echo json_encode(array("success" => true, 'message' => app_lang('record_saved')));
+    }
+
     /* open invitation modal */
 
     function invitation_modal() {
@@ -368,6 +456,15 @@ class Team_members extends Security_Controller {
         $delete_link = "";
         if ($this->login_user->is_admin && $this->login_user->id != $data->id) {
             $delete_link = js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_team_member'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("team_members/delete"), "data-action" => "delete-confirmation"));
+            $delete_link .=  modal_anchor(get_uri("team_members/migrate_modal_form"), "<i data-feather='upload' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('migrate_data'), "data-post-id" => $data->id));
+            if($data->status == "active") 
+            {
+                $delete_link .=  js_anchor("<i data-feather='user-x' class='icon-16'></i>", array('title' => app_lang('inactive_team_member'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("team_members/inactive"), "data-action" => "delete-confirmation"));
+            }
+            else
+            {
+                $delete_link .=  js_anchor("<i data-feather='user-check' class='icon-16'></i>", array('title' => app_lang('active_team_member'), "class" => "save", "data-id" => $data->id, "data-action-url" => get_uri("team_members/active"), "data-action" => "delete-confirmation"));
+            }
         }
 
         $row_data[] = $delete_link;
@@ -401,8 +498,6 @@ class Team_members extends Security_Controller {
             if (!$this->can_view_team_members_list() && $this->login_user->id != $id) {
                 app_redirect("forbidden");
             }
-
-
 
             //we have an id. view the team_member's profie
             $options = array("id" => $id, "user_type" => "staff");
@@ -726,6 +821,54 @@ class Team_members extends Security_Controller {
             $data["language"] = strtolower($language);
 
             $this->Users_model->ci_save($data, $this->login_user->id);
+        }
+    }
+
+    //inactive member
+    function inactive() {
+
+        $this->validate_submitted_data(array(
+            "id" => "required|numeric"
+        ));
+
+        $user_id = $this->request->getPost('id');
+
+        validate_numeric_value($user_id);
+        $this->can_access_user_settings($user_id);
+
+        //only admin user/eligible user has permission to update team member's role
+        //but admin user/eligible user can't update his/her own role 
+        //eligible user can't update admin user's role or can't give admin role to anyone
+        $account_data['status'] = "inactive";
+
+        if ($this->Users_model->ci_save($account_data, $user_id)) {
+            echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        }
+    }
+
+    //active member
+    function active() {
+        
+        $this->validate_submitted_data(array(
+            "id" => "required|numeric"
+        ));
+
+        $user_id = $this->request->getPost('id');
+
+        validate_numeric_value($user_id);
+        $this->can_access_user_settings($user_id);
+
+        //only admin user/eligible user has permission to update team member's role
+        //but admin user/eligible user can't update his/her own role 
+        //eligible user can't update admin user's role or can't give admin role to anyone
+        $account_data['status'] = "active";
+
+        if ($this->Users_model->ci_save($account_data, $user_id)) {
+            echo json_encode(array("success" => true, 'message' => app_lang('record_updated')));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
     }
 

@@ -1868,6 +1868,12 @@ $lang["has_partially_paid_invoices"] = "Tem faturas parcialmente pagas";
 $lang["assignee"] = "Cessionária";
 
 $lang["upload_and_crop"] = "Carregar e cortar";
+$lang["transfer"] = "Transferir";
+$lang["transfer_estimates"] = "Transferir Propostas em aberto";
+$lang["migrate_data"] = "Migrar dados de membro";
+$lang["for_team_member"] = "Para membro";
+$lang["inactive_team_member"] = "Inativar";
+$lang["active_team_member"] = "Ativar";
 
 $lang["active_members_on_projects"] = "Membros ativos em projetos";
 $lang["clients_has_new_projects"] = "Clientes com propostas fechadas";
