@@ -103,6 +103,7 @@
 
 
         $searchBox.on('awesomplete-selectcomplete', function () {
+           
             //serch result selected, redirect to the details view
             if (this.value) {
                 var location = "",
@@ -117,9 +118,15 @@
                     } else if (searchFieldValue === "project") {
                         location = "<?php echo get_uri("projects/view"); ?>/" + this.value;
                     } else if (searchFieldValue === "client") {
-                        location = "<?php echo get_uri("clients/view"); ?>/" + this.value;
+                        <?php $uri =  get_uri( "clients/view"); ?>
+                        location ="<?php echo $uri; ?>/" + this.value;
+                    } else if (searchFieldValue === "lead") {
+                        <?php $uri =  get_uri( "leads/view"); ?>
+                        location ="<?php echo $uri; ?>/" + this.value;
+                    } else if (searchFieldValue === "estimate") {
+                        <?php $uri =  get_uri( "estimates/view"); ?>
+                        location ="<?php echo $uri; ?>/" + this.value;
                     }
-
                     window.location.href = location;
                 }
             }

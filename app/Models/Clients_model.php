@@ -795,9 +795,20 @@ class Clients_model extends Crud_model {
         $client_groups = $this->_get_clean_value($options, "client_groups");
         $where .= $this->prepare_allowed_client_groups_query($clients_table, $client_groups);
 
+        
+        $is_lead = $this->_get_clean_value($options, "is_lead");
+        if($is_lead)
+        {
+            $where .= " AND $clients_table.is_lead = 1";
+        }
+        else
+        {
+            $where .= " AND $clients_table.is_lead = 0";
+        }
+
         $sql = "SELECT $clients_table.id, CONCAT($clients_table.company_name, ' - ', $clients_table.cnpj) AS title
         FROM $clients_table  
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND ($clients_table.company_name LIKE '%$search%' OR $clients_table.cnpj LIKE '%$search%' ESCAPE '!') $where
+        WHERE $clients_table.deleted=0 AND ($clients_table.company_name LIKE '%$search%' OR $clients_table.cnpj LIKE '%$search%' ESCAPE '!') $where
         ORDER BY $clients_table.company_name ASC
         LIMIT 0, 10";
 

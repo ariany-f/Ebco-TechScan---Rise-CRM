@@ -22,12 +22,14 @@ class Search extends Security_Controller {
 
     function search_modal_form() {
         $search_fields = array(
+            "estimate",
             "task",
             "project"
         );
 
         if ($this->can_access_clients()) {
             $search_fields[] = "client";
+            $search_fields[] = "lead";
         }
 
         if (get_setting("module_todo")) {
@@ -70,6 +72,19 @@ class Search extends Security_Controller {
                 $options["client_groups"] = $this->allowed_client_groups;
 
                 $result = $this->Clients_model->get_search_suggestion($search, $options)->getResult();
+            } else if ($search_field == "lead") { //client
+                if (!$this->can_access_clients()) {
+                    app_redirect("forbidden");
+                }
+                $options["is_lead"] = 1;
+                $options["show_own_clients_only_user_id"] = $this->show_own_clients_only_user_id();
+
+                $this->init_permission_checker("client");
+                $options["client_groups"] = $this->allowed_client_groups;
+
+                $result = $this->Clients_model->get_search_suggestion($search, $options)->getResult();
+            } else if($search_field == "estimate") {
+                $result = $this->Estimates_model->get_search_suggestion($search, $this->login_user->id)->getResult();
             } else if ($search_field == "todo" && get_setting("module_todo")) { //todo
                 $result = $this->Todo_model->get_search_suggestion($search, $this->login_user->id)->getResult();
             }

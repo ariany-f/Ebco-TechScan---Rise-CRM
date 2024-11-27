@@ -136,6 +136,25 @@ class Estimates_model extends Crud_model {
         return $this->db->query($sql);
     }
     
+    function get_search_suggestion($search = "", $options = array()) {
+        $estimates_table = $this->db->prefixTable('estimates');
+        $clients_table = $this->db->prefixTable('clients');
+
+        $where = "";
+
+        if ($search) {
+            $search = $this->db->escapeLikeString($search);
+        }
+
+        $sql = "SELECT $estimates_table.id, CONCAT('#', $estimates_table.id, ' - ', $clients_table.company_name) AS title
+        FROM $estimates_table  
+        INNER JOIN $clients_table ON $clients_table.id = $estimates_table.client_id
+        WHERE $estimates_table.deleted=0 AND ($estimates_table.id LIKE '%$search%' ESCAPE '!') $where
+        ORDER BY $estimates_table.id ASC
+        LIMIT 0, 10";
+
+        return $this->db->query($sql);
+    }
 
     function is_duplicate_code($estimate_number, $id = 0) {
 
