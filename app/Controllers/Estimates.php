@@ -130,35 +130,11 @@ class Estimates extends Security_Controller {
         //clone estimate data
         $is_clone = $this->request->getPost('is_clone');
         $view_data['is_clone'] = $is_clone;
-        if($is_clone)
-        {
-            $model_info->estimate_type_id = 2; // Revisão
 
-            $matches = array();
-            
+        $next_id = $this->Estimates_model->next_id()->getRow();
+        $view_data['next_id'] = $next_id->id;
 
-            if (strpos($model_info->estimate_number, 'Rev') !== false) {
-
-                if (preg_match('#(\d+)$#', $model_info->estimate_number, $matches)) {
-                    $number = $matches[1];
-                }
-
-                if(is_numeric($number))
-                {
-                    $number++;
-                    $model_info->estimate_number = str_replace(('Rev'. str_pad($number-1,2,"0",STR_PAD_LEFT)), '',$model_info->estimate_number) . preg_replace("/[^a-zA-Z]+/", "", $model_info->estimate_number) . (($number < 10) ? str_pad($number,2,"0",STR_PAD_LEFT) : $number);
-                }
-            }
-            else
-            {
-                $model_info->estimate_number = $model_info->estimate_number . 'Rev01';
-            }
-
-          
-        }
-        else{
-            $model_info->estimate_type_id = 1;
-        }
+        $model_info->estimate_type_id = 1;
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("estimates", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
@@ -186,6 +162,13 @@ class Estimates extends Security_Controller {
         $client_id = $this->request->getPost('estimate_client_id');
         $id = $this->request->getPost('id');
         $this->can_access_this_estimate($id);
+
+        if($this->request->getPost('estimate_number') && $this->Estimates_model->is_duplicate_code( $this->request->getPost('estimate_number'))) {
+            echo json_encode(array("success" => false, 'message' => app_lang('estimate_code_exists')));
+            return false;
+        }
+
+        $next_id = $this->Estimates_model->next_id()->getRow();
      
         $estimate_data = array(
             "client_id" => $client_id,
@@ -195,8 +178,7 @@ class Estimates extends Security_Controller {
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
             "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
             "is_bidding" => $this->request->getPost('is_bidding'),
-            "note" => $this->request->getPost('estimate_note'),
-            'estimate_number' => $this->request->getPost('estimate_number')
+            "note" => $this->request->getPost('estimate_note')
         );
 
         $is_clone = $this->request->getPost('is_clone');
@@ -206,6 +188,16 @@ class Estimates extends Security_Controller {
         $proposal_id = $this->request->getPost('proposal_id');
         $order_id = $this->request->getPost('order_id');
 
+        // Add quando o código for ser gerado automaticamente
+        if($estimate_type_id !== 2 && $estimate_data['company_id'] != 3) {
+            $estimate_data['estimate_number'] = $next_id->id;
+        }
+        else if( $estimate_data['company_id'] == 3)
+        { 
+            $next_zk_id = $this->Estimates_model->next_zk_id();
+            $estimate_data['estimate_number_temp'] = "ZK_" . $next_zk_id;
+        }
+
         //estimate creation from estimate request
         //store the estimate request id for the first time only
         //don't copy estimate request id on cloning too
@@ -214,8 +206,8 @@ class Estimates extends Security_Controller {
         }
 
         $main_estimate_id = "";
+
         if (($is_clone && $id) || $order_id || $contract_id || $proposal_id) {
-            $estimate_type_id = 2; //Revisão
             $main_estimate_id = $id; //store main estimate id to get items later
             $id = ""; //on cloning estimate, save as new
             //save discount when cloning
@@ -253,7 +245,6 @@ class Estimates extends Security_Controller {
 
             if ($is_clone && $main_estimate_id) {
                 //add estimate items
-
                 save_custom_fields("estimates", $estimate_id, 1, "staff"); //we have to keep this regarding as an admin user because non-admin user also can acquire the access to clone a estimate
 
                 $estimate_items = $this->Estimate_items_model->get_all_where(array("estimate_id" => $main_estimate_id, "deleted" => 0))->getResult();
@@ -266,10 +257,6 @@ class Estimates extends Security_Controller {
 
                     $estimate_item = $this->Estimate_items_model->ci_save($estimate_item_data);
                 }
-
-                
-                $options_original_estimate['status'] = 5;
-                $this->Estimates_model->ci_save($options_original_estimate, $main_estimate_id);
 
             } else {
                 save_custom_fields("estimates", $estimate_id, $this->login_user->is_admin, $this->login_user->user_type);
@@ -422,8 +409,61 @@ class Estimates extends Security_Controller {
         }
     }
 
-    /* delete or undo an estimate */
+    /* create revision for estimate */
+    function create_revision() {
+        $this->access_only_allowed_members();
 
+        $this->validate_submitted_data(array(
+            "id" => "required|numeric"
+        ));
+
+        $id = $this->request->getPost('id');
+
+        $this->can_access_this_estimate($id);
+        $estimate_info = (array) $this->Estimates_model->get_one($id);
+        unset($estimate_info['id']);
+
+        $custom_fields_info = $this->Custom_fields_model->get_combined_details("estimates",  $id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
+      
+        $cf_array = [];
+        foreach ($custom_fields_info as $field) {
+            $value = isset($field->value) ? $field->value : ""; // Pega o valor existente ou inicializa como vazio
+
+            $cf_array[$field->id] = $value;
+        }
+
+        $next_id = $this->Estimates_model->next_id()->getRow();
+        $estimate_info['estimate_number'] = null;
+        $estimate_info['estimate_type_id'] = 2;
+        $estimate_info['parent_estimate'] = $id;
+        $estimate_data["created_by"] = $this->login_user->id;
+        $estimate_data["public_key"] = make_random_string();
+        
+        $estimate_id = $this->Estimates_model->ci_save($estimate_info);
+        if ($estimate_id) {
+            //add estimate items
+            save_custom_fields("estimates", $estimate_id, 1, "staff"); //we have to keep this regarding as an admin user because non-admin user also can acquire the access to clone a estimate
+
+            $this->_save_custom_fields_of_estimate($estimate_id, $cf_array);
+
+            $estimate_items = $this->Estimate_items_model->get_all_where(array("estimate_id" => $id, "deleted" => 0))->getResult();
+            
+            foreach ($estimate_items as $estimate_item) {
+                //prepare new estimate item data
+                $estimate_item_data = (array) $estimate_item;
+                unset($estimate_item_data["id"]);
+                $estimate_item_data['estimate_id'] = $estimate_id;
+
+                $estimate_item = $this->Estimate_items_model->ci_save($estimate_item_data);
+            }
+
+            echo json_encode(array("success" => true, 'id' => $estimate_id, 'message' => app_lang('record_saved')));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        }
+    }
+
+    /* delete or undo an estimate */
     function delete() {
         $this->access_only_allowed_members();
 
@@ -442,6 +482,8 @@ class Estimates extends Security_Controller {
                 $signature_file = unserialize(get_array_value($signer_info, "signature"));
                 delete_app_files(get_setting("timeline_file_path"), $signature_file);
             }
+            $data = ['estimate_number' => null];
+            $this->Estimates_model->ci_save($data, $id);
 
             echo json_encode(array("success" => true, 'message' => app_lang('record_deleted')));
         } else {
@@ -469,6 +511,7 @@ class Estimates extends Security_Controller {
         );
 
         $list_data = $this->Estimates_model->get_details($options)->getResult();
+      
         $result = array();
         foreach ($list_data as $data) {
             $result[] = $this->_make_row($data, $custom_fields);
@@ -522,11 +565,11 @@ class Estimates extends Security_Controller {
         $estimate_url = "";
         if ($this->login_user->user_type == "staff") {
             $estimate_url = anchor(get_uri("estimates/view/" . $data->id), get_estimate_id($data->id));
-            $estimate_url_code = anchor(get_uri("estimates/view/" . $data->id), $data->estimate_number);
+            $estimate_url_code = anchor(get_uri("estimates/view/" . $data->id), ($data->estimate_number ? $data->estimate_number : ($data->parent_estimate ? $data->parent_estimate : ($data->estimate_number_temp ? $data->estimate_number_temp : $data->id))));
         } else {
             //for client client
             $estimate_url = anchor(get_uri("estimates/preview/" . $data->id), get_estimate_id($data->id));
-            $estimate_url_code = anchor(get_uri("estimates/preview/" . $data->id), $data->estimate_number);
+            $estimate_url_code = anchor(get_uri("estimates/preview/" . $data->id), ($data->estimate_number ? $data->estimate_number : ($data->parent_estimate ? $data->parent_estimate : ($data->estimate_number_temp ? $data->estimate_number_temp : $data->id))));
         }
 
         $client = anchor(get_uri("clients/view/" . $data->client_id), $data->company_name);
@@ -542,8 +585,7 @@ class Estimates extends Security_Controller {
             $client,
             $data->estimate_date,
             format_to_date($data->estimate_date, false),
-            $data->estimate_type,
-            to_currency($data->estimate_value, $data->currency_symbol),
+            '<span class="mt0 badge '.($data->estimate_type == "Revisão" ? "bg-info" : "bg-secondary").'  large">'. ($data->estimate_type == "Revisão" ? $data->estimate_type : "Primeira Proposta")  . '</span>',
             $this->_get_estimate_status_label($data),
             $licitacao,
         );
@@ -593,9 +635,11 @@ class Estimates extends Security_Controller {
             }
         }
 
+
         $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
                 . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-post-id" => $data->id))
-                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
+                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"))
+                . ajax_anchor(get_uri("estimates/create_revision"), "<i data-feather='copy' class='icon-16'></i> ", array('title' => app_lang('create_revision'), "class" => "delete", "data-post-id" => $data->id, "data-reload-on-success" => true, "data-bs-toggle" => "tooltip", "data-placement" => "left"));
 
         return $row_data;
     }
@@ -921,6 +965,10 @@ class Estimates extends Security_Controller {
     function validate_code() {
         $code = $this->request->getPost('code');
         echo json_encode($this->Estimates_model->is_duplicate_code($code));
+    }
+    
+    function next_zk_id() {
+        echo json_encode($this->Estimates_model->next_zk_id());
     }
 
     function download_pdf($estimate_id = 0, $mode = "download", $estimate_public_id = 0) {

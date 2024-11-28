@@ -11,6 +11,31 @@ class Estimates_model extends Crud_model {
         parent::__construct($this->table);
     }
 
+    function next_id() {
+        $estimates_table = $this->db->prefixTable('estimates');
+        $sql = "SELECT MAX($estimates_table.estimate_number) + 1 as id FROM $estimates_table;";
+        return $this->db->query($sql);
+    }
+
+    function next_zk_id() {
+        $estimates_table = $this->db->prefixTable('estimates');
+    
+        // Consulta para obter o maior número de sequência do ano atual
+        $sql = "
+            SELECT 
+                COALESCE(MAX(CAST(SUBSTRING_INDEX(estimate_number_temp, '_', -1) AS UNSIGNED)), 0) + 1 AS next_sequence
+            FROM 
+                $estimates_table
+            WHERE 
+                estimate_number_temp LIKE CONCAT('ZK_', YEAR(CURDATE()), '_%');
+        ";
+    
+        $result = $this->db->query($sql)->getRow();
+    
+        // Caso ainda não haja registros para o ano atual, começamos a sequência com 1
+        return $result->next_sequence ?: 1;
+    }
+
     function get_details($options = array()) {
         $estimates_table = $this->db->prefixTable('estimates');
         $clients_table = $this->db->prefixTable('clients');
@@ -139,6 +164,8 @@ class Estimates_model extends Crud_model {
         $join_custom_fieds
         $estrajoin
         WHERE $estimates_table.deleted=0 $where $custom_fields_where";
+
+        log_message(1, json_encode($sql), array($sql));
         return $this->db->query($sql);
     }
     
@@ -152,10 +179,10 @@ class Estimates_model extends Crud_model {
             $search = $this->db->escapeLikeString($search);
         }
 
-        $sql = "SELECT $estimates_table.id, CONCAT('#', $estimates_table.id, ' - ', $clients_table.company_name) AS title
+        $sql = "SELECT $estimates_table.id, CONCAT('#', $estimates_table.estimate_number, ' - ', $clients_table.company_name) AS title
         FROM $estimates_table  
         INNER JOIN $clients_table ON $clients_table.id = $estimates_table.client_id
-        WHERE $estimates_table.deleted=0 AND ($estimates_table.id LIKE '%$search%' ESCAPE '!') $where
+        WHERE $estimates_table.deleted=0 AND ($estimates_table.estimate_number LIKE '%$search%' ESCAPE '!') $where
         ORDER BY $estimates_table.id ASC
         LIMIT 0, 10";
 

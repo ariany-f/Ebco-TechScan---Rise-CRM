@@ -169,6 +169,7 @@ class Clients_model extends Crud_model {
             $where .= " $clients_table.id LIKE '%$search_by%' ESCAPE '!' ";
             $where .= " OR $clients_table.company_name LIKE '%$search_by%' ESCAPE '!' ";
             $where .= " OR $clients_table.cnpj LIKE '%$search_by%' ESCAPE '!' ";
+            $where .= " OR $clients_table.matriz_cnpj LIKE '%$search_by%' ESCAPE '!' ";
             $where .= " OR CONCAT($users_table.first_name, ' ', $users_table.last_name) LIKE '%$search_by%' ESCAPE '!' ";
 
             if ($leads_only) {
@@ -661,7 +662,7 @@ class Clients_model extends Crud_model {
 
     function is_duplicate_cnpj($cnpj, $id = 0) {
 
-        $result = $this->get_all_where(array("REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '')" => preg_replace('/\D/', '', $cnpj) . '%', "deleted" => 0));
+        $result = $this->get_all_where(array("REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '')" => preg_replace('/\D/', '', $cnpj), "deleted" => 0));
         if (count($result->getResult()) && $result->getRow()->id != $id) {
             return $result->getRow();
         } else {
@@ -809,7 +810,7 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT $clients_table.id, CONCAT($clients_table.company_name, ' - ', $clients_table.cnpj) AS title
         FROM $clients_table  
-        WHERE $clients_table.deleted=0 AND ($clients_table.company_name LIKE '%$search%' OR $clients_table.cnpj LIKE '%$search%' ESCAPE '!') $where
+        WHERE $clients_table.deleted=0 AND ($clients_table.company_name LIKE '%$search%' OR $clients_table.cnpj LIKE '%$search%'  OR $clients_table.matriz_cnpj LIKE '%$search%' ESCAPE '!') $where
         ORDER BY $clients_table.company_name ASC
         LIMIT 0, 10";
 

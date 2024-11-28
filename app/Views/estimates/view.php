@@ -1,7 +1,7 @@
 <div id="page-content" class="clearfix">
     <div style="max-width: 1000px; margin: auto;">
         <div class="page-title clearfix mt25">
-            <h1><?php echo get_estimate_id($estimate_info->id) . ' - ' . $estimate_info->estimate_number; ?></h1>
+            <h1><?php echo get_estimate_id($estimate_info->estimate_number ?? $estimate_info->parent_estimate ?? $estimate_info->estimate_number_temp); ?></h1>
             <div class="title-button-group">
                 <span class="dropdown inline-block mt15">
                     <button class="btn btn-info text-white dropdown-toggle caret mt0 mb0" type="button" data-bs-toggle="dropdown" aria-expanded="true">
@@ -20,7 +20,7 @@
                         <li role="presentation"><?php echo modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='copy' class='icon-16'></i> " . app_lang('clone_estimate'), array("data-post-is_clone" => true, "data-post-id" => $estimate_info->id, "title" => app_lang('clone_estimate'), "class" => "dropdown-item")); ?></li>
                         <?php
                         if ($estimate_status != "in_revision") { ?>
-                            <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/in_revision"), "<i data-feather='edit' class='icon-16'></i> " . app_lang('mark_as_revision'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                            <!-- <li role="presentation"><?php //echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/in_revision"), "<i data-feather='edit' class='icon-16'></i> " . app_lang('mark_as_revision'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li> -->
                         <?php
                         }
                         ?>

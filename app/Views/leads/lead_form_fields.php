@@ -19,19 +19,57 @@
         </div>
     </div>
 </div>
-
-
 <div class="form-group">
     <div class="row">
-        <label for="cnpj" class=" col-md-3"><?php echo app_lang('cnpj'); ?></label>
+            <label for="cnpj" class="<?php echo $label_column; ?>"><?php echo app_lang('cnpj'); ?>
+                <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo "Só é obrigatório para filiais que possuem cnpj proprio" ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+            </label>
         <div class=" col-md-9">
             <?php
             echo form_input(array(
                 "id" => "cnpj",
                 "name" => "cnpj",
+                "maxlength" => "18",
                 "value" => $model_info->cnpj,
                 "class" => "form-control",
                 "placeholder" => app_lang('cnpj'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <label for="matriz_cnpj" class="<?php echo $label_column; ?>"><?php echo app_lang('matriz_cnpj'); ?>
+            <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo "Caso seja filial, preencha o cnpj da matriz" ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+        </label>
+        <div class=" col-md-9">
+            <?php
+            echo form_input(array(
+                "id" => "matriz_cnpj",
+                "name" => "matriz_cnpj",
+                "maxlength" => "18",
+                "value" => $model_info->matriz_cnpj,
+                "class" => "form-control",
+                "placeholder" => app_lang('matriz_cnpj'),
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <label for="setor" class="<?php echo $label_column; ?>"><?php echo app_lang('setor'); ?>
+            <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo app_lang('public') . ' ou ' . app_lang('private') ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+        </label>
+        <div class="<?php echo $field_column; ?>">
+            <?php
+            echo form_input(array(
+                "id" => "setor",
+                "name" => "setor",
+                "value" => $model_info->setor,
+                "class" => "form-control",
+                "placeholder" => app_lang('setor')
             ));
             ?>
         </div>
@@ -298,6 +336,80 @@
                 $('#currency').select2({data: <?php echo json_encode($currency_dropdown); ?>});
             }
 <?php } ?>
+
+
+<?php if (isset($setor_dropdown)) { ?>
+            $("#setor").select2({
+                data: <?php echo json_encode($setor_dropdown); ?>
+            });
+<?php } ?>
+
+
+        $("#cnpj").on('change', function() {
+            var cnpj = this.value;
+
+            // Remover a máscara do CNPJ (remover pontos, barra e hífen)
+            cnpj = cnpj.replace(/[^\d]/g, ''); // Expressão regular para remover tudo que não for dígito
+
+            if (cnpj.length >= 14) {
+                // Formatar a URL com o CNPJ digitado
+                var url = "https://open.cnpja.com/office/" + cnpj;
+
+                // Fazer a requisição para a API
+                fetch(url)
+                    .then(response => response.json()) // Parseia a resposta JSON
+                    .then(data => {
+                        if (data.code !== 401) {
+                            // Verificando se a API retornou um nome de empresa válido
+                            if (data.company && data.company.name) {
+                                // Preencher os campos com os dados retornados
+                                $('#custom_field_12').val(data.company.name);  // Preenche o campo com o nome da empresa
+                            }
+                            if (data.alias) {
+                                $('#company_name').val(data.alias.toUpperCase());  // Preenche o campo com o nome da empresa
+                            }
+                            // Preencher o endereço (se disponível)
+                            if (data.address) {
+                                var endereco = data.address.street + ", " + data.address.number;
+                                $('#address').val(endereco); // Preenche o campo com o endereço da empresa
+                                $('#city').val( data.address.city ); // Preenche o campo com o endereço da empresa
+                                $('#state').val( data.address.state ); // Preenche o campo com o endereço da empresa
+                                $('#zip').val( data.address.zip ); // Preenche o campo com o endereço da empresa
+                                $('#country').val( data.address.country.name ); // Preenche o campo com o endereço da empresa
+                            } 
+
+                            // Preencher o telefone (se disponível)
+                            if (data.phones && data.phones.length > 0) {
+                                var telefone = data.phones.map(function(phone) {
+                                    return phone.area + ' ' + phone.number;
+                                }).join(', ');
+                                $('#phone').val(telefone); // Preenche o campo com o telefone
+                            }
+
+                             // Verificar se a empresa é do setor público ou privado
+                            var natureza = data.company.nature ? data.company.nature.text : '';
+                            if (natureza.includes('Público')) {
+                                $('#setor').select2("val", "public").trigger('change');
+                            } else {
+                                $('#setor').select2("val", "private").trigger('change');
+                            }
+
+                        } else {
+                            console.log('CNPJ não encontrado ou inválido.');
+                            // Caso o CNPJ não seja encontrado ou seja inválido, limpar os campos
+                        
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar informações do CNPJ:', error);
+                    });
+            }
+        });
+
+        setTimeout(() => {
+            $("input[name='cnpj']").mask('##.###.###/####-##', { reverse: false });
+            $("input[name='matriz_cnpj']").mask('##.###.###/####-##', { reverse: false });
+        }, 1000);
 
         $('#owner_id').select2({data: <?php echo json_encode($owners_dropdown); ?>});
 

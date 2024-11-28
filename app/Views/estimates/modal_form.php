@@ -18,16 +18,16 @@
                     echo form_input(array(
                         "id" => "estimate_number",
                         "name" => "estimate_number",
-                        "value" => $model_info->estimate_number ? process_images_from_content($model_info->estimate_number, false) : "",
+                        "value" => $next_id,
+                        "disabled" => true,
                         "class" => "form-control",
-                        "placeholder" => app_lang('estimate_number'),
-                        "data-rich-text-editor" => true
+                        "placeholder" => app_lang('estimate_number')
                     ));
                     ?>
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group hide">
             <div class="row">
                 <label for="is_bidding"class="col-md-3"> <?php echo app_lang('is_bidding'); ?>
                     <?php
@@ -113,8 +113,7 @@
                 </div>
             </div>
         <?php } ?>
-
-        <div class="form-group">
+        <div class="form-group hide ">
             <div class="row">
                 <label for="estimate_type_id" class=" col-md-3"><?php echo app_lang('estimate_type'); ?></label>
                 <div class="col-md-9">
@@ -124,26 +123,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="form-group">
-            <div class="row">
-                <label for="tax_id" class=" col-md-3"><?php //echo app_lang('tax'); ?></label>
-                <div class="col-md-9">
-                    <?php
-                    //echo form_dropdown("tax_id", $taxes_dropdown, array($model_info->tax_id), "class='select2 tax-select2'");
-                    ?>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <label for="tax_id" class=" col-md-3"><?php //echo app_lang('second_tax'); ?></label>
-                <div class="col-md-9">
-                    <?php
-                    //echo form_dropdown("tax_id2", $taxes_dropdown, array($model_info->tax_id2), "class='select2 tax-select2'");
-                    ?>
-                </div>
-            </div>
-        </div> -->
         <div class="form-group">
             <div class="row">
                 <label for="estimate_note" class=" col-md-3"><?php echo app_lang('payment_conditions') ; ?></label>
@@ -243,6 +222,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        var cod =  $("#estimate_number").val();
         $("#estimate-form").appForm({
             onSuccess: function (result) {
                 if (typeof RELOAD_VIEW_AFTER_UPDATE !== "undefined" && RELOAD_VIEW_AFTER_UPDATE) {
@@ -278,10 +258,30 @@
         $("#estimate_client_id").select2();
 
         setTimeout(() => {
-            $("input[name='custom_field_5']").mask('###0.00', { reverse: true });
+            $("input[name='custom_field_5']").mask('#.###.##0,00', { reverse: true });
         }, 1000);
 
         $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});
+
+        $("#company_id").on('change', function() {
+
+            /** ZK TECO SEGUE O PADRÃO ZK_{ANO}{PROXINDEX} */
+            if(this.value == 3) {
+                $.ajax({
+                    url: AppHelper.baseUrl + 'estimates/next_zk_id',
+                    cache: false,
+                    type: 'POST',
+                    dataType: "json",
+                    success: function (response) {
+                        $("#estimate_number").val("ZK_" + response)
+                    }
+                });
+            }
+            else
+            {
+                $("#estimate_number").val(cod)
+            }
+        })
 
         setDatePicker("#estimate_date, #valid_until");
 

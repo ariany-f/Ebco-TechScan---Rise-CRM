@@ -113,7 +113,7 @@
                     </div>
 
                 </div>
-                <?php echo view("includes/dropzone_preview"); ?>    
+                <?php echo view("includes/dropzone_preview"); ?>
 
                 <div class="card-footer clearfix">
                     <button class="btn btn-default upload-file-button float-start me-auto btn-sm round" type="button" style="color:#7988a2"><i data-feather='camera' class='icon-16'></i> <?php echo app_lang("upload_file"); ?></button>

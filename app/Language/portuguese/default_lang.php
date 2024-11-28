@@ -1539,6 +1539,7 @@ $lang["help_articles"] = "Artigos de ajuda";
 $lang["help_categories"] = "Categorias de ajuda";
 $lang["knowledge_base_articles"] = "artigos KB";
 $lang["knowledge_base_categories"] = "Categorias KB";
+$lang["create_revision"] = "Criar Revisão";
 
 $lang["rtl"] = "RTL";
 
@@ -1557,7 +1558,7 @@ $lang["Thermometer"] = "Termômetro";
 $lang["draft_invoices"] = "Rascunho de faturas";
 $lang["draft_invoices_total"] = "Rascunho total da fatura";
 $lang["draft_invoices_value"] = "Rascunho do valor da fatura";
-$lang["payment_conditions"] = "Condições de pagamento";
+$lang["payment_conditions"] = "Anotações da proposta";
 $lang["term"] = "Prazos";
 
 $lang["gdpr_terms_and_conditions_link"] = "URL dos termos e condições";
@@ -1866,6 +1867,7 @@ $lang["has_unpaid_invoices"] = "Tem faturas não pagas";
 $lang["has_overdue_invoices"] = "Tem faturas vencidas";
 $lang["has_partially_paid_invoices"] = "Tem faturas parcialmente pagas";
 $lang["assignee"] = "Cessionária";
+$lang["estimate_code_exists"] = "Código da proposta já existe";
 
 $lang["upload_and_crop"] = "Carregar e cortar";
 $lang["transfer"] = "Transferir";
@@ -1874,6 +1876,7 @@ $lang["migrate_data"] = "Migrar dados de membro";
 $lang["for_team_member"] = "Para membro";
 $lang["inactive_team_member"] = "Inativar";
 $lang["active_team_member"] = "Ativar";
+$lang["matriz_cnpj"] = "CNPJ matriz";
 
 $lang["active_members_on_projects"] = "Membros ativos em projetos";
 $lang["clients_has_new_projects"] = "Clientes com propostas fechadas";

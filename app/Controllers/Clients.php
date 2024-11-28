@@ -138,6 +138,7 @@ class Clients extends Security_Controller {
             "company_name" => $company_name,
             "setor" => $this->request->getPost('setor'),
             "cnpj" => $this->formatCNPJ($this->request->getPost('cnpj')),
+            "matriz_cnpj" => $this->formatCNPJ($this->request->getPost('matriz_cnpj')),
             "limit_date_for_nota_fiscal" => $this->request->getPost('limit_date_for_nota_fiscal'),
             "city_subscription" => $this->request->getPost('city_subscription'),
             "state_subscription" => $this->request->getPost('state_subscription'),
@@ -940,7 +941,11 @@ class Clients extends Security_Controller {
             $view_data['social_link'] = $this->Social_links_model->get_one($contact_id);
             return $this->template->rander("clients/contacts/view", $view_data);
         } else {
-            show_404();
+            $view_data['show_cotact_info'] = true;
+            $view_data['show_social_links'] = true;
+            $view_data['social_link'] = $this->Social_links_model->get_one($contact_id);
+            return $this->template->rander("clients/contacts/view", $view_data);
+            //show_404();
         }
     }
 
@@ -1829,6 +1834,7 @@ class Clients extends Security_Controller {
             "currency",
             "currency_symbol",
             "cnpj",
+            "matriz_cnpj",
             "cf-12"
         );
     }

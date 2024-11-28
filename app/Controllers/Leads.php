@@ -33,6 +33,8 @@ class Leads extends Security_Controller {
         $lead_id = $this->request->getPost('id');
         $this->can_access_this_lead($lead_id);
         $view_data = $this->make_lead_modal_form_data($lead_id);
+        
+        $view_data['setor_dropdown'] = $this->_get_setor_select2_data();
         return $this->template->view('leads/modal_form', $view_data);
     }
 
@@ -119,6 +121,7 @@ class Leads extends Security_Controller {
 
         $data = array(
             "company_name" => $this->request->getPost('company_name'),
+            "setor" => $this->request->getPost('setor'),
             "cnpj" => $this->formatCNPJ($this->request->getPost('cnpj')),
             "state_subscription" => $this->request->getPost('state_subscription'),
             "city_subscription" => $this->request->getPost('city_subscription'),
@@ -143,7 +146,6 @@ class Leads extends Security_Controller {
         if (!$client_id) {
             $data["created_date"] = get_current_utc_time();
         }
-
 
         $data = clean_data($data);
         
