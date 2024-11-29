@@ -169,6 +169,10 @@ class Estimates extends Security_Controller {
         }
 
         $next_id = $this->Estimates_model->next_id()->getRow();
+
+        $target_path = get_setting("timeline_file_path");
+        $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "estimates");
+        $new_files = unserialize($files_data);
      
         $estimate_data = array(
             "client_id" => $client_id,
@@ -178,8 +182,20 @@ class Estimates extends Security_Controller {
             "tax_id2" => $this->request->getPost('tax_id2') ? $this->request->getPost('tax_id2') : 0,
             "company_id" => $this->request->getPost('company_id') ? $this->request->getPost('company_id') : get_default_company_id(),
             "is_bidding" => $this->request->getPost('is_bidding'),
+            "margem" => $this->request->getPost('margem'),
+            "prazo_em_dias" => $this->request->getPost('prazo_em_dias'),
             "note" => $this->request->getPost('estimate_note')
         );
+        
+        //is editing? update the files if required
+        if ($id) {
+            $expense_info = $this->Estimates_model->get_one($id);
+            $timeline_file_path = get_setting("timeline_file_path");
+
+            $new_files = update_saved_files($timeline_file_path, $expense_info->files, $new_files);
+        }
+
+        $estimate_data["files"] = serialize($new_files);
 
         $is_clone = $this->request->getPost('is_clone');
         $estimate_request_id = $this->request->getPost('estimate_request_id');
@@ -272,6 +288,25 @@ class Estimates extends Security_Controller {
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
+    }
+
+    // upload a file 
+    function upload_estimate_file() {
+        $this->access_only_allowed_members();
+        upload_file_to_temp();
+    }
+
+    // check valid file for ticket 
+
+    function validate_file() {
+        return validate_post_file($this->request->getPost("file_name"));
+    }
+
+
+    // download files 
+    function download_files($id = 0) {
+        $info = $this->Estimates_model->get_one($id);
+        return $this->download_app_files(get_setting("timeline_file_path"), $info->files);
     }
 
     private function _copy_related_items_to_estimate($copy_items_from_proposal, $copy_items_from_contract, $copy_items_from_order, $estimate_id) {

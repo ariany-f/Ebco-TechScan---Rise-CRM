@@ -1,3 +1,5 @@
+
+<div id="estimate-dropzone" class="post-dropzone">
 <?php echo form_open(get_uri("estimates/save"), array("id" => "estimate-form", "class" => "general-form", "role" => "form")); ?>
 <div class="modal-body clearfix">
     <div class="container-fluid">
@@ -125,6 +127,39 @@
         </div>
         <div class="form-group">
             <div class="row">
+                <label for="margem" class=" col-md-3"><?php echo app_lang('margem') ; ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "margem",
+                        "name" => "margem",
+                        "value" => $model_info->margem ? $model_info->margem : "",
+                        "class" => "percent form-control",
+                        "placeholder" => app_lang('margem')
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label for="prazo_em_dias" class=" col-md-3"><?php echo app_lang('prazo_em_dias') ; ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_input(array(
+                        "id" => "prazo_em_dias",
+                        "name" => "prazo_em_dias",
+                        "value" => $model_info->prazo_em_dias ? $model_info->prazo_em_dias : "",
+                        "class" => "form-control",
+                        "type" => "number",
+                        "placeholder" => app_lang('prazo_em_dias')
+                    ));
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
                 <label for="estimate_note" class=" col-md-3"><?php echo app_lang('payment_conditions') ; ?></label>
                 <div class=" col-md-9">
                     <?php
@@ -211,16 +246,27 @@
             </div>
         <?php } ?>
 
+        <div class="form-group">
+            <div class="col-md-12">
+                <?php
+                echo view("includes/file_list", array("files" => $model_info->files));
+                ?>
+            </div>
+        </div>
     </div>
+    <?php echo view("includes/dropzone_preview"); ?>
 </div>
 
 <div class="modal-footer">
+    <button class="btn btn-default upload-file-button float-start me-auto btn-sm round" type="button" style="color:#7988a2"><i data-feather='camera' class='icon-16'></i> <?php echo app_lang("upload_file"); ?></button>
     <button type="button" class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
     <button type="submit" class="btn btn-primary"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save'); ?></button>
 </div>
+</div> 
 <?php echo form_close(); ?>
 
 <script type="text/javascript">
+  
     $(document).ready(function () {
         var cod =  $("#estimate_number").val();
         $("#estimate-form").appForm({
@@ -259,6 +305,7 @@
 
         setTimeout(() => {
             $("input[name='custom_field_5']").mask('#.###.##0,00', { reverse: true });
+            $("input[name='margem']").mask('##%', { reverse: true });
         }, 1000);
 
         $("#company_id").select2({data: <?php echo json_encode($companies_dropdown); ?>});
@@ -285,6 +332,10 @@
 
         setDatePicker("#estimate_date, #valid_until");
 
+        var uploadUrl = "<?php echo get_uri("estimates/upload_estimate_file"); ?>";
+        var validationUrl = "<?php echo get_uri("estimates/validate_file"); ?>";
+
+        var dropzone = attachDropzoneWithForm("#estimate-dropzone", uploadUrl, validationUrl);
 
     });
 </script>
