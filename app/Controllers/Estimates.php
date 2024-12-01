@@ -1475,7 +1475,7 @@ class Estimates extends Security_Controller {
         }
         else
         {
-            echo json_encode(array('success' => false, 'message' => "Você precisa anexar ao menos um arquivo"));
+            echo json_encode(array('success' => false, 'message' => "Você precisa selecionar ao menos um arquivo para ir anexado"));
             return false;
         }
 
