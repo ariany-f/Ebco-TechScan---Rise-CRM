@@ -2,6 +2,7 @@
     <?php echo form_open(get_uri("estimates/send_estimate"), array("id" => "send-estimate-form", "class" => "general-form", "role" => "form")); ?>
         <div class="modal-body clearfix">
             <div class="container-fluid" id="estimate-dropzone" class="post-dropzone form-group">
+           
                 <input type="hidden" name="id" value="<?php echo $estimate_info->id; ?>" />
                 <input type="hidden" name="estimate_id" value="<?php echo $estimate_info->id; ?>" />
 
@@ -47,7 +48,25 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="form-group">
+                    <div class="row">
+                        <label for="files_to_send" class=" col-md-4"><?php echo app_lang('files_to_send') ?></label>
+                        <div class="col-md-8">
+                            <?php
+                                if(isset($estimate_info->files) && isset($estimate_info->revision_files) && (count(unserialize($estimate_info->files)) > 0 || count(unserialize($estimate_info->revision_files)) > 0))
+                                {
+                                    /** Type 1 = proposta original */
+                                    echo view("includes/select_file_list", array("files" => $estimate_info->files, "type" => 1));
+                                    /** Type 2 = revisão */
+                                    echo view("includes/select_file_list", array("files" => $estimate_info->revision_files, "type" => 2));
+                                } else
+                                {
+                                    echo "<span data-feather='slash' class='icon-16'></span>";
+                                }
+                            ?>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="row">
                         <label for="subject" class=" col-md-3"><?php echo app_lang("subject"); ?></label>
@@ -78,12 +97,14 @@
                         </div>
                     </div>
                 </div>
-                <?php echo view("includes/dropzone_preview"); ?>
+                <div class="form-group">
+                    <b>Anexos adicionais</b>
+                    <?php echo view("includes/dropzone_preview"); ?>
+                </div>
                 <div class="form-group ml15">
                     <!-- <i data-feather="check-circle" class='icon-16' style="color: #5CB85C;"></i> <?php //echo app_lang('attached') . ' ' . anchor(get_uri("estimate/download_pdf/" . $estimate_info->id . '/' . $estimate_info->public_key), app_lang("estimate") . "-$estimate_info->id.pdf", array("target" => "_blank")); ?>  -->
                     <button class="btn btn-default upload-file-button float-start me-auto btn-sm round" type="button" style="color:#7988a2"><i data-feather="camera" class='icon-16'></i> <?php echo app_lang("upload_file"); ?></button>
                 </div>
-
             </div>
         </div>
         <div class="modal-footer">
@@ -102,7 +123,7 @@
         $('#send-estimate-form .select2').select2();
         $("#send-estimate-form").appForm({
             isModal: false,
-            beforeAjaxSubmit: function (data) {
+            beforeAjaxSubmit: function (data, event, options) {
                 var custom_message = encodeAjaxPostData(getWYSIWYGEditorHTML("#message"));
                 $.each(data, function (index, obj) {
                     if (obj.name === "message") {
@@ -110,11 +131,16 @@
                     }
                 });
             },
+            onError: function (result) {
+                appLoader.hide()
+                appAlert.error(result.message);
+            },
             onSuccess: function (result) {
                 if (result.success) {
                     appAlert.success(result.message, {duration: 10000});
                 } else {
                     appAlert.error(result.message);
+
                 }
             }
         });

@@ -13,7 +13,9 @@ if (isset($files) && $files) {
                 $thumbnail = get_source_url_of_file($file, $timeline_file_path, "thumbnail");
                 echo "<div class='col-md-2 col-sm-6 pr0 saved-file-item-container'><div style='background-image: url($thumbnail)' class='edit-image-file mb15' ><a href='#' class='delete-saved-file' data-file_name='$file_name'><span data-feather='x' class='icon-16'></span></a></div></div>";
             } else {
-                echo "<div class='box saved-file-item-container'><div class='box-content w80p pt5 pb5'>" . remove_file_prefix($file_name) . "</div> <div class='box-content w20p text-right'><a href='#' class='delete-saved-file p5 dark' data-file_name='$file_name'><span data-feather='x' class='icon-16'></span></a></div> </div>";
+                $max_length = 30;
+                $adjusted_file_name = (strlen(($file_name)) > $max_length) ? substr(($file_name), 0, $max_length) . '...' : ($file_name);
+                echo "<div class='box saved-file-item-container'><div title='".$file_name."' class='box-content w80p pt5 pb5'>" . ($adjusted_file_name) . "</div> <div class='box-content w20p text-right'><a href='#' class='delete-saved-file p5 dark' data-file_name='$file_name'><span data-feather='x' class='icon-16'></span></a></div> </div>";
             }
         }
     }

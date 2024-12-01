@@ -1,7 +1,7 @@
 <div id="page-content" class="clearfix">
     <div style="max-width: 1000px; margin: auto;">
         <div class="page-title clearfix mt25">
-            <h1><?php echo get_estimate_id($estimate_info->estimate_number ?? $estimate_info->parent_estimate ?? $estimate_info->estimate_number_temp); ?></h1>
+            <h1><strong><?php echo get_estimate_id($estimate_info->estimate_number ?? $estimate_info->parent_estimate ?? $estimate_info->estimate_number_temp); ?></strong></h1>
             <div class="title-button-group">
                 <span class="dropdown inline-block mt15">
                     <button class="btn btn-info text-white dropdown-toggle caret mt0 mb0" type="button" data-bs-toggle="dropdown" aria-expanded="true">
@@ -44,6 +44,7 @@
                             <?php
                         }
                         ?>
+                        <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/create_revision"), "<i data-feather='copy' class='icon-16'></i> " . app_lang('create_revision'), array("data-post-id" => $estimate_info->id, "data-reload-on-success" => 1, "class" => "dropdown-item")); ?> </li>
 
                         <?php
                         if ($client_info->is_lead) {
@@ -98,9 +99,9 @@
         <div class="mt15">
             <div class="card no-border clearfix ">
                 <ul data-bs-toggle="ajax-tab" class="nav nav-tabs bg-white title" role="tablist">
-                    <li><a role="presentation" data-bs-toggle="tab" href="javascript:;" data-bs-target="#estimate-items"><?php echo app_lang("estimate") . " " . app_lang("items"); ?></a></li>
-                    <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("estimates/editor/" . $estimate_info->id); ?>" data-bs-target="#estimate-editor"><?php echo app_lang("estimate_editor"); ?></a></li>
-                    <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("estimates/preview/" . $estimate_info->id . "/0/1"); ?>" data-bs-target="#estimate-preview" data-reload="true"><?php echo app_lang("preview"); ?></a></li>
+                    <li><a role="presentation" data-bs-toggle="tab" href="javascript:;" data-bs-target="#estimate-items"><?php echo app_lang("estimate"); ?></a></li>
+                    <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php //echo_uri("estimates/editor/" . $estimate_info->id); ?>" data-bs-target="#estimate-editor"><?php //echo app_lang("estimate_editor"); ?></a></li> -->
+                    <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php //echo_uri("estimates/preview/" . $estimate_info->id . "/0/1"); ?>" data-bs-target="#estimate-preview" data-reload="true"><?php //echo app_lang("preview"); ?></a></li> -->
                 </ul>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane fade" id="estimate-items">
@@ -134,22 +135,38 @@
                                 echo view('estimates/estimate_parts/header_style_1.php', $data);
                             }
                             ?>
-
                         </div>
 
                         <div class="table-responsive mt15 pl15 pr15">
-                            <table id="estimate-item-table" class="display" width="100%">            
+                            <div class="col-md-12 mb-5">
+                                <h4><strong><?php echo app_lang("files") ?></strong></h4>
+                            </div>
+                            <table id="files-estimate-table" class="display" cellspacing="0" width="100%">   
                             </table>
                         </div>
 
-                        <div class="clearfix">
+
+                        <div class="table-responsive mt15 pl15 pr15">
+                            <div class="col-md-12 mb-5">
+                                <h4><strong><?php echo app_lang("revisions") ?></strong></h4>
+                            </div>
+                            <table id="revisions-estimate-table" class="display" cellspacing="0" width="100%">   
+                            </table>
+                        </div>
+
+                        <!-- <div class="table-responsive mt15 pl15 pr15 mt20">
+                            <table id="estimate-item-table" class="display" width="100%">            
+                            </table>
+                        </div> -->
+
+                        <!-- <div class="clearfix">
                             <div class="float-start mt20 ml15">
-                                <?php echo modal_anchor(get_uri("estimates/item_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_item'), array("class" => "btn btn-info text-white", "title" => app_lang('add_item'), "data-post-estimate_id" => $estimate_info->id)); ?>
+                                <?php //echo modal_anchor(get_uri("estimates/item_modal_form"), "<i data-feather='plus-circle' class='icon-16'></i> " . app_lang('add_item'), array("class" => "btn btn-info text-white", "title" => app_lang('add_item'), "data-post-estimate_id" => $estimate_info->id)); ?>
                             </div>
                             <div class="float-end pr15" id="estimate-total-section">
-                                <?php echo view("estimates/estimate_total_section"); ?>
+                                <?php //echo view("estimates/estimate_total_section"); ?>
                             </div>
-                        </div>
+                        </div> -->
 
                         <?php
                         if (get_setting("enable_comments_on_estimates") && !($estimate_info->status === "draft")) {
@@ -159,8 +176,8 @@
 
                     </div>
                     
-                    <div role="tabpanel" class="tab-pane fade" id="estimate-editor"></div>
-                    <div role="tabpanel" class="tab-pane fade" id="estimate-preview"></div>
+                    <!-- <div role="tabpanel" class="tab-pane fade" id="estimate-editor"></div> -->
+                    <!-- <div role="tabpanel" class="tab-pane fade" id="estimate-preview"></div> -->
                 </div>
             </div>
         </div>
@@ -205,6 +222,30 @@
 <script type="text/javascript">
     //RELOAD_VIEW_AFTER_UPDATE = true;
     $(document).ready(function () {
+
+        $("#files-estimate-table").appTable({
+            source: '<?php echo_uri("estimates/list_files_data/" . $estimate_info->id) ?>',
+            order: [[0, "desc"]],
+            columns: [
+                {title: '<?php echo app_lang("id") ?>'},
+                {title: '<?php echo app_lang("file") ?>'},
+                {title: '<?php echo app_lang("size") ?>'},
+                {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
+            ]
+        });
+
+        $("#revisions-estimate-table").appTable({
+            source: '<?php echo_uri("estimates/list_revisions_data/". $estimate_info->id . "/") ?>',
+            order: [[0, "desc"]],
+            columns: [
+                {title: "<?php echo app_lang("number") ?>", "class": "text-center"},
+                {title: "<?php echo app_lang("status") ?>", "class": "text-center"},
+                {visible: false, title: '<i data-feather="message-circle" class="icon-16"></i>', "class": "text-center w50"}
+                <?php echo $custom_field_headers; ?>,
+                {title: "<i data-feather='menu' class='icon-16'></i>", "class": "text-center option w150"}
+            ]
+        });
+
         $("#estimate-item-table").appTable({
             source: '<?php echo_uri("estimates/item_list_data/" . $estimate_info->id . "/") ?>',
             order: [[0, "asc"]],

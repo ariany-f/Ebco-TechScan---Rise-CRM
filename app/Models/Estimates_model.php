@@ -151,7 +151,12 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT $estimates_table.*, $estimate_type_table.title AS estimate_type, client_contact.id AS contact_id, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title as project_title, $clients_table.is_lead,
            CONCAT($users_table.first_name, ' ',$users_table.last_name) AS signer_name, $users_table.email AS signer_email,
-           $estimate_value_calculation AS estimate_value, tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2 $select_custom_fieds
+           $estimate_value_calculation AS estimate_value, 
+            (SELECT COUNT(*) 
+            FROM $estimates_table AS revisions 
+            WHERE revisions.parent_estimate = COALESCE($estimates_table.estimate_number, $estimates_table.estimate_number_temp) AND revisions.deleted = 0
+            ) > 0 AS has_revisions, 
+            tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2 $select_custom_fieds
         FROM $estimates_table
         LEFT JOIN $clients_table ON $clients_table.id= $estimates_table.client_id        
         LEFT JOIN $users_table AS client_contact ON client_contact.client_id = $clients_table.id AND client_contact.deleted=0 AND client_contact.is_primary_contact=1 
@@ -163,9 +168,77 @@ class Estimates_model extends Crud_model {
         LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value, $items_table.files AS estimate_files FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
         $join_custom_fieds
         $estrajoin
-        WHERE $estimates_table.deleted=0 $where $custom_fields_where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.parent_estimate IS NULL $where $custom_fields_where";
 
-        log_message(1, json_encode($sql), array($sql));
+        return $this->db->query($sql);
+    }
+
+    function get_revisions($options, $estimate_id) {
+
+        $estimates_table = $this->db->prefixTable('estimates');
+        $clients_table = $this->db->prefixTable('clients');
+        $taxes_table = $this->db->prefixTable('taxes');
+        $estimate_type_table = $this->db->prefixTable('estimate_type');
+        $estimate_items_table = $this->db->prefixTable('estimate_items');
+        $projects_table = $this->db->prefixTable('projects');
+        $users_table = $this->db->prefixTable('users');
+        $items_table = $this->db->prefixTable('items');
+
+        $where = "";
+
+        $after_tax_1 = "(IFNULL(tax_table.percentage,0)/100*IFNULL(items_table.estimate_value,0))";
+        $after_tax_2 = "(IFNULL(tax_table2.percentage,0)/100*IFNULL(items_table.estimate_value,0))";
+
+        $discountable_estimate_value = "IF($estimates_table.discount_type='after_tax', (IFNULL(items_table.estimate_value,0) + $after_tax_1 + $after_tax_2), IFNULL(items_table.estimate_value,0) )";
+
+        $discount_amount = "IF($estimates_table.discount_amount_type='percentage', IFNULL($estimates_table.discount_amount,0)/100* $discountable_estimate_value, $estimates_table.discount_amount)";
+
+        $before_tax_1 = "(IFNULL(tax_table.percentage,0)/100* (IFNULL(items_table.estimate_value,0)- $discount_amount))";
+        $before_tax_2 = "(IFNULL(tax_table2.percentage,0)/100* (IFNULL(items_table.estimate_value,0)- $discount_amount))";
+
+        $estimate_value_calculation = "(
+            IFNULL(items_table.estimate_value,0)+
+            IF($estimates_table.discount_type='before_tax',  ($before_tax_1+ $before_tax_2), ($after_tax_1 + $after_tax_2))
+            - $discount_amount
+           )";
+
+
+        $estrajoin = "";
+
+        //prepare custom fild binding query
+        $custom_fields = get_array_value($options, "custom_fields");
+        $custom_field_filter = get_array_value($options, "custom_field_filter");
+        $custom_field_query_info = $this->prepare_custom_field_query_string("estimates", $custom_fields, $estimates_table, $custom_field_filter);
+        $select_custom_fieds = get_array_value($custom_field_query_info, "select_string");
+        $join_custom_fieds = get_array_value($custom_field_query_info, "join_string");
+        $custom_fields_where = get_array_value($custom_field_query_info, "where_string");
+
+        $sql = "SELECT $estimates_table.*, $estimate_type_table.title AS estimate_type, client_contact.id AS contact_id, $clients_table.currency, $clients_table.currency_symbol, $clients_table.company_name, $projects_table.title as project_title, $clients_table.is_lead,
+           CONCAT($users_table.first_name, ' ',$users_table.last_name) AS signer_name, $users_table.email AS signer_email,
+           $estimate_value_calculation AS estimate_value,  
+            tax_table.percentage AS tax_percentage, tax_table2.percentage AS tax_percentage2 $select_custom_fieds
+        FROM $estimates_table
+        LEFT JOIN $clients_table ON $clients_table.id= $estimates_table.client_id        
+        LEFT JOIN $users_table AS client_contact ON client_contact.client_id = $clients_table.id AND client_contact.deleted=0 AND client_contact.is_primary_contact=1 
+        LEFT JOIN $estimate_type_table ON $estimate_type_table.id= $estimates_table.estimate_type_id
+        LEFT JOIN $projects_table ON $projects_table.id= $estimates_table.project_id
+        LEFT JOIN $users_table ON $users_table.id= $estimates_table.accepted_by
+        LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table ON tax_table.id = $estimates_table.tax_id
+        LEFT JOIN (SELECT $taxes_table.* FROM $taxes_table) AS tax_table2 ON tax_table2.id = $estimates_table.tax_id2 
+        LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value, $items_table.files AS estimate_files FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
+        $join_custom_fieds
+        $estrajoin
+        WHERE $estimates_table.deleted=0 AND $estimates_table.parent_estimate = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id) $where $custom_fields_where";
+       
+        return $this->db->query($sql);
+    }
+
+    function get_files($estimate_id) {
+        $estimates_table = $this->db->prefixTable('estimates');
+        $sql = "SELECT $estimates_table.files
+        FROM $estimates_table
+        WHERE $estimates_table.deleted=0 AND ($estimates_table.estimate_number = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id) OR $estimates_table.estimate_number_temp = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id))";
+        
         return $this->db->query($sql);
     }
     

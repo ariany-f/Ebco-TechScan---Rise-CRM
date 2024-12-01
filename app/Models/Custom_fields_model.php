@@ -219,8 +219,6 @@ class Custom_fields_model extends Crud_model {
                     ORDER by $custom_fields_table.sort ASC";
             }
 
-         log_message("1", "TEST", array($sql));
-
         return $this->db->query($sql);
     }
 

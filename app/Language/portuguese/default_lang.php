@@ -823,6 +823,7 @@ $lang["estimate_date"] = "Data da Proposta";
 $lang["accepted"] = "Aceito";
 $lang["declined"] = "Recusado";
 $lang["sent"] = "Enviado";
+$lang["revisions"] = "Revisões";
 $lang["estimate_preview"] = "Visualizar Proposta";
 $lang["estimate_to"] = "Proposta para";
 
@@ -831,10 +832,12 @@ $lang["request_an_estimate"] = "Solicitar uma proposta";
 $lang["estimate_request_form_selection_title"] = "Selecione um formulário da lista a seguir para enviar sua solicitação.";
 
 $lang["mark_as_processing"] = "Marcar como Processando";
+$lang["revision_date"] = "Data da Revisão";
 $lang["mark_as_estimated"] = "Marcar como Proposto";
 $lang["mark_as_hold"] = "Marcar como Aguardando";
 $lang["mark_as_canceled"] = "Marcar como Cancelado";
 $lang['mark_as_revision'] = "Marcar como em Revisão";
+$lang['has_revisions'] = "Tem revisão";
 $lang['margem'] = "Margem (%)";
 $lang['prazo_em_dias'] = "Prazo em Dias";
 $lang["mark_as_sent"] = "Marcar como Enviado";
@@ -1337,6 +1340,7 @@ $lang["clone_estimate"] = "Duplicar Proposta";
 $lang["import_clients"] = "Importação de Clientes";
 $lang["download_sample_file"] = "Baixar arquivo de amostra";
 
+$lang["number"] = "Número";
 $lang["estimate_settings"] = "Configurações de proposta";
 $lang["estimate_logo"] = "Logotipo da proposta";
 $lang["estimate_color"] = "Cor da Proposta";
@@ -1344,6 +1348,7 @@ $lang["initial_number_of_the_estimate"] = "Número inicial da proposta";
 $lang["the_estimates_id_must_be_larger_then_last_estimate_id"] = "O ID das propostas deve ser maior que o ID da última proposta.";
 
 $lang["send_to_client"] = "Enviar para o cliente";
+$lang["files_to_send"] = "Arquivos a anexar no e-mail";
 $lang["estimate_sent_message"] = "A proposta foi enviado!";
 $lang["send_estimate_bcc_to"] = "Ao enviar proposta para o cliente, envie BCC para";
 

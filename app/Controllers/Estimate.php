@@ -173,6 +173,24 @@ class Estimate extends Security_Controller {
         
         return view("estimates/estimate_public_accept", $view_data);
     }
+
+    function download_file($id) {
+        
+        if (!($id)) {
+            show_404();
+        }
+
+        $file_info = $this->General_files_model->get_one($id);
+
+        if (!$file_info->client_id) {
+            app_redirect("forbidden");
+        }
+
+        //serilize the path
+        $file_data = serialize(array(make_array_of_file($file_info)));
+
+        return $this->download_app_files(get_general_file_path("client", $file_info->client_id), $file_data);
+    }
     
     function download_pdf($estimate_id = 0, $public_key = "", $js = 1) {
         if (!($estimate_id && $public_key)) {
@@ -512,7 +530,24 @@ class Estimate extends Security_Controller {
             //create notification
             if ($status == "accepted") {
                 log_notification("estimate_accepted", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
+
+                 //estimate accepted, create a new project
+                if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
+                    $this->_create_project_from_estimate($estimate_id);
+                }
+                
+                $estimate_new_data = $this->Estimates_model->get_one($estimate_id);
+                    
+                // Altera lead para client em caso de ser lead
+                $client = $this->Clients_model->get_one($estimate_new_data->client_id);
+                if($client->is_lead == 1)
+                {
+                    $data["is_lead"] = 0;
+                    $this->Clients_model->ci_save($data, $estimate_new_data->client_id);
+                }
+
                 $this->session->setFlashdata("success_message", app_lang("estimate_accepted"));
+
             } else if ($status == "declined") {
                 log_notification("estimate_rejected", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
                 $this->session->setFlashdata("error_message", app_lang('estimate_rejected'));
@@ -615,11 +650,52 @@ class Estimate extends Security_Controller {
 
         if ($this->Estimates_model->ci_save($estimate_data, $estimate_id)) {
             log_notification("estimate_accepted", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
+
+            //estimate accepted, create a new project
+            if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted")) {
+                $this->_create_project_from_estimate($estimate_id);
+            }
+            
+            $estimate_new_data = $this->Estimates_model->get_one($estimate_id);
+                
+            // Altera lead para client em caso de ser lead
+            $client = $this->Clients_model->get_one($estimate_new_data->client_id);
+            if($client->is_lead == 1)
+            {
+                $data["is_lead"] = 0;
+                $this->Clients_model->ci_save($data, $estimate_new_data->client_id);
+            }
+            
             echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
         } else {
             echo json_encode(array("success" => false, "message" => app_lang("error_occurred")));
         }
     }
+
+    /* create new project from accepted estimate */
+
+    private function _create_project_from_estimate($estimate_id) {
+        if ($estimate_id) {
+            $estimate_info = $this->Estimates_model->get_one($estimate_id);
+
+            //don't create new project if there has already been created a new project with this estimate
+            if (!$this->Projects_model->get_one_where(array("estimate_id" => $estimate_id))->id) {
+                $data = array(
+                    "title" => get_estimate_id($estimate_info->id),
+                    "client_id" => $estimate_info->client_id,
+                    "start_date" => $estimate_info->estimate_date,
+                    "deadline" => $estimate_info->valid_until,
+                    "estimate_id" => $estimate_id
+                );
+                $save_id = $this->Projects_model->ci_save($data);
+
+                //save the project id
+                $data = array("project_id" => $save_id);
+                $this->Estimates_model->ci_save($data, $estimate_id);
+            }
+        }
+    }
+
 
     function reject_estimate_modal_form($estimate_id = 0, $public_key = "") {
         validate_numeric_value($estimate_id);

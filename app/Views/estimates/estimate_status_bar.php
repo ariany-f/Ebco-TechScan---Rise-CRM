@@ -38,8 +38,8 @@
         <?php
             $files1 = is_dir("./files/timeline_files/estimates/" . $estimate_info->id) ? scandir("./files/timeline_files/estimates/" . $estimate_info->id) : [];
         ?>
-        <?php if(!empty($files1)): ?>
-            <h6>Arquivos anexados anteriormente</h6>
+        <?php if(count($files1) > 0): ?>
+            <i>Arquivos adicionais anexados anteriormente: </i>
             <div style="display: flex;width: 100%;flex-wrap: wrap;">
                 <?php foreach($files1 as $file): ?>
                     <?php if($file!= 'index.html' && isset($file) && $file != '..' && $file != '.' && !empty(trim($file))): ?>

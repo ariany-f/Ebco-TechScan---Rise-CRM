@@ -14,33 +14,36 @@
         <?php } ?>
         <div class="form-group">
             <div class="row">
-                <label for="estimate_number" class=" col-md-3"><?php echo app_lang('estimate_number'); ?></label>
+                <label for="is_bidding" class="col-md-3 d-flex align-items-center"> <?php echo app_lang('is_bidding'); ?></label>
+                <div class=" col-md-9">
+                    <?php
+                    echo form_checkbox(
+                        "is_bidding",
+                        "1", 
+                        $model_info->is_bidding ?? false, 
+                        "id='is_bidding'"
+                    );
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <label class=" col-md-3" for="estimate_number" class="<?php echo $label_column; ?>"><?php echo app_lang('estimate_number'); ?>
+                    <span class="help" data-container="body" data-bs-toggle="tooltip" title="<?php echo "Gerado automáticamente" ?>"><i data-feather="help-circle" class="icon-16"></i></span>
+                </label>
                 <div class=" col-md-9">
                     <?php
                     echo form_input(array(
                         "id" => "estimate_number",
                         "name" => "estimate_number",
-                        "value" => $next_id,
+                        "value" => $model_info->id ? ($model_info->estimate_number ? $model_info->estimate_number : "Rev") : $next_id,
                         "disabled" => true,
                         "class" => "form-control",
                         "placeholder" => app_lang('estimate_number')
                     ));
                     ?>
                 </div>
-            </div>
-        </div>
-        <div class="form-group hide">
-            <div class="row">
-                <label for="is_bidding"class="col-md-3"> <?php echo app_lang('is_bidding'); ?>
-                    <?php
-                    echo form_checkbox(
-                        "is_bidding",
-                        "1", 
-                        $model_info->is_bidding ?? false, 
-                        ""
-                    );
-                    ?>
-                </label>
             </div>
         </div>
         <div class="form-group">
@@ -125,36 +128,38 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <label for="margem" class=" col-md-3"><?php echo app_lang('margem') ; ?></label>
-                <div class=" col-md-9">
-                    <?php
-                    echo form_input(array(
-                        "id" => "margem",
-                        "name" => "margem",
-                        "value" => $model_info->margem ? $model_info->margem : "",
-                        "class" => "percent form-control",
-                        "placeholder" => app_lang('margem')
-                    ));
-                    ?>
+        <div class="col-md-12 d-flex" style="gap: 5px;">
+            <div class="form-group col-md-6">
+                <div class="row">
+                    <label for="margem" class=" col-md-6 d-flex align-items-center"><?php echo app_lang('margem') ; ?></label>
+                    <div class=" col-md-6">
+                        <?php
+                        echo form_input(array(
+                            "id" => "margem",
+                            "name" => "margem",
+                            "value" => $model_info->margem ? $model_info->margem : "",
+                            "class" => "percent form-control",
+                            "placeholder" => app_lang('margem')
+                        ));
+                        ?>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <label for="prazo_em_dias" class=" col-md-3"><?php echo app_lang('prazo_em_dias') ; ?></label>
-                <div class=" col-md-9">
-                    <?php
-                    echo form_input(array(
-                        "id" => "prazo_em_dias",
-                        "name" => "prazo_em_dias",
-                        "value" => $model_info->prazo_em_dias ? $model_info->prazo_em_dias : "",
-                        "class" => "form-control",
-                        "type" => "number",
-                        "placeholder" => app_lang('prazo_em_dias')
-                    ));
-                    ?>
+            <div class="form-group col-md-6">
+                <div class="row">
+                    <label for="prazo_em_dias" class=" col-md-5 d-flex align-items-center"><?php echo app_lang('prazo_em_dias') ; ?></label>
+                    <div class=" col-md-7">
+                        <?php
+                        echo form_input(array(
+                            "id" => "prazo_em_dias",
+                            "name" => "prazo_em_dias",
+                            "value" => $model_info->prazo_em_dias ? $model_info->prazo_em_dias : "",
+                            "class" => "form-control",
+                            "type" => "number",
+                            "placeholder" => app_lang('prazo_em_dias')
+                        ));
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -251,6 +256,13 @@
                 <?php
                 echo view("includes/file_list", array("files" => $model_info->files));
                 ?>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <strong>Arquivos</strong><br/>
+                Aqui você pode anexar os arquivos de memória de calculo, levantamento de custos e proposta.<br/>
+                <i>O arquivo da proposta deve ter o titulo iniciado em "Proposta_"</i>
             </div>
         </div>
     </div>

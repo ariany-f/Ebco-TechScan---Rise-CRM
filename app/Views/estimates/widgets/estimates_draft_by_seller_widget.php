@@ -44,7 +44,7 @@
                 {visible: false, searchable: false},
                 {title: "<?php echo app_lang("estimate_date") ?>", "iDataSort": 3, "class": "w5p"},
                 {visible: false, searchable: false},
-                {title: "<?php echo app_lang("amount") ?>", "class": "text-center w10p"},
+                {visible: false, searchable: false},
                 {visible: false, searchable: false},
                 {visible: false, searchable: false},
                 {visible: false, searchable: false}

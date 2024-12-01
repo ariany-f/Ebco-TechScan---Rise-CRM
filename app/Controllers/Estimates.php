@@ -169,10 +169,6 @@ class Estimates extends Security_Controller {
         }
 
         $next_id = $this->Estimates_model->next_id()->getRow();
-
-        $target_path = get_setting("timeline_file_path");
-        $files_data = move_files_from_temp_dir_to_permanent_dir($target_path, "estimates");
-        $new_files = unserialize($files_data);
      
         $estimate_data = array(
             "client_id" => $client_id,
@@ -187,15 +183,32 @@ class Estimates extends Security_Controller {
             "note" => $this->request->getPost('estimate_note')
         );
         
+        $estimate_files = [];
         //is editing? update the files if required
         if ($id) {
-            $expense_info = $this->Estimates_model->get_one($id);
-            $timeline_file_path = get_setting("timeline_file_path");
+            $files['file_names'] = $this->request->getPost("file_names");
+            $files['file_sizes'] = $this->request->getPost("file_sizes");
 
-            $new_files = update_saved_files($timeline_file_path, $expense_info->files, $new_files);
+            if($files["file_names"] && $files["file_sizes"])
+            {
+                foreach($files["file_names"] as $j => $file_name)
+                {
+                    $estimate_files[$j]["file_name"] = $file_name;
+                }
+                foreach($files["file_sizes"] as $j => $file_sizes)
+                {
+                    $estimate_files[$j]["file_size"] = $file_sizes;
+                }
+    
+                foreach($estimate_files as $k => $file)
+                {
+                    $file_id = $this->save_file($estimate_files, $client_id, '', $file['file_size'], $file['file_name']);
+                    
+                    $estimate_files[$k]['file_id'] = (string)$file_id;
+                }
+            }
         }
-
-        $estimate_data["files"] = serialize($new_files);
+        $estimate_data["files"] = serialize($estimate_files);
 
         $is_clone = $this->request->getPost('is_clone');
         $estimate_request_id = $this->request->getPost('estimate_request_id');
@@ -205,15 +218,17 @@ class Estimates extends Security_Controller {
         $order_id = $this->request->getPost('order_id');
 
         // Add quando o código for ser gerado automaticamente
-        if($estimate_type_id !== 2 && $estimate_data['company_id'] != 3) {
-            $estimate_data['estimate_number'] = $next_id->id;
+        if(!$id)
+        {
+            if($estimate_type_id !== 2 && $estimate_data['company_id'] != 3) {
+                $estimate_data['estimate_number'] = $next_id->id;
+            }
+            else if( $estimate_data['company_id'] == 3)
+            { 
+                $next_zk_id = $this->Estimates_model->next_zk_id();
+                $estimate_data['estimate_number_temp'] = "ZK_" . $next_zk_id;
+            }
         }
-        else if( $estimate_data['company_id'] == 3)
-        { 
-            $next_zk_id = $this->Estimates_model->next_zk_id();
-            $estimate_data['estimate_number_temp'] = "ZK_" . $next_zk_id;
-        }
-
         //estimate creation from estimate request
         //store the estimate request id for the first time only
         //don't copy estimate request id on cloning too
@@ -301,7 +316,6 @@ class Estimates extends Security_Controller {
     function validate_file() {
         return validate_post_file($this->request->getPost("file_name"));
     }
-
 
     // download files 
     function download_files($id = 0) {
@@ -397,6 +411,16 @@ class Estimates extends Security_Controller {
                     $this->_create_project_from_estimate($estimate_id);
                 }
 
+                $estimate_new_data = $this->Estimates_model->get_one($estimate_id);
+
+                // Altera lead para client em caso de ser lead
+                $client = $this->Clients_model->get_one($estimate_new_data->client_id);
+                if($client->is_lead == 1)
+                {
+                    $data["is_lead"] = 0;
+                    $this->Clients_model->ci_save($data, $estimate_new_data->client_id);
+                }
+
                 if ($is_modal) {
                     echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
                 }
@@ -415,6 +439,16 @@ class Estimates extends Security_Controller {
             //estimate accepted, create a new project
             if (get_setting("create_new_projects_automatically_when_estimates_gets_accepted") && $status == "accepted") {
                 $this->_create_project_from_estimate($estimate_id);
+            }
+            
+            $estimate_new_data = $this->Estimates_model->get_one($estimate_id);
+                
+            // Altera lead para client em caso de ser lead
+            $client = $this->Clients_model->get_one($estimate_new_data->client_id);
+            if($client->is_lead == 1)
+            {
+                $data["is_lead"] = 0;
+                $this->Clients_model->ci_save($data, $estimate_new_data->client_id);
             }
         }
     }
@@ -463,18 +497,18 @@ class Estimates extends Security_Controller {
         $cf_array = [];
         foreach ($custom_fields_info as $field) {
             $value = isset($field->value) ? $field->value : ""; // Pega o valor existente ou inicializa como vazio
-
             $cf_array[$field->id] = $value;
         }
 
-        $next_id = $this->Estimates_model->next_id()->getRow();
+      //  $next_id = $this->Estimates_model->next_id()->getRow();
+        $estimate_info['parent_estimate'] = $estimate_info['estimate_number'] ?? $estimate_info['estimate_number_temp'];
         $estimate_info['estimate_number'] = null;
         $estimate_info['estimate_type_id'] = 2;
-        $estimate_info['parent_estimate'] = $id;
         $estimate_data["created_by"] = $this->login_user->id;
         $estimate_data["public_key"] = make_random_string();
         
-        $estimate_id = $this->Estimates_model->ci_save($estimate_info);
+        $estimate_id = $this->Estimates_model->ci_save($estimate_info, null);
+       
         if ($estimate_id) {
             //add estimate items
             save_custom_fields("estimates", $estimate_id, 1, "staff"); //we have to keep this regarding as an admin user because non-admin user also can acquire the access to clone a estimate
@@ -524,6 +558,57 @@ class Estimates extends Security_Controller {
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
         }
+    }
+
+    /* list of estimates, prepared for datatable  */
+    function list_files_data($estimate_id = 0) {
+        $this->access_only_allowed_members();      
+        
+        $list_data = $this->Estimates_model->get_files($estimate_id)->getResult();
+        $result = array();
+        foreach ($list_data as $data) {
+            require_once(APPPATH . "ThirdParty/nelexa-php-zip/vendor/autoload.php");
+            $zip = new \PhpZip\ZipFile();
+    
+            if($data->files) {
+                $files = unserialize($data->files);
+                $total_files = count($files);
+        
+                //for only one file we'll download the file without archiving
+                if ($total_files === 1) {
+                    helper('download');
+                }
+                foreach ($files as $data) {
+                    if($data["file_id"]){
+                        $exists = $this->General_files_model->get_one_where(array("id" => $data["file_id"], "deleted" => 0));
+                        
+                        if ($exists->client_id) {
+                            $result[] = $this->_make_files_row($data);
+                        }
+                    }
+                }
+            }
+        }
+
+        echo json_encode(array("data" => $result));
+    }
+
+    /* list of estimates, prepared for datatable  */
+    function list_revisions_data($estimate_id = 0) {
+        $this->access_only_allowed_members();
+
+        $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
+        $options = [
+            "custom_fields" => $custom_fields
+        ];
+        $list_data = $this->Estimates_model->get_revisions( $options, $estimate_id )->getResult();
+      
+        $result = array();
+        foreach ($list_data as $i => $data) {
+            $result[] = $this->_make_revisions_row($data, $custom_fields, $i+1);
+        }
+
+        echo json_encode(array("data" => $result));
     }
 
     /* list of estimates, prepared for datatable  */
@@ -594,6 +679,141 @@ class Estimates extends Security_Controller {
         return $this->_make_row($data, $custom_fields);
     }
 
+
+    function view_file($file_id = 0) {
+        $file_info = $this->General_files_model->get_details(array("id" => $file_id))->getRow();
+
+        if ($file_info) {
+
+            if (!$file_info->client_id) {
+                app_redirect("forbidden");
+            }
+
+            $this->can_access_this_client($file_info->client_id);
+
+            $view_data['can_comment_on_files'] = false;
+            $file_url = get_source_url_of_file(make_array_of_file($file_info), get_general_file_path("client", $file_info->client_id));
+
+            $view_data["file_url"] = $file_url;
+            $view_data["is_image_file"] = is_image_file($file_info->file_name);
+            $view_data["is_iframe_preview_available"] = is_iframe_preview_available($file_info->file_name);
+            $view_data["is_google_preview_available"] = is_google_preview_available($file_info->file_name);
+            $view_data["is_viewable_video_file"] = is_viewable_video_file($file_info->file_name);
+            $view_data["is_google_drive_file"] = ($file_info->file_id && $file_info->service_type == "google") ? true : false;
+            $view_data["is_iframe_preview_available"] = is_iframe_preview_available($file_info->file_name);
+
+            $view_data["file_info"] = $file_info;
+            $view_data['file_id'] = clean_data($file_id);
+            return $this->template->view("clients/files/view", $view_data);
+        } else {
+            show_404();
+        }
+    }
+    
+    function _make_files_row($data) {
+
+        $file_icon = get_file_icon(strtolower(pathinfo($data['file_name'], PATHINFO_EXTENSION)));
+
+        $description = "<div class='float-start'>" .
+                js_anchor(remove_file_prefix($data['file_name']), array('title' => "", "data-toggle" => "app-modal", "data-sidebar" => "0", "data-url" => get_uri("estimates/view_file/" . $data['file_id'])));
+
+        if ($data['description']) {
+            $description .= "<br /><span>" . $data['description'] . "</span></div>";
+        } else {
+            $description .= "</div>";
+        }
+
+        $options = anchor(get_uri("estimate/download_file/" . $data['file_id']), "<i data-feather='download-cloud' class='icon-16'></i>", array("title" => app_lang("download")));
+
+        if ($this->login_user->user_type == "staff") {
+            $options .= js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_file'), "class" => "delete", "data-id" => $data['file_id'], "data-action-url" => get_uri("estimates/delete_file"), "data-action" => "delete-confirmation"));
+        }
+
+
+        return array( $data['file_id'],
+            "<div data-feather='$file_icon' class='mr10 float-start'></div>" . $description,
+            convert_file_size($data['file_size']),
+            $options
+        );
+    }
+
+    /* prepare a row of estimate list table */
+
+    private function _make_revisions_row($data, $custom_fields, $index) {
+        $estimate_url = "";
+        if ($this->login_user->user_type == "staff") {
+            $estimate_url = anchor(get_uri("estimates/view/" . $data->id), get_estimate_id($data->id));
+            $estimate_url_code = anchor(get_uri("estimates/view/" . $data->id), ($data->estimate_number ? $data->estimate_number : ($data->parent_estimate ? $data->parent_estimate : ($data->estimate_number_temp ? $data->estimate_number_temp : $data->id))));
+        } else {
+            //for client client
+            $estimate_url = anchor(get_uri("estimates/preview/" . $data->id), get_estimate_id($data->id));
+            $estimate_url_code = anchor(get_uri("estimates/preview/" . $data->id), ($data->estimate_number ? $data->estimate_number : ($data->parent_estimate ? $data->parent_estimate : ($data->estimate_number_temp ? $data->estimate_number_temp : $data->id))));
+        }
+
+        $client = anchor(get_uri("clients/view/" . $data->client_id), $data->company_name);
+        if ($data->is_lead) {
+            $client = anchor(get_uri("leads/view/" . $data->client_id), $data->company_name);
+        }
+
+        $row_data = array(
+            $index,
+            $this->_get_estimate_status_label($data),
+        );
+
+        $comment_link = "";
+        if (get_setting("enable_comments_on_estimates") && $data->status !== "draft") {
+            $comment_link = modal_anchor(get_uri("estimates/comment_modal_form"), "<i data-feather='message-circle' class='icon-16'></i>", array("class" => "edit text-muted", "title" => app_lang("estimate") . " #" . $data->id . " " . app_lang("comments"), "data-post-estimate_id" => $data->id));
+        }
+
+        $row_data[] = $comment_link;
+
+        foreach ($custom_fields as $field) {
+            $cf_id = "cfv_" . $field->id;
+            if($field->title === 'Valor Estimado')
+            {
+                //$row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)$data->$cf_id, $data->currency_symbol)));
+                $row_data[] = str_replace(".", ",",$data->$cf_id);
+            } else if($field->title === 'Termômetro')
+            {
+                $class = "badge-primary";
+                $style = "";
+                switch($data->$cf_id) {
+                    case 'Morna':
+                        $style = "border-left: 5px solid #FFB822 !important;";
+                    break;
+                    case 'Fria':
+                        $style = "border-left: 5px solid #22B9FF !important;";
+                     break;
+                    case 'Quente':
+                        $style = "border-left: 5px solid #FD397A !important;";
+                    break;
+                }
+                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => "<span style='padding:10px;$style'>" . $data->$cf_id . "</span>"));
+            } else if($field->title === "Vendedor")
+            {
+                $collaborators_array = explode(',', $data->$cf_id);
+                $user_result = '';
+                foreach( $collaborators_array as $user )
+                {
+                    $user_info = $this->Users_model->get_one($user);
+                    $user_result .= "<div class='user-avatar avatar-30 avatar-circle' data-bs-toggle='tooltip' title='" . $user_info->first_name .' '.$user_info->last_name . "'><img alt='' src='" . get_avatar($user_info->image, ($user_info->first_name .' '.$user_info->last_name)) . "'></div>";
+                }
+                $row_data[] = "<div class='w100 avatar-group'>" .  $user_result . "</div>";
+            }
+            else
+            {
+                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => $data->$cf_id));
+            }
+        }
+
+
+        $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
+                . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-post-id" => $data->id))
+                . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
+
+        return $row_data;
+    }
+
     /* prepare a row of estimate list table */
 
     private function _make_row($data, $custom_fields) {
@@ -622,6 +842,7 @@ class Estimates extends Security_Controller {
             format_to_date($data->estimate_date, false),
             '<span class="mt0 badge '.($data->estimate_type == "Revisão" ? "bg-info" : "bg-secondary").'  large">'. ($data->estimate_type == "Revisão" ? $data->estimate_type : "Primeira Proposta")  . '</span>',
             $this->_get_estimate_status_label($data),
+            (($data->has_revisions) ? ("<span class='mt0 badge bg-success'>" . app_lang('yes') . "</span>") : ("<span class='mt0 badge bg-danger'>" . app_lang('no') . "</span>")),
             $licitacao,
         );
 
@@ -636,7 +857,8 @@ class Estimates extends Security_Controller {
             $cf_id = "cfv_" . $field->id;
             if($field->title === 'Valor Estimado')
             {
-                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)$data->$cf_id, $data->currency_symbol)));
+              //  $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)$data->$cf_id, $data->currency_symbol)));
+              $row_data[] = str_replace(".", ",",$data->$cf_id);
             } else if($field->title === 'Termômetro')
             {
                 $class = "badge-primary";
@@ -696,6 +918,8 @@ class Estimates extends Security_Controller {
             $sort_as_decending = get_setting("show_most_recent_estimate_comments_at_the_top");
             $view_data = get_estimate_making_data($estimate_id);
 
+            $view_data["custom_field_headers"] = $this->Custom_fields_model->get_custom_field_headers_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
+
             $comments_options = array(
                 "estimate_id" => $estimate_id,
                 "sort_as_decending" => $sort_as_decending
@@ -744,6 +968,41 @@ class Estimates extends Security_Controller {
         $view_data['model_info'] = $this->Estimates_model->get_one($estimate_id);
 
         return $this->template->view('estimates/discount_modal_form', $view_data);
+    }
+
+    function save_file($files, $client_id, $description, $file_size, $file_name) {
+
+        $this->validate_submitted_data(array(
+            "id" => "numeric"
+        ));
+
+        $success = false;
+        $now = get_current_utc_time();
+
+        $target_path = getcwd() . "/" . get_general_file_path("client", $client_id);
+
+        //process the fiiles which has been uploaded by dropzone
+        if ($files && get_array_value($files, 0)) {
+            foreach ($files as $file) {
+                $file_name = $file_name;
+                $file_info = move_temp_file($file_name, $target_path);
+                if ($file_info) {
+                    $data = array(
+                        "client_id" => $client_id,
+                        "file_name" => get_array_value($file_info, 'file_name'),
+                        "file_id" => get_array_value($file_info, 'file_id'),
+                        "service_type" => get_array_value($file_info, 'service_type'),
+                        "description" => $description,
+                        "file_size" => $file_size."_".$file,
+                        "created_at" => $now,
+                        "uploaded_by" => $this->login_user->id
+                    );
+                    return $this->General_files_model->ci_save($data);
+                } else {
+                   return false;
+                }
+            }
+        }
     }
 
     /* save discount */
@@ -1058,6 +1317,62 @@ class Estimates extends Security_Controller {
             validate_numeric_value($estimate_id);
             $options = array("id" => $estimate_id);
             $estimate_info = $this->Estimates_model->get_details($options)->getRow();
+
+            $files = [];
+            if($estimate_info->files)
+            {
+                $files = unserialize($estimate_info->files);
+                foreach ($files as $f => $data) {
+                    if($data["file_id"]){
+                        $exists = $this->General_files_model->get_one_where(array("id" => $data["file_id"], "deleted" => 0));
+                        
+                        if (!$exists->client_id) {
+                            unset($files[$f]);
+                        }
+                    }
+                }
+            }  
+            
+            $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
+            $options = [
+                "custom_fields" => $custom_fields
+            ];
+            $revisions = $this->Estimates_model->get_revisions($options, $estimate_id)->getResult();
+            $revision_fl = [];
+            $revision_files = [];
+            log_message(1, count($revisions), []);
+            foreach($revisions as $index => $revision)
+            {
+                if($revision->files)
+                {
+                    $revision_fl[] = unserialize($revision->files);
+                    foreach ($revision_fl as $f => $data) {
+                        if(count($data) > 0) {
+                            $data = current($data);
+                        }
+                        if($data["file_id"]){
+                            $exists = $this->General_files_model->get_one_where(array("id" => $data["file_id"], "deleted" => 0));
+                            
+                            $in_array = array_search($exists->id, array_column($revision_files, 'file_id')) !== false;
+
+                            // Se não existir, adiciona o item ao array
+                            if (!$in_array) {
+                                $revision_files[] = [
+                                    'file_index' => $index+1,
+                                    'file_id' => $exists->id,
+                                    'file_name' => $exists->file_name,
+                                    'file_size' => $exists->file_size,
+                                    'created_at' => $exists->created_at
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+
+            $estimate_info->files = serialize($files);
+            $estimate_info->revision_files = serialize($revision_files);
+
             $view_data['estimate_info'] = $estimate_info;
 
             $is_lead = $this->request->getPost('is_lead');
@@ -1143,7 +1458,27 @@ class Estimates extends Security_Controller {
                 'file_path' => getcwd().'/'.$target_path.$file['file_name']
             ];
         }
+
+        $attachable_files = $this->request->getPost('attachable_files');
+        if($attachable_files)
+        {
+            foreach($attachable_files as $i => $file)
+            {
+                $file = unserialize($file);
+                    
+                $file_info = $this->General_files_model->get_one($file['file_id']);
+                $attachements[] = [
+                    'file_path' => get_source_url_of_file(make_array_of_file($file_info), get_general_file_path("client", $file_info->client_id))
+                ];
     
+            }
+        }
+        else
+        {
+            echo json_encode(array('success' => false, 'message' => "Você precisa anexar ao menos um arquivo"));
+            return false;
+        }
+
         $estimate_data = get_estimate_making_data($estimate_id);
 
         $default_bcc = get_setting('send_estimate_bcc_to');
@@ -1274,9 +1609,42 @@ class Estimates extends Security_Controller {
         }
     }
 
-    function download_file($file_data) {
-        $dw = serialize(array(array("file_name" => $file_data)));
-        return $this->download_app_files(get_setting("timeline_file_path"), $dw);
+    /* delete a file */
+
+    function delete_file() {
+
+        $id = $this->request->getPost('id');
+        $info = $this->General_files_model->get_one($id);
+
+        if (!$info->client_id || ($this->login_user->user_type == "client" && $info->uploaded_by !== $this->login_user->id)) {
+            app_redirect("forbidden");
+        }
+
+        $this->can_access_this_client($info->client_id);
+
+        if ($this->General_files_model->delete($id)) {
+
+            //delete the files
+            delete_app_files(get_general_file_path("client", $info->client_id), array(make_array_of_file($info)));
+
+            echo json_encode(array("success" => true, 'message' => app_lang('record_deleted')));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('record_cannot_be_deleted')));
+        }
+    }
+
+    function download_file($id) {
+      
+        $file_info = $this->General_files_model->get_one($id);
+
+        if (!$file_info->client_id) {
+            app_redirect("forbidden");
+        }
+
+        //serilize the path
+        $file_data = serialize(array(make_array_of_file($file_info)));
+
+        return $this->download_app_files(get_general_file_path("client", $file_info->client_id), $file_data);
     }
 
     /* download files by zip */
