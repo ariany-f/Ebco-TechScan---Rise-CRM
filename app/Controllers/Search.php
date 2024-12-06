@@ -66,6 +66,17 @@ class Search extends Security_Controller {
                 if (!$this->can_access_clients()) {
                     app_redirect("forbidden");
                 }
+                $options["is_lead"] = 0;
+                $options["show_own_clients_only_user_id"] = $this->show_own_clients_only_user_id();
+
+                $this->init_permission_checker("client");
+                $options["client_groups"] = $this->allowed_client_groups;
+
+                $result = $this->Clients_model->get_search_suggestion($search, $options)->getResult();
+            } else if ($search_field == "client_lead") { //client
+                if (!$this->can_access_clients()) {
+                    app_redirect("forbidden");
+                }
                 $options["show_own_clients_only_user_id"] = $this->show_own_clients_only_user_id();
 
                 $this->init_permission_checker("client");

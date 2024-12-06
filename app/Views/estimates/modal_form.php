@@ -27,6 +27,24 @@
                 </div>
             </div>
         </div>
+        <div class="form-group bidding hide">
+            <div class="row">
+                <label for="uasg" class="col-md-3 d-flex align-items-center"> <?php echo app_lang('uasg'); ?></label>
+                <div class=" col-md-9">
+                    <?php
+                     echo form_input(
+                        array(
+                            "id" => "uasg",
+                            "name" => "uasg",
+                            "value" => "",
+                            "class" => "form-control",
+                            "placeholder" => app_lang('uasg')
+                        )
+                    );
+                    ?>
+                </div>
+            </div>
+        </div>
         <div class="form-group">
             <div class="row">
                 <label class=" col-md-3" for="estimate_number" class="<?php echo $label_column; ?>"><?php echo app_lang('estimate_number'); ?>
@@ -276,10 +294,117 @@
 </div>
 </div> 
 <?php echo form_close(); ?>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
 <script type="text/javascript">
   
     $(document).ready(function () {
+
+        $("#is_bidding").on('change', function() {
+            var is_bidding = $('input[name=is_bidding]:checked').length > 0;
+            if(is_bidding) {
+                $(".form-group.bidding").removeClass('hide');
+            }
+            else
+            {
+                $(".form-group.bidding").addClass('hide');
+            }
+        })
+
+        var request_made = false;
+
+        $("#uasg").on('keyup', function() {
+            var uasg = $("#uasg").val();
+            var year = ((new Date).getFullYear());
+            if(uasg.length  >= 5 && (!request_made))
+            {
+                $.ajax({
+                    url: AppHelper.baseUrl + 'estimates/uasg/' + uasg,
+                    cache: false,
+                    type: 'POST',
+                    dataType: "json",
+                    success: function (response) {
+                        appLoader.show()
+                        request_made = true;
+                        if(response.resultado.length) {
+                            var cnpj = response.resultado[0].cnpjCpfOrgao;
+                            var cnpjVinculado = response.resultado[0].cnpjCpfOrgaoVinculado;
+                            var company_name = response.resultado[0].nomeUasg;
+                            var social_name = response.resultado[0].nomeUnidadePolo;
+                            $.ajax({
+                                url: "<?php echo get_uri('search/get_search_suggestion/'); ?>",
+                                data: {search: cnpjVinculado, search_field: 'client_lead'},
+                                cache: false,
+                                type: 'POST',
+                                dataType: 'json',
+                                success: function (response) {
+                                    if(response.length)
+                                    {
+                                        $("#estimate_client_id").val(response[0].value).change();
+                                    } 
+                                    else {
+                                        $.confirm({
+                                            title: 'Cadastro de cliente',
+                                            content: 'Cliente não cadastrado: '+cnpjVinculado+'. Cadastrar?',
+                                            buttons: {
+                                                cadastrar: function () {
+                                                    var data = {
+                                                        "custom_field_12": company_name,
+                                                        "company_name" : social_name,
+                                                        "matriz_cnpj": cnpj,
+                                                        "type": "organization",
+                                                        "setor": "public",
+                                                        "is_lead": '1',
+                                                        "lead_status_id": 2,
+                                                        "cnpj": cnpjVinculado
+                                                    }
+                                                    
+                                                    $.ajax({
+                                                        url: AppHelper.baseUrl + 'clients/save',
+                                                        cache: false,
+                                                        type: 'POST',
+                                                        dataType: "json",
+                                                        data: data,
+                                                        success: function (response) {
+                                                            $.alert({
+                                                                title: 'Alerta!',
+                                                                content: 'Cadastrado com sucesso, por favor feche o modal e refaça a operação!',
+                                                            });
+                                                        }
+                                                    });
+                                                },
+                                                nao: function () {
+                                                    $("#uasg").val('')
+                                                }
+                                            }
+                                        });
+                                    }
+                                    appLoader.hide()
+                                    request_made = false;
+                                },
+                                error: function() {
+                                    request_made = false;
+                                    appLoader.hide()
+                                }
+                            });
+                        }
+                        else{
+                            $.alert({
+                                title: 'Alerta!',
+                                content: 'Não foram encontrados resultados para este código!',
+                            });
+                            request_made = false;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // O que fazer em caso de erro
+                        console.error("Erro na requisição:", error);
+                        appLoader.hide()
+                    }
+                });
+            }
+        })
+
         var cod =  $("#estimate_number").val();
         $("#estimate-form").appForm({
             onSuccess: function (result) {

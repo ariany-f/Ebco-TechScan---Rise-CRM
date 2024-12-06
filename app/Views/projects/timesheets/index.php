@@ -32,7 +32,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        var optionVisibility = false;
+        var optionVisibility = true;
 <?php if ($login_user->user_type === "staff" && ($login_user->is_admin || get_array_value($login_user->permissions, "timesheet_manage_permission"))) { ?>
             optionVisibility = true;
 <?php } ?>
@@ -61,8 +61,8 @@
                 {title: "<?php echo app_lang('total') ?>", "class": "text-right"},
                 {visible: false, title: "<?php echo app_lang('hours') ?>", "class": "text-right"},
                 {title: '<?php echo app_lang('note'); ?>', "class": "text-center w200"}
-<?php echo $custom_field_headers; ?>,
-                {visible: optionVisibility, title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
+                <?php echo $custom_field_headers; ?>,
+                {visible: true, title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
             ],
             printColumns: combineCustomFieldsColumns([0, 3, 5, 7, 8, 9, 10], '<?php echo $custom_field_headers; ?>'),
             xlsColumns: combineCustomFieldsColumns([0, 3, 5, 7, 8, 9, 10], '<?php echo $custom_field_headers; ?>'),

@@ -1708,6 +1708,7 @@ $lang["invalid_calendar_id_error_message"] = "Este ID de calendário não é vá
 $lang["total_clients"] = "Número Total de Clientes Ativos";
 $lang["total_prospects"] = "Número Total de Prospects Ativos";
 $lang["total_contacts"] = "Número Total de Contatos";
+$lang["uasg"] = "Código Uasg";
 $lang["total_amount_estimates"] = "Total Propostas Fechadas no Período";
 $lang["total_amount_bidding_estimates"] = "Total Licitações Ganhas no Período";
 $lang["total_amount_estimates_rx"] = "Total RX e Pórticos no Período";

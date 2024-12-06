@@ -65,6 +65,48 @@ class Estimates extends Security_Controller {
         }
     }
 
+    function uasg($uasg) {
+        $url = "https://dadosabertos.compras.gov.br/modulo-uasg/1_consultarUasg?pagina=1&codigoUasg=$uasg&statusUasg=1";
+
+        // Inicia a sessão cURL
+        $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Accept: */*'
+        ));
+        
+        // Desabilitar a verificação do certificado SSL (apenas para testes)
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+        
+        // Executa a requisição e captura a resposta
+        $response = curl_exec($ch);
+        
+        // Verifica se ocorreu algum erro durante a requisição
+        if(curl_errno($ch)) {
+            $error = curl_error($ch);
+            echo json_encode(['Erro cURL' => $error]);
+        } else {
+            // Tenta decodificar a resposta como JSON
+            $decodedResponse = json_decode($response, true);
+        
+            // Verifica se a resposta é um JSON válido
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // Resposta JSON válida, formatada
+                echo json_encode($decodedResponse, JSON_PRETTY_PRINT);
+            } else {
+                // Resposta não é JSON válido, retorna a resposta bruta
+                echo json_encode(['Erro' => 'Resposta não é um JSON válido', 'Resposta' => $response]);
+            }
+        }
+        
+        // Fecha a sessão cURL
+        curl_close($ch);
+    }
+
     //load the yearly view of estimate list
     function yearly() {
         return $this->template->view("estimates/yearly_estimates");
@@ -83,6 +125,11 @@ class Estimates extends Security_Controller {
         $this->can_access_this_estimate($id);
         $client_id = $this->request->getPost('client_id');
         $model_info = $this->Estimates_model->get_one($id);
+       
+        $bidding_dropdown = [
+            'serviços',
+            'material',
+        ];
 
         //check if proposal_id/contract_id/order_id posted. if found, generate related information
         $proposal_id = $this->request->getPost('proposal_id');
@@ -124,7 +171,7 @@ class Estimates extends Security_Controller {
         $view_data['taxes_dropdown'] = array("" => "-") + $this->Taxes_model->get_dropdown_list(array("title"));
         $view_data['estimate_type_dropdown'] = array("" => "-") + $this->Estimate_type_model->get_dropdown_list(array("title"));
         $view_data['clients_dropdown'] = $this->get_clients_and_leads_dropdown();
-
+       
         $view_data['client_id'] = $client_id;
 
         //clone estimate data
@@ -139,6 +186,7 @@ class Estimates extends Security_Controller {
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("estimates", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
 
         $view_data['companies_dropdown'] = $this->_get_companies_dropdown();
+        $view_data['bidding_dropdown'] = $bidding_dropdown;
         if (!$model_info->company_id) {
             $view_data['model_info']->company_id = get_default_company_id();
         }

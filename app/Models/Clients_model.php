@@ -801,16 +801,12 @@ class Clients_model extends Crud_model {
         $is_lead = $this->_get_clean_value($options, "is_lead");
         if($is_lead)
         {
-            $where .= " AND $clients_table.is_lead = 1";
-        }
-        else
-        {
-            $where .= " AND $clients_table.is_lead = 0";
+            $where .= " AND $clients_table.is_lead = $is_lead";
         }
 
         $sql = "SELECT $clients_table.id, CONCAT($clients_table.company_name, ' - ', $clients_table.cnpj) AS title
         FROM $clients_table  
-        WHERE $clients_table.deleted=0 AND ($clients_table.company_name LIKE '%$search%' OR $clients_table.cnpj LIKE '%$search%'  OR $clients_table.matriz_cnpj LIKE '%$search%' ESCAPE '!') $where
+        WHERE $clients_table.deleted=0 AND ($clients_table.company_name LIKE '%$search%' OR  REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') OR  REPLACE(REPLACE(REPLACE(REPLACE(matriz_cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') ESCAPE '!') $where
         ORDER BY $clients_table.company_name ASC
         LIMIT 0, 10";
 

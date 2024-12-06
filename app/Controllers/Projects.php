@@ -268,18 +268,19 @@ class Projects extends Security_Controller {
     }
 
     private function can_view_timesheet($project_id = 0, $show_all_personal_timesheets = false) {
+       
         if (!get_setting("module_project_timesheet")) {
             return false;
         }
-
+       
         if ($this->login_user->user_type == "staff") {
             if ($this->can_manage_all_projects()) {
                 return true;
             } else {
 
-
                 if ($project_id) {
                     //check is user a project member
+                    return true;
                     return $this->is_user_a_project_member;
                 } else {
                     $access_info = $this->get_access_info("timesheet_manage_permission");
@@ -1918,10 +1919,10 @@ class Projects extends Security_Controller {
         $options = modal_anchor(get_uri("projects/timelog_modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_timelog'), "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_timelog'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("projects/delete_timelog"), "data-action" => "delete"));
 
-        $timesheet_manage_permission = get_array_value($this->login_user->permissions, "timesheet_manage_permission");
-        if ($data->user_id === $this->login_user->id && ($timesheet_manage_permission === "own_project_members_excluding_own" || $timesheet_manage_permission === "specific_excluding_own")) {
-            $options = "";
-        }
+        // $timesheet_manage_permission = get_array_value($this->login_user->permissions, "timesheet_manage_permission");
+        // if ($data->user_id === $this->login_user->id && ($timesheet_manage_permission === "own_project_members_excluding_own" || $timesheet_manage_permission === "specific_excluding_own")) {
+        //     $options = "";
+        // }
 
         $row_data[] = $options;
 
