@@ -919,6 +919,8 @@ class Clients_model extends Crud_model {
                         END)";
         }
 
+        $whereClauses[] = "YEAR($clients_table.created_date) = YEAR(CURDATE())";
+
         // Junta as cláusulas WHERE
         $whereSql = implode(' AND ', $whereClauses);
 
@@ -962,6 +964,8 @@ class Clients_model extends Crud_model {
                                 CASE WHEN is_lead = 0 AND client_migration_date BETWEEN '$date_start' AND '$date_end' THEN id END
                         END)";
         }
+
+        $whereClauses[] = "YEAR($clients_table.created_date) = YEAR(CURDATE())";
 
         // Junta as cláusulas WHERE
         $whereSql = implode(' AND ', $whereClauses);

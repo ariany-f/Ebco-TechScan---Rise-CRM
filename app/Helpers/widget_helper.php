@@ -1256,7 +1256,7 @@ if (!function_exists('total_conversion_estimates_widget')) {
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
 
-        $view_data["total"] = $Estimates_model->get_conversion_data(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
+        $view_data["total"] = ($Estimates_model->get_conversion_data(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end) ?? 0);
         $template = new Template();
         return $template->view("estimates/widgets/total_conversion_estimates_widget", $view_data);
     }

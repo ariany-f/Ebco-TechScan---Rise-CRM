@@ -439,12 +439,12 @@ class Dashboard extends Security_Controller {
         validate_numeric_value($id);
 
         $selected_dashboard_id = get_setting("user_" . $this->login_user->id . "_dashboard");
+        
         if (!$id) {
             $id = $selected_dashboard_id;
         }
-
         $dashboard_info = $this->_get_my_dashboard($id, $this->is_staff_dashboard($id));
-
+      
         if ($dashboard_info) {
             if (get_setting("disable_dashboard_customization_by_clients") && $this->login_user->user_type == "client") {
                 app_redirect("forbidden");
@@ -820,12 +820,19 @@ class Dashboard extends Security_Controller {
     private function _get_my_dashboard($id = 0, $is_staff_dashboard = false) {
         if ($id) {
             $options = array("id" => $id);
+            $default_options = array("id" => 1);
 
             if (!$is_staff_dashboard and $this->login_user->is_admin) {
                 $options["user_id"] = $this->login_user->id;
             }
 
-            return $this->Dashboards_model->get_details($options)->getRow();
+            if( $this->Dashboards_model->get_details($options)->getRow())
+            {
+                return $this->Dashboards_model->get_details($options)->getRow();
+            }
+            else {
+                $this->Dashboards_model->get_details($default_options)->getRow();
+            }
         }
     }
 
@@ -1575,6 +1582,7 @@ class Dashboard extends Security_Controller {
     }
 
     function restore_to_default_client_dashboard() {
+       
         $this->access_only_admin_or_settings_admin();
         $this->Settings_model->save_setting("client_default_dashboard", "");
         app_redirect("dashboard/client_default_dashboard");

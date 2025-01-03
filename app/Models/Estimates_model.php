@@ -525,6 +525,7 @@ class Estimates_model extends Crud_model {
                     crm_users u ON e.created_by = u.id
                 WHERE 
                     e.deleted = 0
+                    AND YEAR(e.estimate_date) = YEAR(CURDATE())
                     AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                     $where 
                 GROUP BY 
@@ -567,6 +568,7 @@ class Estimates_model extends Crud_model {
                     crm_custom_field_values cfv ON e.id = cfv.related_to_id AND cfv.custom_field_id = cf.id AND cfv.related_to_type = 'estimates'
                 WHERE 
                     e.deleted = 0
+                    AND YEAR(e.estimate_date) = YEAR(CURDATE())
                     AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                     $where
                 GROUP BY 
@@ -622,6 +624,7 @@ class Estimates_model extends Crud_model {
                 crm_estimates e
             WHERE 
                 e.deleted = 0
+                AND YEAR(e.estimate_date) = YEAR(CURDATE())
                 AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                 $where
         ";
@@ -815,7 +818,7 @@ class Estimates_model extends Crud_model {
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
         JOIN 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
-        WHERE $estimates_table.deleted=0 AND $estimates_table.status IN ('draft', 'sent', 'accepted', 'rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
+        WHERE $estimates_table.deleted=0 AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status IN ('draft', 'sent', 'accepted', 'rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -842,7 +845,7 @@ class Estimates_model extends Crud_model {
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
         JOIN 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
-        WHERE $estimates_table.deleted=0 AND $estimates_table.status IN ('rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
+        WHERE $estimates_table.deleted=0 AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status IN ('rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -870,7 +873,7 @@ class Estimates_model extends Crud_model {
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
         JOIN 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
-        WHERE $estimates_table.deleted=0 AND $estimates_table.status = 'accepted' AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
+        WHERE $estimates_table.deleted=0 AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status = 'accepted' AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -886,7 +889,7 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        WHERE $estimates_table.deleted=0 AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 1 $where";
+        WHERE $estimates_table.deleted=0 AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -902,7 +905,7 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        WHERE $estimates_table.deleted=0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where";
+        WHERE $estimates_table.deleted=0 AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -969,6 +972,7 @@ class Estimates_model extends Crud_model {
                     $estimates_table.deleted = 0 
                     AND $estimates_table.status = 'accepted'
                     AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL)
+                    AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE())
                     $where_clause
                 GROUP BY 
                     $estimates_table.id
@@ -1023,7 +1027,7 @@ class Estimates_model extends Crud_model {
                 LEFT JOIN 
                     $custom_field_values_table cfv ON $estimates_table.id = cfv.related_to_id AND cfv.custom_field_id = cf.id AND cfv.related_to_type = 'estimates'
                 WHERE 
-                    $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where_clause";
+                    $estimates_table.deleted = 0 AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where_clause";
         
         $query = $this->db->query($sql, $parameters);
         $result = $query->getRow();

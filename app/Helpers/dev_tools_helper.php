@@ -23,7 +23,7 @@ function write_css($files) {
 
 //preapre app.all.js
 function write_js($files) {
-    merge_file($files, "assets/js/app.all.js");
+    merge_file($files, "assets/js/app.all.js?ver=4");
 }
 
 //merge all files into one

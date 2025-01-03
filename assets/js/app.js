@@ -23,6 +23,7 @@ $(document).ready(function () {
                 url = $(this).attr('data-action-url'),
                 isLargeModal = $(this).attr('data-modal-lg'),
                 isFullscreenModal = $(this).attr('data-modal-fullscreen'),
+                isVeryLargeModal = $(this).attr('data-modal-xl'),
                 isCloseModal = $(this).attr('data-modal-close'),
                 title = $(this).attr('data-title');
         if (!url) {
@@ -67,6 +68,8 @@ $(document).ready(function () {
                 $("#ajaxModal").find(".modal-dialog").removeClass("mini-modal");
                 if (isLargeModal === "1") {
                     $("#ajaxModal").find(".modal-dialog").addClass("custom-modal-lg");
+                } else if (isVeryLargeModal === "1") {
+                    $("#ajaxModal").find(".modal-dialog").addClass("modal-xl");
                 } else if (isFullscreenModal === "1") {
                     $("#ajaxModal").find(".modal-dialog").addClass("modal-fullscreen");
                 }
