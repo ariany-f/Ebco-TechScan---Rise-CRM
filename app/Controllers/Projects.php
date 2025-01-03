@@ -6,6 +6,7 @@ class Projects extends Security_Controller {
 
     protected $Project_settings_model;
     protected $Checklist_items_model;
+    protected $Estimate_value_items_model;
     protected $Likes_model;
     protected $Pin_comments_model;
     protected $File_category_model;
@@ -19,6 +20,7 @@ class Projects extends Security_Controller {
 
         $this->Project_settings_model = model('App\Models\Project_settings_model');
         $this->Checklist_items_model = model('App\Models\Checklist_items_model');
+        $this->Estimate_value_items_model = model('App\Models\Estimate_value_items_model');
         $this->Likes_model = model('App\Models\Likes_model');
         $this->Pin_comments_model = model('App\Models\Pin_comments_model');
         $this->File_category_model = model('App\Models\File_category_model');

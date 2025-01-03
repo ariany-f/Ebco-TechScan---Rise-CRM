@@ -9,9 +9,13 @@ use DOMXPath;
 
 class Estimates extends Security_Controller {
 
+    protected $Estimate_value_items_model;
+
     function __construct() {
         parent::__construct();
         $this->init_permission_checker("estimate");
+        
+        $this->Estimate_value_items_model = model('App\Models\Estimate_value_items_model');
     }
 
     /* load estimate list view */
@@ -190,9 +194,128 @@ class Estimates extends Security_Controller {
         if (!$model_info->company_id) {
             $view_data['model_info']->company_id = get_default_company_id();
         }
+
+        
+        //get checklist items
+        $estimate_value_items_array = array();
+        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $model_info->estimate_number))->getResult();
+        foreach ($estimate_value_items as $estimate_value_item) {
+            $estimate_value_items_array[] = $this->_make_estimate_value_item_row($estimate_value_item);
+        }
+        $view_data["estimate_value_items"] = json_encode($estimate_value_items_array);
+        
+        $view_data["currency_dropdown"] = $this->_get_currency_dropdown_select2_data();
         
         return $this->template->view('estimates/modal_form', $view_data);
     }
+
+    private function _make_estimate_value_item_row($data = array(), $return_type = "row") {
+        $checkbox_class = "form-check-input";
+        $title_class = "text-off";
+        $is_checked_value = 1;
+        $title_value = link_it($data->title);
+        $amount_value = $data->amount;
+
+        if ($data->is_checked == 1) {
+            $is_checked_value = 0;
+            $checkbox_class = "radio-checked";
+            $title_class = "";
+            $title_value = $data->title;
+        }
+
+        $status = js_anchor("<input type='radio' ".($data->is_checked ? 'checked' : '')." class='$checkbox_class mr15 float-start'></input>", array('title' => "", "data-estimate-id" => $data->estimate_id,"data-id" => $data->id, "data-value" => $is_checked_value, "data-act" => "update-estimate-value-item-status-checkbox"));
+        if (!$this->can_edit_tasks()) {
+            $status = "";
+        }
+
+        $title = "<span class='font-13 $title_class'>" . $title_value . " - " . to_currency($amount_value) . " </span>";
+
+        $delete = ajax_anchor(get_uri("estimates/delete_estimate_value_item/$data->id"), "<div class='float-end'><i data-feather='x' class='icon-16'></i></div>", array("class" => "delete-estimate-value-item", "title" => app_lang("delete_estimate_value_item"), "data-fade-out-on-success" => "#checklist-item-row-$data->id"));
+        if (!$this->can_edit_tasks()) {
+            $delete = "";
+        }
+
+        if ($return_type == "data") {
+            return $status . $delete . $title;
+        }
+
+        return "<div id='checklist-item-row-$data->id' class='list-group-item mb5 checklist-item-row b-a rounded text-break' data-id='$data->id'>" . $status . $delete . $title . "</div>";
+    }
+
+    function save_estimate_value_item_check($estimate_id) {
+       
+        $id = $this->request->getPost('id');
+        
+        $others = $this->Estimate_value_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
+
+        $uncheck = array(
+            "is_checked" => 0
+        );
+        foreach($others as $estimate_value)
+        {
+            if($estimate_value->id != $id)
+            {
+                $this->Estimate_value_items_model->ci_save($uncheck, $estimate_value->id);
+            }
+        }
+
+        $data = array(
+            "is_checked" => 1
+        );
+
+        $save_id = $this->Estimate_value_items_model->ci_save($data, $id);
+
+        if ($save_id) {
+            $item_info = $this->Estimate_value_items_model->get_one($save_id);
+            echo json_encode(array("success" => true, "data" => $this->_make_estimate_value_item_row($item_info, "data"), 'id' => $save_id));
+        } else {
+            echo json_encode(array("success" => false));
+        }
+    }
+
+    function delete_estimate_value_item($id) {
+        if ($this->Estimate_value_items_model->delete($id)) {
+            echo json_encode(array("success" => true));
+        } else {
+            echo json_encode(array("success" => false));
+        }
+    }
+
+    /* checklist */
+    function save_vale_item() {
+
+        $estimate_id = $this->request->getPost("estimate_id");
+
+        $this->validate_submitted_data(array(
+            "estimate_id" => "required|numeric"
+        ));
+
+        $success_data = "";
+
+        $amount = $this->request->getPost("estimate-value-add-item");
+
+        $amount = str_replace('.', '', $amount);
+        // Substitui a vírgula por ponto
+        $amount = str_replace(',', '.', $amount);
+      
+        $data = array(
+            "estimate_id" => $estimate_id,
+            "title" => $this->request->getPost("estimate-value-add-item-description"),
+            "amount" => (double) $amount 
+        );
+        $save_id = $this->Estimate_value_items_model->ci_save($data);
+        if ($save_id) {
+            $item_info = $this->Estimate_value_items_model->get_one($save_id);
+            $success_data = $this->_make_estimate_value_item_row($item_info);
+        }
+
+        if ($success_data) {
+            echo json_encode(array("success" => true, "data" => $success_data, 'id' => $save_id));
+        } else {
+            echo json_encode(array("success" => false));
+        }
+    }
+
 
     /* add, edit or clone an estimate */
     function save() {
@@ -347,7 +470,7 @@ class Estimates extends Security_Controller {
             $copy_items_from_order = $this->request->getPost("copy_items_from_order");
             $this->_copy_related_items_to_estimate($copy_items_from_proposal, $copy_items_from_contract, $copy_items_from_order, $estimate_id);
 
-            echo json_encode(array("success" => true, 'id' => $estimate_id, 'message' => app_lang('record_saved')));
+            echo json_encode(array("success" => true, "data" => $this->_row_data($estimate_id), 'id' => $estimate_id, 'message' => app_lang('record_saved')));
         } else {
             echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
         }
@@ -856,7 +979,7 @@ class Estimates extends Security_Controller {
 
 
         $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
-                . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-post-id" => $data->id))
+                . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-modal-xl" => 1, "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
 
         return $row_data;
@@ -942,7 +1065,7 @@ class Estimates extends Security_Controller {
 
 
         $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
-                . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-post-id" => $data->id))
+                . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-modal-xl" => 1, "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"))
                 . ajax_anchor(get_uri("estimates/create_revision"), "<i data-feather='copy' class='icon-16'></i> ", array('title' => app_lang('create_revision'), "class" => "delete", "data-post-id" => $data->id, "data-reload-on-success" => true, "data-bs-toggle" => "tooltip", "data-placement" => "left"));
 
