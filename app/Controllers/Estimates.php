@@ -214,6 +214,9 @@ class Estimates extends Security_Controller {
         $title_class = "text-off";
         $is_checked_value = 1;
         $title_value = link_it($data->title);
+        $converted_value = $data->converted_amount;
+        $converted_date = $data->converted_date;
+        $currency = $data->currency;
         $amount_value = $data->amount;
 
         if ($data->is_checked == 1) {
@@ -223,7 +226,7 @@ class Estimates extends Security_Controller {
             $title_value = $data->title;
         }
 
-        $status = js_anchor("<input type='radio' ".($data->is_checked ? 'checked' : '')." class='$checkbox_class mr15 float-start'></input>", array('title' => "", "data-estimate-id" => $data->estimate_id,"data-id" => $data->id, "data-value" => $is_checked_value, "data-act" => "update-estimate-value-item-status-checkbox"));
+        $status = js_anchor("<input data-amount='$amount_value' type='radio' ".($data->is_checked ? 'checked' : '')." class='$checkbox_class mr15 float-start'></input>", array('title' => "", "data-estimate-id" => $data->estimate_id, "data-amount" => $amount_value, "data-id" => $data->id, "data-value" => $is_checked_value, "data-act" => "update-estimate-value-item-status-checkbox"));
         if (!$this->can_edit_tasks()) {
             $status = "";
         }
@@ -235,11 +238,22 @@ class Estimates extends Security_Controller {
             $delete = "";
         }
 
-        if ($return_type == "data") {
-            return $status . $delete . $title;
+        if($converted_value)
+        {
+
+            $date = format_to_datetime($converted_date, false);
+            $converted = "<span id='converted-$data->id'> -> ".to_currency($converted_value, $currency)." (". $date .")</span>";
+        }
+        else
+        {
+            $converted = "<span id='converted-$data->id'></span>";
         }
 
-        return "<div id='checklist-item-row-$data->id' class='list-group-item mb5 checklist-item-row b-a rounded text-break' data-id='$data->id'>" . $status . $delete . $title . "</div>";
+        if ($return_type == "data") {
+            return $status . $delete . $title . $converted;
+        }
+
+        return "<div id='checklist-item-row-$data->id' class='list-group-item mb5 checklist-item-row b-a rounded text-break' data-id='$data->id'>" . $status . $delete . $title . $converted . "</div>";
     }
 
     function save_estimate_value_item_check($estimate_id) {
@@ -316,6 +330,40 @@ class Estimates extends Security_Controller {
         }
     }
 
+    /* checklist */
+    function save_value_convert_item() {
+
+        $estimate_value_item_id = $this->request->getPost("estimate_value_item_id");
+
+        $this->validate_submitted_data(array(
+            "estimate_value_item_id" => "required|numeric"
+        ));
+
+        $success_data = "";
+
+        $currency = $this->request->getPost("currency");
+        $converted_amount = $this->request->getPost("converted_amount");
+        
+        date_default_timezone_set('America/Sao_Paulo');
+        $data = array(
+            "currency" => $currency,
+            "converted_amount" => $converted_amount,
+            "converted_date" => date_create()->format('Y-m-d H:i:s')
+        );
+        $save_id = $this->Estimate_value_items_model->ci_save($data, $estimate_value_item_id);
+        
+        
+        if ($save_id) {
+            $item_info = $this->Estimate_value_items_model->get_one($save_id);
+            $success_data = $this->_make_estimate_value_item_row($item_info);
+        }
+
+        if ($success_data) {
+            echo json_encode(array("success" => true, "data" => $success_data, 'id' => $save_id));
+        } else {
+            echo json_encode(array("success" => false));
+        }
+    }
 
     /* add, edit or clone an estimate */
     function save() {

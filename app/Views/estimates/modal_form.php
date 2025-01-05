@@ -292,7 +292,7 @@
         </div>
         <button class="btn btn-default upload-file-button float-start me-auto btn-sm round" type="button" style="color:#7988a2"><i data-feather='camera' class='icon-16'></i> <?php echo app_lang("upload_file"); ?></button>
         <button type="button" class="btn btn-default" data-bs-dismiss="modal"><span data-feather="x" class="icon-16"></span> <?php echo app_lang('close'); ?></button>
-        <button id="save-and-show-button" type="button" class="btn btn-info text-white"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save_and_show'); ?></button>
+        <button id="save-and-show-button" type="button" class="btn btn-info text-white"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('save'); ?></button>
     </div>
     <?php echo form_close(); ?>
 
@@ -300,8 +300,6 @@
         <!--checklist-->
         <?php echo form_open(get_uri("estimates/save_vale_item"), array("id" => "estimate_value_form", "class" => "general-form  " . (( $model_info->id ) ? ' col-md-5' : ' hide'), "role" => "form")); ?>
         <div class="col-md-12 container">
-
-
             <div class="form-group">
                 <div class="row">
                     <label for="currency" class="<?php echo $label_column; ?>"><?php echo app_lang('destiny') . ' ' . app_lang('currency'); ?></label>
@@ -388,11 +386,68 @@
 
         $("#convert").on('click', function() {
             var moeda = $("#currency").val();
-            var items = $("#estimate-value-items");
-            console.log(items);
+            var items = $("#estimate-value-items .list-group-item a");
         
+            if(!moeda)
+            {
+                alert('Selecione a moeda para converter!')
+                return;
+            }
             //API Moeda
             var url = "https://economia.awesomeapi.com.br/BRL-"+moeda;
+
+             // Fazer a requisição para a API
+            $.get(url, function(response) {
+                
+                if (response && response[0] && response[0].ask) {
+                    var conversionRate = parseFloat(response[0].ask); // Taxa de conversão
+
+                    // Iterar sobre os itens da lista
+                    items.each(function() {
+                        var dataAmount = $(this).data('amount');  // Pegar o valor do atributo data-amount
+                        var id = $(this).data('id');
+
+                        if (dataAmount) {
+                            // Converter o valor usando a taxa da API
+                            var convertedAmount = parseFloat(dataAmount) * conversionRate;
+                            
+                            // Atualizar o item com o valor convertido (pode ser em um texto, por exemplo)
+                            $.ajax({
+                                url: AppHelper.baseUrl + 'estimates/save_value_convert_item',
+                                cache: false,
+                                type: 'POST',
+                                data: {
+                                    currency: moeda,
+                                    estimate_value_item_id: id,
+                                    converted_amount: convertedAmount.toFixed(2)
+                                },
+                                dataType: "json",
+                                success: function (response) {
+                                    console.log(response)
+                                }
+                            });
+                            var data = new Date(),
+                                dia = data.getDate().toString(),
+                                diaF = (dia.length == 1) ? '0' + dia : dia,
+                                mes = (data.getMonth() + 1).toString(), // +1 pois getMonth começa do 0
+                                mesF = (mes.length == 1) ? '0' + mes : mes,
+                                anoF = data.getFullYear(),
+                                hora = data.getHours().toString(),
+                                horaF = (hora.length == 1) ? '0' + hora : hora,
+                                minuto = data.getMinutes().toString(),
+                                minutoF = (minuto.length == 1) ? '0' + minuto : minuto;
+
+                            // Formatar data e hora
+                            var fDate = diaF + "/" + mesF + "/" + anoF + " " + horaF + ":" + minutoF;
+                            $("#converted-"+id).text(' -> ' + moeda + convertedAmount.toFixed(2) + ' (' + fDate + ')');
+                        }
+                    });
+                } else {
+                    console.error("Erro ao obter a taxa de conversão");
+                }
+            }).fail(function() {
+                console.error("Erro na requisição da API.");
+            });
         })
 
         //send data to show the task after save
@@ -659,6 +714,7 @@
                         $(".checklist-item-row input").attr('checked', false);
                         $(".checklist-item-row a").addClass('text-off');
                         status_checkbox.closest("div").html(response.data); 
+                        status_checkbox.attr('checked', true);
                     }
                 }
             });
