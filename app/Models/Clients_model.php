@@ -1009,7 +1009,7 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT COUNT($clients_table.id) AS total
         FROM $clients_table 
-        WHERE $clients_table.deleted=0 AND $clients_table.lead_status_id=1 AND $clients_table.is_lead=1 $where";
+        WHERE $clients_table.deleted=0  AND $clients_table.lead_status_id=1 AND $clients_table.is_lead=1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -1095,6 +1095,11 @@ class Clients_model extends Crud_model {
         if($date_start and $date_end)
         {
             $where .= " AND ($clients_table.created_date BETWEEN '$date_start' and '$date_end' OR $clients_table.client_migration_date BETWEEN '$date_start' and '$date_end')";
+        }
+        else
+        {
+            
+            $where .= " AND (YEAR($clients_table.created_date) = YEAR(CURDATE()) OR YEAR($clients_table.client_migration_date) = YEAR(CURDATE()))";
         }
         
         $converted_to_client = "SELECT COUNT(DISTINCT $clients_table.id) AS total

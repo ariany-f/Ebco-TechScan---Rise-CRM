@@ -33,7 +33,7 @@ class Estimates_model extends Crud_model {
         $result = $this->db->query($sql)->getRow();
     
         // Caso ainda não haja registros para o ano atual, começamos a sequência com 1
-        return $result->next_sequence ?: 1;
+        return $result->next_sequence ?: '01';
     }
 
     function get_details($options = array()) {
@@ -72,6 +72,10 @@ class Estimates_model extends Crud_model {
         $end_date = $this->_get_clean_value($options, "end_date");
         if ($start_date && $end_date) {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$start_date' AND '$end_date') ";
+        }
+        else
+        {
+            $where .= " AND (YEAR($estimates_table.estimate_date) = YEAR(CURDATE())) ";
         }
 
         $after_tax_1 = "(IFNULL(tax_table.percentage,0)/100*IFNULL(items_table.estimate_value,0))";
@@ -804,13 +808,13 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
-        if(!$this->login_user->is_admin)
-        {
-           $where_us .= " AND us.id=".$this->login_user_id()." ";
-        }
+        // if(!$this->login_user->is_admin)
+        // {
+        //    $where_us .= " AND us.id=".$this->login_user_id()." ";
+        // }
 
 
-        $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
+        $sql = "SELECT COUNT(DISTINCT $estimates_table.estimate_number) AS total
         FROM $estimates_table 
         JOIN 
             crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
@@ -831,10 +835,10 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
-        if(!$this->login_user->is_admin)
-        {
-            $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
-        }
+        // if(!$this->login_user->is_admin)
+        // {
+        //     $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
+        // }
 
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
@@ -858,10 +862,10 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
-        if(!$this->login_user->is_admin)
-        {
-           $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
-        }
+        // if(!$this->login_user->is_admin)
+        // {
+        //    $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
+        // }
 
 
 

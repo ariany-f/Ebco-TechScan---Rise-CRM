@@ -188,7 +188,10 @@ class Estimates extends Security_Controller {
         $model_info->estimate_type_id = 1;
 
         $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("estimates", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
-
+        
+        $view_data["custom_fields"] = array_filter($view_data["custom_fields"], function($item) {
+            return isset($item->title) && $item->title !== "Valor Estimado";
+        });
         $view_data['companies_dropdown'] = $this->_get_companies_dropdown();
         $view_data['bidding_dropdown'] = $bidding_dropdown;
         if (!$model_info->company_id) {
@@ -234,9 +237,9 @@ class Estimates extends Security_Controller {
         $title = "<span class='font-13 $title_class'>" . $title_value . " - " . to_currency($amount_value) . " </span>";
 
         $delete = ajax_anchor(get_uri("estimates/delete_estimate_value_item/$data->id"), "<div class='float-end'><i data-feather='x' class='icon-16'></i></div>", array("class" => "delete-estimate-value-item", "title" => app_lang("delete_estimate_value_item"), "data-fade-out-on-success" => "#checklist-item-row-$data->id"));
-        if (!$this->can_edit_tasks()) {
-            $delete = "";
-        }
+        // if (!$this->can_edit_tasks()) {
+            // $delete = "";
+        // }
 
         if($converted_value)
         {
@@ -934,7 +937,7 @@ class Estimates extends Security_Controller {
         $file_icon = get_file_icon(strtolower(pathinfo($data['file_name'], PATHINFO_EXTENSION)));
 
         $description = "<div class='float-start'>" .
-                js_anchor(remove_file_prefix($data['file_name']), array('title' => "", "data-toggle" => "app-modal", "data-sidebar" => "0", "data-url" => get_uri("estimates/view_file/" . $data['file_id'])));
+                js_anchor(($data['file_name']), array('title' => "", "data-toggle" => "app-modal", "data-sidebar" => "0", "data-url" => get_uri("estimates/view_file/" . $data['file_id'])));
 
         if ($data['description']) {
             $description .= "<br /><span>" . $data['description'] . "</span></div>";
@@ -1074,12 +1077,17 @@ class Estimates extends Security_Controller {
 
         foreach ($custom_fields as $field) {
             $cf_id = "cfv_" . $field->id;
-            if($field->title === 'Valor Estimado')
-            {
-              //  $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)$data->$cf_id, $data->currency_symbol)));
-              $row_data[] = str_replace(".", ",",$data->$cf_id);
-            } else if($field->title === 'Termômetro')
-            {
+            if($field->title === 'Valor Estimado') {
+                //get checklist items
+                $estimate_value_items_array = array();
+                $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->estimate_number, "checked" => 1))->getResult();
+                foreach ($estimate_value_items as $estimate_value_item) {
+                    $estimate_value_items_array[] = $estimate_value_item;
+                }
+           
+                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)$estimate_value_items_array[0]->amount, $data->currency_symbol)));
+            } 
+            else if($field->title === 'Termômetro') {
                 $class = "badge-primary";
                 $style = "";
                 switch($data->$cf_id) {

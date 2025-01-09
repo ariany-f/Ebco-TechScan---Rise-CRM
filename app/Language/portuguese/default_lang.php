@@ -1714,6 +1714,7 @@ $lang["add_value_item"] = "Valor";
 $lang["estimate_value"] = "Valor da Proposta";
 $lang["convert"] = "Converter Valores";
 $lang["destiny"] = "Destino";
+$lang["delete_estimate_value_item"] = "Deletar item";
 $lang["total_amount_estimates"] = "Total Propostas Fechadas no Período";
 $lang["total_amount_bidding_estimates"] = "Total Licitações Ganhas no Período";
 $lang["total_amount_estimates_rx"] = "Total RX e Pórticos no Período";

@@ -2,7 +2,7 @@
 
 namespace Config;
 
-define("DB_NAME", 'u196197156_uniebco_data');
+define("DB_NAME", 'u196197156_uniebco');
 define("DB_USER", 'root');
 define("DB_PASSWORD", 'Mudar123@');
 define("DB_HOST", 'localhost');

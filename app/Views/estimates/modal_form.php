@@ -75,9 +75,7 @@
                             "value" => $model_info->estimate_date,
                             "class" => "form-control",
                             "placeholder" => app_lang('estimate_date'),
-                            "autocomplete" => "off",
-                            "data-rule-required" => true,
-                            "data-msg-required" => app_lang("field_required"),
+                            "autocomplete" => "off"
                         ));
                         ?>
                     </div>
@@ -112,8 +110,6 @@
                             "class" => "form-control",
                             "placeholder" => app_lang('valid_until'),
                             "autocomplete" => "off",
-                            "data-rule-required" => true,
-                            "data-msg-required" => app_lang("field_required"),
                             "data-rule-greaterThanOrEqual" => "#estimate_date",
                             "data-msg-greaterThanOrEqual" => app_lang("end_date_must_be_equal_or_greater_than_start_date")
                         ));
@@ -644,7 +640,8 @@
                     type: 'POST',
                     dataType: "json",
                     success: function (response) {
-                        $("#estimate_number").val("ZK_" + response)
+                        let year = new Date().getFullYear()
+                        $("#estimate_number").val("ZK_" + year+response)
                     }
                 });
             }
