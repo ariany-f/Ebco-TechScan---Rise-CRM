@@ -182,7 +182,7 @@ class Leads extends Security_Controller {
         ));
 
         $id = $this->request->getPost('id');
-        $this->can_access_this_lead($id);
+        // $this->can_access_this_lead($id);
 
         if ($this->Clients_model->delete_client_and_sub_items($id)) {
             echo json_encode(array("success" => true, 'message' => app_lang('record_deleted')));

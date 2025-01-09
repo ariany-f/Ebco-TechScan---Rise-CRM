@@ -247,7 +247,7 @@ class Clients_model extends Crud_model {
                 WHERE deleted=0 
                 GROUP BY client_id) AS estimates_table ON estimates_table.client_id = $clients_table.id
         $join_custom_fieds               
-        WHERE $clients_table.deleted = 0 $where $custom_fields_where  
+        WHERE $clients_table.deleted = 0 AND $clients_table.status_id <> 2 $where $custom_fields_where  
         $order $limit_offset";
         $raw_query = $this->db->query($sql);
 
@@ -311,7 +311,7 @@ class Clients_model extends Crud_model {
             FROM
                 crm_clients c
             WHERE
-                c.is_lead = 0 AND c.deleted = 0 $where_client
+                c.is_lead = 0 AND c.deleted = 0 AND c.status_id <> 2 $where_client
         ),
         clients_seller_info AS (
             SELECT
@@ -848,7 +848,7 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $clients_table.id) AS total
         FROM $clients_table 
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 $where";
+        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND $clients_table.status_id <> 2 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -857,6 +857,7 @@ class Clients_model extends Crud_model {
         $tickets_table = $this->db->prefixTable('tickets');
         $invoices_table = $this->db->prefixTable('invoices');
         $invoice_payments_table = $this->db->prefixTable('invoice_payments');
+        $lead_status_table = $this->db->prefixTable('lead_status');
         $invoice_items_table = $this->db->prefixTable('invoice_items');
         $taxes_table = $this->db->prefixTable('taxes');
         $projects_table = $this->db->prefixTable('projects');
@@ -887,7 +888,8 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $clients_table.id) AS total
         FROM $clients_table 
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=1 AND $clients_table.lead_status_id IN (2, 3, 4, 6, 7) $where";
+        INNER JOIN $lead_status_table ON $clients_table.lead_status_id = $lead_status_table.id AND crm_lead_status.deleted = 0
+        WHERE $clients_table.deleted=0 AND $clients_table.is_lead = 1 AND $clients_table.status_id <> 2 AND $clients_table.lead_status_id IN (2, 3, 4, 6, 7) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -1009,7 +1011,7 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT COUNT($clients_table.id) AS total
         FROM $clients_table 
-        WHERE $clients_table.deleted=0  AND $clients_table.lead_status_id=1 AND $clients_table.is_lead=1 $where";
+        WHERE $clients_table.deleted=0 AND $clients_table.status_id <> 2 AND $clients_table.lead_status_id=1 AND $clients_table.is_lead=1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -1040,20 +1042,20 @@ class Clients_model extends Crud_model {
         $converted_to_client = "SELECT COUNT($clients_table.id) AS total
         FROM $clients_table
         LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 AND $clients_table.lead_status_id!=0 $where";
+        WHERE $clients_table.deleted=0 AND $clients_table.status_id <> 2  AND $clients_table.is_lead=0 AND $clients_table.lead_status_id!=0 $where";
 
         $lead_statuses = "SELECT COUNT(DISTINCT $clients_table.id) AS total, $clients_table.lead_status_id, $lead_status_table.title, $lead_status_table.color, SUM($projects_table.price) AS projects_total
         FROM $clients_table
         LEFT JOIN $lead_status_table ON $lead_status_table.id = $clients_table.lead_status_id
         LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=1 $where
+        WHERE $clients_table.deleted=0 AND $clients_table.status_id <> 2 AND $clients_table.is_lead=1 $where
         GROUP BY $clients_table.lead_status_id
         ORDER BY total DESC";
 
         $client_statuses = "SELECT COUNT(DISTINCT $clients_table.id) AS total, 10 AS lead_status_id, 'Cliente' AS 'title', 'navy' AS color, SUM($projects_table.price) AS projects_total
         FROM $clients_table
         LEFT JOIN $projects_table ON $projects_table.client_id = $clients_table.id
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0 $where";
+        WHERE $clients_table.deleted=0  AND $clients_table.status_id <> 2  AND $clients_table.is_lead=0 $where";
 
         $total_sells = "SELECT SUM($projects_table.price) AS total, $clients_table.lead_status_id, $clients_table.currency_symbol
         FROM $projects_table
@@ -1124,7 +1126,7 @@ class Clients_model extends Crud_model {
                 LEFT JOIN $lead_source_table ON $lead_source_table.id = $clients_table.lead_source_id
                 LEFT JOIN $estimates_table ON $estimates_table.client_id = $clients_table.id
                 LEFT JOIN $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
-                WHERE $clients_table.deleted = 0 AND $clients_table.is_lead = 0 $where
+                WHERE $clients_table.deleted = 0 AND $clients_table.status_id <> 2  AND $clients_table.is_lead = 0 $where
                 GROUP BY $clients_table.lead_source_id
             UNION ALL
             
@@ -1138,7 +1140,7 @@ class Clients_model extends Crud_model {
                 LEFT JOIN $lead_source_table ON $lead_source_table.id = $clients_table.lead_source_id
                 LEFT JOIN $estimates_table ON $estimates_table.client_id = $clients_table.id
                 LEFT JOIN $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
-                WHERE $clients_table.deleted = 0 AND $clients_table.is_lead = 1 $where
+                WHERE $clients_table.deleted = 0 AND $clients_table.status_id <> 2  AND $clients_table.is_lead = 1 $where
                 GROUP BY $clients_table.lead_source_id
             ) AS combined
             GROUP BY title

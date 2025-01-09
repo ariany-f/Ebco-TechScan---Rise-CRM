@@ -2948,7 +2948,7 @@ if (!function_exists('append_server_side_filtering_commmon_params')) {
             $options["limit"] = $request->getPost("limit");
 
             if ($options["limit"] == -1) {
-                $options["limit"] = 100; //max limit is 100 for serverside. 
+                $options["limit"] = 10000; //max limit is 100 for serverside. 
             }
 
             $options["skip"] = $request->getPost("skip") ? $request->getPost("skip") : 0;
