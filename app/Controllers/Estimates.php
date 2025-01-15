@@ -1080,7 +1080,7 @@ class Estimates extends Security_Controller {
             if($field->title === 'Valor Estimado') {
                 //get checklist items
                 $estimate_value_items_array = array();
-                $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->estimate_number, "checked" => 1))->getResult();
+                $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => 1))->getResult();
                 foreach ($estimate_value_items as $estimate_value_item) {
                     $estimate_value_items_array[] = $estimate_value_item;
                 }
