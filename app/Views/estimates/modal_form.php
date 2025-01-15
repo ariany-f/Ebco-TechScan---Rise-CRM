@@ -323,7 +323,7 @@
             <div class="pb10 pt10 mb10">
                 <strong class="float-start mr10"><?php echo app_lang("estimate_value"); ?></strong>
             </div>
-            <input type="hidden" name="estimate_id" value="<?php echo ($model_info->id ? ($model_info->estimate_number ? $model_info->estimate_number : "Rev") : $next_id); ?>" />
+            <input type="hidden" name="estimate_id" value="<?php echo ($model_info->id); ?>" />
 
             <div class="estimate-value-items" id="estimate-value-items">
 

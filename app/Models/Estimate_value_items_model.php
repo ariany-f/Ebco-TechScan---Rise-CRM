@@ -13,6 +13,7 @@ class Estimate_value_items_model extends Crud_model {
 
     function get_details($options = array()) {
         $estimate_value_items_table = $this->db->prefixTable("estimate_value_items");
+        $estimates_table = $this->db->prefixTable("estimates");
 
         $where = "";
 
@@ -23,7 +24,8 @@ class Estimate_value_items_model extends Crud_model {
 
         $sql = "SELECT $estimate_value_items_table.*, IF($estimate_value_items_table.sort!=0, $estimate_value_items_table.sort, $estimate_value_items_table.id) AS new_sort
         FROM $estimate_value_items_table
-        WHERE $estimate_value_items_table.deleted=0 $where
+        INNER JOIN $estimates_table ON $estimates_table.deleted = 0 AND (($estimates_table.id = $estimate_value_items_table.estimate_id))
+        WHERE $estimate_value_items_table.deleted=0 AND $estimate_value_items_table.estimate_id IS NOT NULL $where
         ORDER BY new_sort ASC";
         return $this->db->query($sql);
     }
@@ -34,7 +36,8 @@ class Estimate_value_items_model extends Crud_model {
 
         $sql = "SELECT $estimate_value_items_table.estimate_id, $estimate_value_items_table.title
         FROM $estimate_value_items_table
-        WHERE $estimate_value_items_table.deleted=0 AND $estimate_value_items_table.estimate_id IN(SELECT $estimates_table.id FROM $estimates_table WHERE $estimates_table.deleted=0 AND $estimates_table.project_id=$project_id)";
+        INNER JOIN $estimates_table ON $estimates_table.deleted = 0 AND $estimates_table.id = $estimate_value_items_table.estimate_id
+        WHERE $estimate_value_items_table.deleted=0 AND $estimate_value_items_table.estimate_id IS NOT NULL AND $estimate_value_items_table.estimate_id IN(SELECT $estimates_table.id FROM $estimates_table WHERE $estimates_table.deleted=0 AND $estimates_table.project_id=$project_id)";
         return $this->db->query($sql);
     }
 

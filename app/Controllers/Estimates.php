@@ -165,7 +165,7 @@ class Estimates extends Security_Controller {
                 $model_info->discount_type = $info->discount_type;
             }
         }
-
+        
         $view_data['model_info'] = $model_info;
 
         $estimate_request_id = $this->request->getPost('estimate_request_id');
@@ -201,7 +201,7 @@ class Estimates extends Security_Controller {
         
         //get checklist items
         $estimate_value_items_array = array();
-        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $model_info->estimate_number))->getResult();
+        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $model_info->id))->getResult();
         foreach ($estimate_value_items as $estimate_value_item) {
             $estimate_value_items_array[] = $this->_make_estimate_value_item_row($estimate_value_item);
         }
