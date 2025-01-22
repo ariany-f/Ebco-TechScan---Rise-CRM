@@ -333,8 +333,74 @@ class Estimates extends Security_Controller {
         }
     }
 
-    /* checklist */
+    /* checklist convert on backend */
     function save_value_convert_item() {
+
+        $estimate_value_item_id = $this->request->getPost("estimate_value_item_id");
+        $estimate_value_item_amount = $this->request->getPost("estimate_value_item_data_amount");
+
+        $this->validate_submitted_data(array(
+            "estimate_value_item_id" => "required|numeric"
+        ));
+
+        $success_data = "";
+
+        $currency = $this->request->getPost("currency");
+
+        $url = "https://economia.awesomeapi.com.br/BRL-" . $currency;
+
+        $response = file_get_contents($url);
+        // // Fazer a requisição para a API usando cURL
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // $response = curl_exec($ch);
+        // curl_close($ch);
+
+        // Verificar se a resposta foi recebida com sucesso
+        if ($response) {
+            // Decodificar a resposta JSON
+            $responseData = json_decode($response, true);
+
+            if (isset($responseData[0]['ask'])) {
+                // Obter a taxa de conversão
+                $conversionRate = floatval($responseData[0]['ask']);
+
+                // Calcular o valor convertido
+                $converted_amount = $estimate_value_item_amount * $conversionRate;
+            } 
+            else{
+                echo json_encode(array("success" => false, "reason" => 1));die;
+            }
+        }
+        else
+        {
+            echo json_encode(array("success" => false, "reason" => 2));die;
+        }
+
+
+        date_default_timezone_set('America/Sao_Paulo');
+        $data = array(
+            "currency" => $currency,
+            "converted_amount" => $converted_amount,
+            "converted_date" => date_create()->format('Y-m-d H:i:s')
+        );
+        $save_id = $this->Estimate_value_items_model->ci_save($data, $estimate_value_item_id);
+        
+        if ($save_id) {
+            $item_info = $this->Estimate_value_items_model->get_one($save_id);
+            $success_data = $this->_make_estimate_value_item_row($item_info);
+        }
+
+        if ($success_data) {
+            echo json_encode(array("success" => true, "converted_amount" => $converted_amount, 'id' => $save_id));die;
+        } else {
+            echo json_encode(array("success" => false));die;
+        }
+    }
+
+    /* checklist */
+    function save_value_converted_item() {
 
         $estimate_value_item_id = $this->request->getPost("estimate_value_item_id");
 
