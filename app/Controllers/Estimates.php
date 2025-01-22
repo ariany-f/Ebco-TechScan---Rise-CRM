@@ -378,7 +378,7 @@ class Estimates extends Security_Controller {
             echo json_encode(array("success" => false, "reason" => 2));die;
         }
 
-
+        
         date_default_timezone_set('America/Sao_Paulo');
         $data = array(
             "currency" => $currency,
