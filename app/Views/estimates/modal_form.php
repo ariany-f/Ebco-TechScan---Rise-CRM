@@ -414,7 +414,7 @@
                             },
                             dataType: "json",
                             success: function (response) {
-                                console.log(response)
+                                
                                 if(response.success)
                                 {
                                     convertedAmount = response.converted_amount;
