@@ -172,7 +172,7 @@ class Estimates_model extends Crud_model {
         LEFT JOIN (SELECT estimate_id, SUM(total) AS estimate_value, $items_table.files AS estimate_files FROM $estimate_items_table INNER JOIN $items_table ON $items_table.id = $estimate_items_table.item_id WHERE $estimate_items_table.deleted=0 GROUP BY estimate_id) AS items_table ON items_table.estimate_id = $estimates_table.id 
         $join_custom_fieds
         $estrajoin
-        WHERE $estimates_table.deleted=0 AND $estimates_table.parent_estimate IS NULL $where $custom_fields_where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.parent_estimate IS NULL $where $custom_fields_where GROUP BY $estimates_table.id";
 
         return $this->db->query($sql);
     }

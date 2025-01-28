@@ -494,9 +494,10 @@ class Estimates extends Security_Controller {
                     
                     $estimate_files[$k]['file_id'] = (string)$file_id;
                 }
+                
+                $estimate_data["files"] = serialize($estimate_files);
             }
         }
-        $estimate_data["files"] = serialize($estimate_files);
 
         $is_clone = $this->request->getPost('is_clone');
         $estimate_request_id = $this->request->getPost('estimate_request_id');
