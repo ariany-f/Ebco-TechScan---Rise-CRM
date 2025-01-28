@@ -333,8 +333,13 @@ class Custom_fields_model extends Crud_model {
                 crm_custom_fields.id,
                 crm_custom_fields.title,
                 IF(((LENGTH(crm_custom_fields.options) - LENGTH(REPLACE(crm_custom_fields.options, ',', '')) + 1) = 1
-                            AND LOCATE('crm_', crm_custom_fields.options) >= 1),(SELECT GROUP_CONCAT(CONCAT(mock.id, ':', mock.first_name) SEPARATOR ',')
-                 FROM $foreign_table_options_custom_field->options AS mock), 
+                            AND LOCATE('crm_', crm_custom_fields.options) >= 1),(SELECT GROUP_CONCAT(CONCAT(mock.id, ':', mock.first_name, ' ', mock.last_name) SEPARATOR ',')
+                 FROM $foreign_table_options_custom_field->options AS mock
+                    WHERE mock.deleted = 0
+                      AND (
+                           crm_custom_fields.options != 'crm_users' -- Verificação condicional
+                           OR (crm_custom_fields.options = 'crm_users' AND mock.user_type = 'staff')
+                       )),
                 crm_custom_fields.options
             ) AS options
                 FROM $custom_fields_table
