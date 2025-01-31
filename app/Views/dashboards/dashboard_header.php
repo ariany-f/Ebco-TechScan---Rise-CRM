@@ -13,7 +13,7 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
 }
 ?>
 
-<div class="clearfix mb15 dashbaord-header-area">
+<div class="clearfix mb15 mt15 dashbaord-header-area">
     <div class="clearfix float-start">
         <span class="float-start p10 pl0">
             <span style="background-color: <?php echo $color; ?>" class="color-tag border-circle"></span>
