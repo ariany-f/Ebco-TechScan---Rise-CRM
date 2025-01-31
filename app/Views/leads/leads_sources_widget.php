@@ -1,6 +1,8 @@
 <div class="card bg-white">
     <div class="card-header clearfix">
         <i data-feather="layers" class="icon-16"></i> &nbsp;<?php echo app_lang("leads_source"); ?>
+        <br/>
+        <small>Considera-se somente clientes/leads cadastrados ou transformados em Cliente no Período (Propostas Aceitas pertencentes a clientes/leads criados anteriormente não serão exibidas aqui)</small>
     </div>
     <div class="card-body rounded-bottom widget-box" id="leads-source-widget">
         <div class="row">
