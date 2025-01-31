@@ -236,6 +236,7 @@ class Dashboard extends Security_Controller {
             $widget["total_conversion_bidding_estimates"] = true;
             $widget["total_amount_bidding_estimates"] = true;
             $widget["total_amount_estimates_rx"] = true;
+            $widget["empty"] = true;
             $widget["total_amount_estimates_se"] = true;
             $widget["total_amount_estimates_vistoria"] = true;
             $widget["total_amount_estimates_colete"] = true;
@@ -602,6 +603,9 @@ class Dashboard extends Security_Controller {
 
         if (count($columns) < 4 && get_array_value($widgets, "total_amount_estimates_rx")) {
             $columns[] = array("total_amount_estimates_rx");
+        }
+        if (count($columns) < 4 && get_array_value($widgets, "empty")) {
+            $columns[] = array("empty");
         }
 
         if (count($columns) < 4 && get_array_value($widgets, "total_amount_estimates_se")) {
@@ -1001,6 +1005,7 @@ class Dashboard extends Security_Controller {
                 "total_amount_estimates",
                 "total_amount_bidding_estimates",
                 "total_amount_estimates_rx",
+                "empty",
                 "total_amount_estimates_se",
                 "total_amount_estimates_vistoria",
                 "total_amount_estimates_colete",
@@ -1323,6 +1328,7 @@ class Dashboard extends Security_Controller {
                 $widget == "total_amount_estimates" || 
                 $widget == "total_amount_bidding_estimates" || 
                 $widget == "total_amount_estimates_rx" || 
+                $widget == "empty" || 
                 $widget == "total_amount_estimates_se" || 
                 $widget == "total_amount_estimates_vistoria" || 
                 $widget == "total_amount_estimates_colete"
@@ -1361,6 +1367,8 @@ class Dashboard extends Security_Controller {
                     return total_amount_bidding_estimates_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
                 } else if ($widget == "total_amount_estimates_rx") {
                     return total_amount_estimates_rx_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
+                } else if ($widget == "empty") {
+                    return empty_widget();
                 } else if ($widget == "total_amount_estimates_se") {
                     return total_amount_estimates_se_widget($show_own_clients_only_user_id, $this->allowed_client_groups);
                 } else if ($widget == "total_amount_estimates_vistoria") {

@@ -1531,6 +1531,18 @@ if (!function_exists('total_amount_bidding_estimates_widget')) {
 
 
 /**
+ * get total amount bidding estimates (LICITAÇÕES)
+ * 
+ * @return html
+ */
+if (!function_exists('empty_widget')) {
+    function empty_widget() {
+        $template = new Template();
+        return $template->view("pages/widgets/empty_widget", []);
+    }
+
+}
+/**
  * get total amount estimates rx
  * 
  * @return html

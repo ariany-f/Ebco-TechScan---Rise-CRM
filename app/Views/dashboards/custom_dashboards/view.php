@@ -18,16 +18,17 @@
             ?>
         </div>
     </div>
+    <div class="dashboard_items_container">
+        <?php
+        if ($widget_columns) {
+            echo $widget_columns;
+        } else {
+            echo view("dashboards/custom_dashboards/no_widgets");
+        }
 
-    <?php
-    if ($widget_columns) {
-        echo $widget_columns;
-    } else {
-        echo view("dashboards/custom_dashboards/no_widgets");
-    }
-
-    $dashboard_id = isset($dashboard_id) ? $dashboard_id : 0;
-    ?>
+        $dashboard_id = isset($dashboard_id) ? $dashboard_id : 0;
+        ?>
+    </div>
 
 </div>
 
@@ -39,6 +40,29 @@
         $("#dashboard-edit-title-button").click(function () {
             window.dashboardTitleEditMode = true;
         });
+
+        
+
+        var header = $(".dashbaord-header-area");
+        var first_row = $(".dashboards-row:first"); // Pegando apenas o primeiro elemento com a classe dashboards-row
+
+        // Coloca o header abaixo do first_row
+        header.before(first_row);
+
+        $(".dashboards-row").first().css({
+            "background-color": "rgb(226, 231, 242)",
+            "padding-top": "17px",
+            "border-radius": "5px"
+        });
+        $(".dashboards-row").first().find(".dashboard-icon-widget").css({
+            "background-color": "rgb(238, 241, 249)"
+        });
+        
+        $(".dashboards-row").first().find(".bg-transparent-white").css({
+            "background-color": "transparent"
+        });
+
+
 
         //update dashboard link
         //$(".dashboard-menu, .dashboard-image").closest("a").attr("href", window.location.href);
