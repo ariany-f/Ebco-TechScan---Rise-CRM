@@ -3031,7 +3031,7 @@ if (!function_exists('get_estimate_status_label')) {
         } else if ($estimate_info->status == "declined" || $estimate_info->status == "rejected") {
             $estimate_status_class = "bg-danger";
         } else if ($estimate_info->status == "accepted") {
-            $estimate_status_class = "bg-success";
+            $estimate_status_class = "bg-info";
         } else if ($estimate_info->status == "sent") {
             $estimate_status_class = "bg-primary";
         } else if ($estimate_info->status == "new") {
