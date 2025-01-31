@@ -946,8 +946,6 @@ class Estimates_model extends Crud_model {
         }
         
         // Filtrando pelas datas
-        $date_start = $this->_get_clean_value($options, "date_start");
-        $date_end = $this->_get_clean_value($options, "date_end");
         if ($date_start && $date_end) {
             $where[] = "($estimates_table.estimate_date BETWEEN ? AND ?)";
             $parameters[] = $date_start;
@@ -955,7 +953,6 @@ class Estimates_model extends Crud_model {
         }
         
         $where_clause = $where ? " AND " . implode(" AND ", $where) : "";
-        
         // Construindo a consulta SQL
         $sql = "
             SELECT 
@@ -1025,8 +1022,6 @@ class Estimates_model extends Crud_model {
         }
         
         // Filtrando pelas datas
-        $date_start = $this->_get_clean_value($options, "date_start");
-        $date_end = $this->_get_clean_value($options, "date_end");
         if ($date_start && $date_end) {
             $where[] = "($estimates_table.estimate_date BETWEEN ? AND ?)";
             $parameters[] = $date_start;

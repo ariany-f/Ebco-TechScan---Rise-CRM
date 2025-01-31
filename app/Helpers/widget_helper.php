@@ -1196,17 +1196,16 @@ if (!function_exists('total_emmited_estimates_widget')) {
         $date_end = null;
         $queries = array();
         parse_str($_SERVER['QUERY_STRING'], $queries);
-
+        
         if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
-        }
-        else
+        }else
         {
             $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
             $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
         }
-
+        // print_r($date_end);die;
         $view_data["total"] = $Estimates_model->count_total_emmited_estimates(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
         $template = new Template();
         return $template->view("estimates/widgets/total_emmited_estimates_widget", $view_data);
@@ -1394,6 +1393,7 @@ if (!function_exists('total_approved_estimates_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
             $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
         }
+        
 
         $view_data["total"] = $Estimates_model->count_total_approved_estimates(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
         $template = new Template();

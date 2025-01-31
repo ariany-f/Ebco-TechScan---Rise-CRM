@@ -347,7 +347,14 @@ class Estimates extends Security_Controller {
 
         $currency = $this->request->getPost("currency");
 
-        $url = "https://economia.awesomeapi.com.br/BRL-" . $currency;
+        if($currency != "BRL")
+        {
+            $url = "https://economia.awesomeapi.com.br/BRL-" . $currency;
+
+        } else
+        {
+            $url = "https://economia.awesomeapi.com.br/USD-" . $currency;
+        }
 
         $response = file_get_contents($url);
         // // Fazer a requisição para a API usando cURL
@@ -1152,7 +1159,7 @@ class Estimates extends Security_Controller {
                     $estimate_value_items_array[] = $estimate_value_item;
                 }
            
-                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)$estimate_value_items_array[0]->amount, $data->currency_symbol)));
+                $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)($estimate_value_items_array[0]->currency != "BRL" ? $estimate_value_items_array[0]->amount : $estimate_value_items_array[0]->converted_amount), $data->currency_symbol)));
             } 
             else if($field->title === 'Termômetro') {
                 $class = "badge-primary";

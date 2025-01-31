@@ -314,7 +314,9 @@
             </div>
             <div class="form-group">
                 <div class="row">
-                    <div class="<?php echo $field_column; ?>">
+                    <b>Moeda de origem padrão: BRL</b>
+                    <small>Caso selecione como <i>destino</i> a moeda <b>BRL</b> então automaticamente a moeda de <i>origem</i> é alterada para <b>USD</b></small>
+                    <div style="margin-top: 2px;" class="<?php echo $field_column; ?>">
                         <button id="convert" type="button" class="btn btn-primary"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('convert'); ?></button>
                     </div>
                 </div>
