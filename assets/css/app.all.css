@@ -6394,7 +6394,7 @@ input[type="color"] {
   max-height: 40px;
 }
 .bg-transparent-white {
-  background: #ffffffeb !important;
+  background: #ffffffeb;
   padding: 0 5px;
   border-radius: 10px;
 }
