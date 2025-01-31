@@ -220,7 +220,7 @@ class Estimates extends Security_Controller {
         $converted_value = $data->converted_amount;
         $converted_date = $data->converted_date;
         $currency = $data->currency;
-        $amount_value = ($currency != "BRL" ? $data->amount : $data->converted_amount);
+        $amount_value = ($data->amount);
 
         if ($data->is_checked == 1) {
             $is_checked_value = 0;
@@ -234,7 +234,7 @@ class Estimates extends Security_Controller {
             $status = "";
         }
 
-        $title = "<span class='font-13 $title_class'>" . $title_value . " - " . to_currency($amount_value) . " </span>";
+        $title = "<span class='font-13 $title_class'>" . $title_value . " - " . to_currency($amount_value, ($currency != 'BRL' ? '' : 'USD')) . " </span>";
 
         $delete = ajax_anchor(get_uri("estimates/delete_estimate_value_item/$data->id"), "<div class='float-end'><i data-feather='x' class='icon-16'></i></div>", array("class" => "delete-estimate-value-item", "title" => app_lang("delete_estimate_value_item"), "data-fade-out-on-success" => "#checklist-item-row-$data->id"));
         // if (!$this->can_edit_tasks()) {
@@ -243,7 +243,6 @@ class Estimates extends Security_Controller {
 
         if($converted_value)
         {
-
             $date = format_to_datetime($converted_date, false);
             $converted = "<span id='converted-$data->id'> -> ".to_currency($converted_value, $currency)." (". $date .")</span>";
         }

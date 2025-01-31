@@ -298,7 +298,9 @@
         <div class="col-md-12 container">
             <div class="form-group">
                 <div class="row">
-                    <label for="currency" class="<?php echo $label_column; ?>"><?php echo app_lang('destiny') . ' ' . app_lang('currency'); ?></label>
+                    <b>Moeda origem padrão: BRL</b>
+                    <small>Caso selecione como <i>destino</i> a moeda <b>BRL</b> então automaticamente a moeda de <i>origem</i> é alterada para <b>USD</b></small>
+                    <label for="currency" class="<?php echo $label_column; ?>"><b><?php echo  app_lang('currency') . ' ' .  app_lang('destiny'); ?></b></label>
                     <div class="<?php echo $field_column; ?>">
                         <?php
                         echo form_input(array(
@@ -314,9 +316,7 @@
             </div>
             <div class="form-group">
                 <div class="row">
-                    <b>Moeda de origem padrão: BRL</b>
-                    <small>Caso selecione como <i>destino</i> a moeda <b>BRL</b> então automaticamente a moeda de <i>origem</i> é alterada para <b>USD</b></small>
-                    <div style="margin-top: 2px;" class="<?php echo $field_column; ?>">
+                    <div class="<?php echo $field_column; ?>">
                         <button id="convert" type="button" class="btn btn-primary"><span data-feather="check-circle" class="icon-16"></span> <?php echo app_lang('convert'); ?></button>
                     </div>
                 </div>
