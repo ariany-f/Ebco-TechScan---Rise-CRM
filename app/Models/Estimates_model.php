@@ -134,6 +134,17 @@ class Estimates_model extends Crud_model {
             unset($options['custom_field_filter']['4']);
         }
 
+        $show_own_estimates_only_user_id = $this->_get_clean_value($options, "show_own_estimates_only_user_id");
+        if ($show_own_estimates_only_user_id) {
+            $where_us = " AND us.id=".$show_own_estimates_only_user_id." ";
+            $estrajoin = " JOIN 
+                    crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
+                JOIN 
+                    crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
+                JOIN 
+                    crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us";
+        }
+
         $exclude_draft = $this->_get_clean_value($options, "exclude_draft");
         if ($exclude_draft) {
             $where .= " AND $estimates_table.status!='draft' ";
@@ -144,10 +155,7 @@ class Estimates_model extends Crud_model {
             $where .= " AND $estimates_table.client_id IN(SELECT $clients_table.id FROM $clients_table WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0)";
         }
 
-        $show_own_estimates_only_user_id = $this->_get_clean_value($options, "show_own_estimates_only_user_id");
-        if ($show_own_estimates_only_user_id) {
-            $where .= " AND $estimates_table.created_by=$show_own_estimates_only_user_id";
-        }
+        
 
         //prepare custom fild binding query
         $custom_fields = get_array_value($options, "custom_fields");

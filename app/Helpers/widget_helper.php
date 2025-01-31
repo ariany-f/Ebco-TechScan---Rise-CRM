@@ -2472,12 +2472,14 @@ if (!function_exists('sellers_conversions_overview_widget')) {
 if (!function_exists('termometer_proposals_widget')) {
 
     function termometer_proposals_widget() {
+
+        $Estimate_value_items_model = model("App\Models\Estimate_value_items_model");
         $ci = new Security_Controller(false);
         $permissions = $ci->login_user->permissions;
 
-        if ($ci->login_user->is_admin || get_array_value($permissions, "lead") == "all") {
+        if ($ci->login_user->is_admin) {
             $show_own_clients_only_user_id = false;
-        } else if (get_array_value($permissions, "lead") == "own") {
+        } else {
             $show_own_clients_only_user_id = $ci->login_user->id;
         }
 
@@ -2497,15 +2499,31 @@ if (!function_exists('termometer_proposals_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
+        }
+
         $options['start_date'] = $date_start;
         $options['end_date'] = $date_end;
 
         $termometro_categorias = [];
         $result["termometer"] = $ci->Estimates_model->get_details($options)->getResult();
+        $total = 0;
         foreach($result['termometer'] as $k => $term)
         {
+            // //get checklist items
+            $estimate_value_items_array = array();
+            $estimate_value_items = $Estimate_value_items_model->get_details(array("estimate_id" => $term->id, "checked" => 1))->getResult();
+            foreach ($estimate_value_items as $estimate_value_item) {
+                 $estimate_value_items_array[] = $estimate_value_item;
+            }
+            $total = ($estimate_value_items_array[0]->currency != "BRL" ? $estimate_value_items_array[0]->amount : $estimate_value_items_array[0]->converted_amount);
+
             $termometro_categorias[$term->cfv_1] = [
                 'title' => $term->cfv_1,
+                'amount' => $termometro_categorias[$term->cfv_1]['amount'] + $total,
                 'total' => isset($termometro_categorias[$term->cfv_1]) ? ($termometro_categorias[$term->cfv_1]['total'] + 1) : 1,
                 'color' => ($term->cfv_1 == 'Fria') ? '#2d9cdb' : (($term->cfv_1 == 'Morna') ? '#f1c40f' : (($term->cfv_1 == 'Quente') ? '#f5325c' : '#01B393'))
             ];
@@ -2542,6 +2560,11 @@ if (!function_exists('sellers_estimates_list_widget')) {
         if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
         }
        
         $options['start_date'] = $date_start;
@@ -2582,6 +2605,11 @@ if (!function_exists('pos_venda_sellers_estimates_list_widget')) {
         if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
         }
        
         $options['pos'] = true;
@@ -2743,6 +2771,11 @@ if (!function_exists('coligadas_estimates_list_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
+        }
        
         $options['start_date'] = $date_start;
         $options['end_date'] = $date_end; 
@@ -2784,6 +2817,11 @@ if (!function_exists('new_clients_list_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
+        }
 
         $options['start_date'] = $date_start;
         $options['end_date'] = $date_end; 
@@ -2822,6 +2860,11 @@ if (!function_exists('leads_prospects_list_widget')) {
         if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
         }
 
        

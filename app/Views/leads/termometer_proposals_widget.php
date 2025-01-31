@@ -7,13 +7,13 @@
             <div class="col-md-6">
                 <canvas id="termometer-proposals-chart" style="width: 100%; height: 160px;"></canvas>
             </div>
-            <div class="col-md-6 pl20 <?php echo count($termometer) > 8 ? "" : "pt-4"; ?>">
+            <div style="justify-content: space-between;" class="col-md-6 pl20 <?php echo count($termometer) > 8 ? "" : "pt-4"; ?>">
                 <?php
                 foreach ($termometer as $term) {
                     ?>
                     <div class="pb-2" style="display: flex;gap: 15px;">
-                        <div class="color-tag border-circle me-3 wh10"></div><?php echo ((!empty($term['title'])) ? $term['title'] : 'Sem Classificação'); ?>
-                        <span class="strong" ><?php echo $term['total']; ?></span>
+                        <div class="color-tag border-circle me-3 wh10"></div><span><?= $term['total'] . '' ?></span><span class="strong" style="width: 10ch;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;color:<?= $term['color']?>"><?php echo ((!empty($term['title'])) ? $term['title'] : 'Sem Classificação'); ?></span>
+                        <span><?php echo to_currency($term['amount']); ?></span>
                     </div>
                     <?php
                 }

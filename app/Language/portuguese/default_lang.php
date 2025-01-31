@@ -2461,7 +2461,7 @@ $lang['sellers_leads_overview'] = 'Ranking Propostas Vendedores';
 $lang['sellers_conversions_overview'] = 'Taxa de conversão dos Vendedores';
 $lang['total_sells'] = 'Total Vendido';
 
-$lang['termometer_proposals'] = 'Termômetro das propostas no Período';
+$lang['termometer_proposals'] = 'Termômetro das propostas Emitidas no Período';
 
 $lang["client_can_access_notes"] = "Client can access notes?";
 
