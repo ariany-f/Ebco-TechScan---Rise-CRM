@@ -828,19 +828,22 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
+        $join = "LEFT JOIN";
+
         if(!$this->user_is_admin())
         {
            $where_us .= " AND us.id=".$this->login_user_id()." ";
+           $join = "JOIN";
         }
 
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.estimate_number) AS total
         FROM $estimates_table 
-        LEFT JOIN 
+        $join 
             crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
-        LEFT JOIN 
+        $join 
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
-        LEFT JOIN 
+        $join 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
         WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status IN ('draft', 'sent', 'accepted', 'rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
@@ -855,19 +858,22 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
+        $join = "LEFT JOIN";
+
         if(!$this->user_is_admin())
         {
             $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
+            $join = "JOIN";
         }
 
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        LEFT JOIN 
+        $join 
             crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
-        LEFT JOIN 
+        $join 
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
-        LEFT JOIN 
+        $join 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
         WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status IN ('rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
@@ -881,19 +887,22 @@ class Estimates_model extends Crud_model {
         if ($date_start && $date_end) {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
+        
+        $join = "LEFT JOIN";
 
         if(!$this->user_is_admin())
         {
            $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
+           $join = "JOIN";
         }
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table   
-        LEFT JOIN 
+        $join  
             crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
-        LEFT JOIN 
+        $join  
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
-        LEFT JOIN 
+        $join  
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
         WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status = 'accepted' AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
