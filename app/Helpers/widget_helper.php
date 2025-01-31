@@ -2280,6 +2280,11 @@ if (!function_exists('leads_overview_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
+        }
 
         $view_data["lead_statuses"] = $ci->Clients_model->get_lead_statistics($options, $date_start, $date_end)->lead_statuses;
         $view_data["client_statuses"] = $ci->Clients_model->get_lead_statistics($options, $date_start, $date_end)->client_statuses;
@@ -2320,6 +2325,11 @@ if (!function_exists('leads_sources_widget')) {
         if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
         }
         
 
@@ -2362,6 +2372,11 @@ if (!function_exists('sellers_overview_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
+        }
 
         $view_data["team_members"] = $ci->Users_model->get_sellers( $options['role_id'], $options['show_own_leads_only_user_id'], $date_start, $date_end )->getResult();
 
@@ -2398,6 +2413,11 @@ if (!function_exists('sellers_leads_overview_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
+        }
 
         $view_data["team_members"] = $ci->Users_model->get_leads_sellers( $options['role_id'], $options['show_own_leads_only_user_id'], $date_start, $date_end )->getResult();
 
@@ -2433,6 +2453,11 @@ if (!function_exists('sellers_conversions_overview_widget')) {
         if((!empty($queries)) and (!empty($queries['date_start'])) and (!empty($queries['date_end']))) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
+        }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
         }
 
         $conversions = $ci->Users_model->get_conversion_sellers( $options['role_id'], $options['show_own_leads_only_user_id'], $date_start, $date_end )->getResult();

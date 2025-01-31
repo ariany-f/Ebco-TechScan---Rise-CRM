@@ -1081,6 +1081,7 @@ class Clients_model extends Crud_model {
         $projects_table = $this->db->prefixTable('projects');
         $estimates_table = $this->db->prefixTable('estimates');
         $estimate_items_table = $this->db->prefixTable('estimate_items');
+        $estimate_value_items_table = $this->db->prefixTable('estimate_value_items');
 
         try {
             $this->db->query("SET sql_mode = ''");
@@ -1097,11 +1098,6 @@ class Clients_model extends Crud_model {
         if($date_start and $date_end)
         {
             $where .= " AND ($clients_table.created_date BETWEEN '$date_start' and '$date_end' OR $clients_table.client_migration_date BETWEEN '$date_start' and '$date_end')";
-        }
-        else
-        {
-            
-            $where .= " AND (YEAR($clients_table.created_date) = YEAR(CURDATE()) OR YEAR($clients_table.client_migration_date) = YEAR(CURDATE()))";
         }
         
         $converted_to_client = "SELECT COUNT(DISTINCT $clients_table.id) AS total
@@ -1121,10 +1117,23 @@ class Clients_model extends Crud_model {
                     COUNT(DISTINCT $clients_table.id) AS total_clients,
                     $clients_table.lead_source_id, 
                     COALESCE($lead_source_table.title, 'Outro') AS title, 
-                    SUM($estimate_items_table.rate * $estimate_items_table.quantity) AS projects_total
+                    SUM(COALESCE(
+                    CASE 
+                        WHEN $estimate_value_items_table.is_checked = 1 THEN 
+                            CASE 
+                                WHEN $estimate_value_items_table.currency = 'BRL' THEN $estimate_value_items_table.converted_amount
+                                ELSE $estimate_value_items_table.amount 
+                            END
+                        ELSE
+                            CASE 
+                                WHEN $estimate_value_items_table.currency = 'BRL' THEN $estimate_value_items_table.converted_amount
+                                ELSE $estimate_value_items_table.amount 
+                            END
+                    END, 0)) AS projects_total
                 FROM $clients_table
                 LEFT JOIN $lead_source_table ON $lead_source_table.id = $clients_table.lead_source_id
                 LEFT JOIN $estimates_table ON $estimates_table.client_id = $clients_table.id
+                LEFT JOIN $estimate_value_items_table ON $estimate_value_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
                 LEFT JOIN $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
                 WHERE $clients_table.deleted = 0 AND $clients_table.status_id <> 2  AND $clients_table.is_lead = 0 $where
                 GROUP BY $clients_table.lead_source_id
@@ -1135,10 +1144,23 @@ class Clients_model extends Crud_model {
                     0 AS total_clients,
                     $clients_table.lead_source_id, 
                     COALESCE($lead_source_table.title, 'Outro') AS title, 
-                    SUM($estimate_items_table.rate * $estimate_items_table.quantity) AS projects_total
+                    SUM(COALESCE(
+                    CASE 
+                        WHEN $estimate_value_items_table.is_checked = 1 THEN 
+                            CASE 
+                                WHEN $estimate_value_items_table.currency = 'BRL' THEN $estimate_value_items_table.converted_amount
+                                ELSE $estimate_value_items_table.amount 
+                            END
+                        ELSE
+                            CASE 
+                                WHEN $estimate_value_items_table.currency = 'BRL' THEN $estimate_value_items_table.converted_amount
+                                ELSE $estimate_value_items_table.amount 
+                            END
+                    END, 0)) AS projects_total
                 FROM $clients_table
                 LEFT JOIN $lead_source_table ON $lead_source_table.id = $clients_table.lead_source_id
                 LEFT JOIN $estimates_table ON $estimates_table.client_id = $clients_table.id
+                LEFT JOIN $estimate_value_items_table ON $estimate_value_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
                 LEFT JOIN $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimates_table.status = 'accepted'
                 WHERE $clients_table.deleted = 0 AND $clients_table.status_id <> 2  AND $clients_table.is_lead = 1 $where
                 GROUP BY $clients_table.lead_source_id
