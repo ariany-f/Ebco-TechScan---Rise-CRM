@@ -667,7 +667,7 @@
                 }   
             },
             onAjaxSuccess: function (result) {
-                
+               location.reload()
             }
         });
 
