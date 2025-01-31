@@ -14,14 +14,12 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
 ?>
 
 <div class="clearfix mb15 dashbaord-header-area">
-
     <div class="clearfix float-start">
         <span class="float-start p10 pl0">
             <span style="background-color: <?php echo $color; ?>" class="color-tag border-circle"></span>
         </span>
         <h4 class="float-start"><?php echo $title; ?></h4>
-    </div>        
-
+    </div>
     <div class="float-end clearfix">
         <span class="float-end dropdown dashboard-dropdown ml10">
             <div class="dropdown-toggle clickable" data-bs-toggle="dropdown" aria-expanded="true" >
@@ -40,57 +38,42 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
                 <?php } ?>
             </ul>
         </span>
-
         <span class="float-end" id="dashboards-color-tags">
-            <div style="display: flex;">
-                <!-- Filtro para Datas dos gráficos -->
-                <div class="row" style="align-items: center;">
-                    <label for="daterange" class="col-md-2">Filtrar Período</label>
-                    <div class="col-md-6">
-                        <input class="form-control" type="text" name="daterange" id="date_range" value="" />
-                        <input type="hidden" id="date_start" value="">
-                        <input type="hidden" id="date_end" value="">
-                    </div>
-                    <div class="col-md-4">
-                        <button type="button" id="clean-filter" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle icon-16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Limpar Filtro</button>
-                    </div>
-                </div>
-                <?php
-                    echo anchor(get_uri("dashboard"), "<span class='clickable p10 mr5 inline-block'><span style='background-color: #fff' class='color-tag $selected_dashboard'  title='" . app_lang("default_dashboard") . "'></span></span>");
+            <?php 
+                if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                    $ip = $_SERVER['HTTP_CLIENT_IP'];
+                } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                } else {
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                }
+            ?>
+            <?php
+                // echo anchor(get_uri("dashboard"), "<span class='clickable p10 mr5 inline-block'><span style='background-color: #fff' class='color-tag $selected_dashboard'  title='" . app_lang("default_dashboard") . "'></span></span>");
 
-                    if ($dashboards) {
-                        foreach ($dashboards as $dashboard) {
-                            $selected_dashboard = "";
+                // if ($dashboards) {
+                //     foreach ($dashboards as $dashboard) {
+                //         $selected_dashboard = "";
 
-                            if ($dashboard_type == "custom") {
-                                if ($dashboard_info->id == $dashboard->id) {
-                                    $selected_dashboard = "border-circle";
-                                }
-                            }
+                //         if ($dashboard_type == "custom") {
+                //             if ($dashboard_info->id == $dashboard->id) {
+                //                 $selected_dashboard = "border-circle";
+                //             }
+                //         }
 
-                            $color = $dashboard->color ? $dashboard->color : "#83c340";
+                //         $color = $dashboard->color ? $dashboard->color : "#83c340";
 
-                            echo anchor(get_uri("dashboard/view/" . $dashboard->id), "<span class='clickable p10 mr5 inline-block'><span style='background-color: $color' class='color-tag $selected_dashboard' title='$dashboard->title'></span></span>");
-                        }
-                    }
-                ?>
-            </span>
-        </div>
+                //         echo anchor(get_uri("dashboard/view/" . $dashboard->id), "<span class='clickable p10 mr5 inline-block'><span style='background-color: $color' class='color-tag $selected_dashboard' title='$dashboard->title'></span></span>");
+                //     }
+                // }
+            ?>
+        </span>
+        <span id="monthly-date-range-selector" class="float-end"></span>
+        <button type="button" id="clean-filter" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle icon-16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Limpar Filtro</button>
     </div>
 </div>
 <script>
     $(document).ready(function () {
-        let params = (new URL(document.location)).searchParams;
-        if(params.size > 0)
-        {
-            let date_start = params.get("date_start");
-            let date_end = params.get("date_end");
-        
-            $('input[name="daterange"]').attr('value', date_start.replace('-', '/')+' - '+date_end.replace('-', '/'));
-
-            $("#date_start").attr('value', date_start);
-            $("#date_end").attr('value', date_end);
-        }
         $('.tqm-events-filter__button--date').on('cancel.daterangepicker', function(ev, picker) {
             $('input[name="daterange"]').val('');
             window.location.href =
@@ -106,6 +89,129 @@ if ($dashboard_type == "custom" && $dashboard_info->id !== get_setting("staff_de
                     window.location.host +
                     window.location.pathname;
         })
+
+        $(document).ready(function () {
+            // Inicialização das variáveis de data
+            let params = (new URL(document.location)).searchParams;
+          
+            let date_start = moment().startOf('month');  // Primeiro dia do mês atual
+            let date_end = date_start.clone().endOf('month');  // Último dia do mês seguinte
+            
+            if (params.size > 0) {
+                date_start = moment(params.get("date_start"), 'DD-MM-YYYY');
+                date_end = moment(params.get("date_end"), 'DD-MM-YYYY');
+            }
+
+            var options = {
+                dateRangeType: "monthly",
+                filterParams: {},
+            };
+            
+            var defaults = {
+                dateRangeType: "monthly",
+                filterParams: {},
+                onChange: function (dateRange) {
+                    // Atualizando parâmetros e redirecionando para a nova URL
+                    var date_starts = moment(dateRange.start_date).format('DD-MM-YYYY');
+                    var date_ends = moment(dateRange.end_date).format('DD-MM-YYYY');
+                    var params = [
+                        "date_start=" + date_starts,
+                        "date_end=" + date_ends
+                    ];
+
+                    window.location.href =
+                        "https://" +
+                        window.location.host +
+                        window.location.pathname +
+                        '?' + params.join('&');
+                },
+                onInit: function (dateRange) {
+                    
+                },
+            };
+            
+            var settings = $.extend({}, defaults, options);
+            settings._inputDateFormat = "YYYY-MM-DD";
+
+            var $instance = $("#monthly-date-range-selector");
+            var dom = '<div class="ml15">'
+                    + '<button data-act="prev" class="btn btn-default date-range-selector"><i data-feather="chevron-left" class="icon-16"></i></button>'
+                    + '<button data-act="datepicker" class="btn btn-default" style="margin: -1px"></button>'
+                    + '<button data-act="next"  class="btn btn-default date-range-selector"><i data-feather="chevron-right" class="icon-16"></i></button>'
+                    + '</div>';
+            
+            $instance.append(dom);
+            
+            var $datepicker = $instance.find("[data-act='datepicker']");
+            var $dateRangeSelector = $instance.find(".date-range-selector");
+
+            // Função para inicializar o texto do mês
+            var initMonthSelectorText = function ($elector) {
+                $elector.html(moment(date_start).format("MMMM YYYY"));
+            };
+
+            initMonthSelectorText($datepicker);
+
+            // Inicializando o datepicker
+            $datepicker.datepicker({
+                format: "yyyy-mm",  // Formato para exibir mês e ano
+                viewMode: "months", // Exibir apenas meses
+                minViewMode: "months", // Evitar a visualização de dias
+                autoclose: true,    // Fechar o datepicker após a seleção
+                startView: 1,       // Começar no mês (não no ano)
+                maxViewMode: 1,     // Não permitir o modo de visualização de anos
+                language: "en",     // Definir o idioma (pode ser alterado conforme necessário)
+                startDate: date_start.format("YYYY-MM-DD"), // Definir a data de início como start_date
+                endDate: date_end.format('YYYY-MM-DD')
+            }).on('changeDate', function (e) {
+               
+                var date = moment(e.date).format(settings._inputDateFormat);
+                        var daysInMonth = moment(date).daysInMonth(),
+                                yearMonth = moment(date).format("YYYY-MM");
+                        settings.filterParams.start_date = yearMonth + "-01";
+                        settings.filterParams.end_date = yearMonth + "-" + daysInMonth;
+                        initMonthSelectorText($datepicker);
+                        settings.onChange(settings.filterParams);
+            });
+
+            
+            //init default date
+            var year = moment(date_start).format("YYYY-MM");
+            settings.filterParams.start_date = year + "-01";
+            settings.filterParams.end_date = year + "-31";
+            settings.filterParams.year = year;
+            settings.onInit(settings.filterParams);
+
+            $dateRangeSelector.click(function () {
+                var type = $(this).attr("data-act"),
+                    startDate = moment(settings.filterParams.start_date),
+                    endDate = moment(settings.filterParams.end_date);
+                
+                if (type === "next") {
+                    var nextMonth = startDate.add(1, 'months'),
+                            daysInMonth = nextMonth.daysInMonth(),
+                            yearMonth = nextMonth.format("YYYY-MM");
+
+                    startDate = yearMonth + "-01";
+                    endDate = yearMonth + "-" + daysInMonth;
+
+                } else if (type === "prev") {
+                    var lastMonth = startDate.subtract(1, 'months'),
+                            daysInMonth = lastMonth.daysInMonth(),
+                            yearMonth = lastMonth.format("YYYY-MM");
+
+                    startDate = yearMonth + "-01";
+                    endDate = yearMonth + "-" + daysInMonth;
+                }
+
+                settings.filterParams.start_date = startDate;
+                settings.filterParams.end_date = endDate;
+                settings.filterParams.year = moment(startDate).format("YYYY-MM");
+
+                initMonthSelectorText($datepicker);
+                settings.onChange(settings.filterParams);
+            });
+        });
 
         //modify design for mobile devices
         if (isMobile()) {

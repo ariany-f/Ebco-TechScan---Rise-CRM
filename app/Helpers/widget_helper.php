@@ -1307,6 +1307,11 @@ if (!function_exists('total_conversion_prospects_clients_widget')) {
             $date_start = DateTime::createFromFormat("d-m-Y", $queries['date_start'])->format('Y-m-d');
             $date_end = DateTime::createFromFormat("d-m-Y", $queries['date_end'])->format('Y-m-d');
         }
+        else
+        {
+            $date_start = DateTime::createFromFormat("d-m-Y", date('01-m-Y'))->format('Y-m-d');  // Primeiro dia do mês atual
+            $date_end = DateTime::createFromFormat("d-m-Y", date('t-m-Y'))->format('Y-m-d'); 
+        }
 
         $view_data["total"] = $Clients_model->get_conversion_prospects_clients(array("show_own_clients_only_user_id" => $show_own_clients_only_user_id, "client_groups" => $allowed_client_groups), $date_start, $date_end);
         $template = new Template();
