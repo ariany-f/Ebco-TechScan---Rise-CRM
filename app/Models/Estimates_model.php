@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use CodeIgniter\Model;
+
 class Estimates_model extends Crud_model {
 
     protected $table = null;
+    protected $Users_model = null;
 
     function __construct() {
         $this->table = 'estimates';
+        $this->Users_model = model("App\Models\Users_model");
         parent::__construct($this->table);
     }
 
@@ -799,6 +803,14 @@ class Estimates_model extends Crud_model {
         return $session->has("user_id") ? $session->get("user_id") : "";
     }
 
+    function user_is_admin() {
+        $id = $this->Users_model->login_user_id();
+        
+        $options = array("status" => "active", "id" => $id);
+        $user = $this->Users_model->get_details($options)->getRow();
+        return $user->is_admin ? true : false;
+    }
+
     function count_total_emmited_estimates($options = array(), $date_start = null, $date_end = null) {
         $estimates_table = $this->db->prefixTable('estimates');
 
@@ -808,7 +820,7 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
-        if(!$this->login_user->is_admin)
+        if(!$this->user_is_admin())
         {
            $where_us .= " AND us.id=".$this->login_user_id()." ";
         }
@@ -816,13 +828,13 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.estimate_number) AS total
         FROM $estimates_table 
-        JOIN 
+        LEFT JOIN 
             crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
-        JOIN 
+        LEFT JOIN 
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
-        JOIN 
+        LEFT JOIN 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
-        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status IN ('draft', 'sent', 'accepted', 'rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status IN ('draft', 'sent', 'accepted', 'rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -835,7 +847,7 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
-        if(!$this->login_user->is_admin)
+        if(!$this->user_is_admin())
         {
             $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
         }
@@ -843,13 +855,13 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        JOIN 
+        LEFT JOIN 
             crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
-        JOIN 
+        LEFT JOIN 
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
-        JOIN 
+        LEFT JOIN 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
-        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status IN ('rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status IN ('rejected') AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -862,20 +874,20 @@ class Estimates_model extends Crud_model {
             $where .= " AND ($estimates_table.estimate_date BETWEEN '$date_start' AND '$date_end') ";
         }
 
-        if(!$this->login_user->is_admin)
+        if(!$this->user_is_admin())
         {
            $where_us .= " AND FIND_IN_SET(".$this->login_user_id().",us.id)";
         }
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table   
-        JOIN 
+        LEFT JOIN 
             crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
-        JOIN 
+        LEFT JOIN 
             crm_custom_field_values cfvu ON $estimates_table.id = cfvu.related_to_id AND cfvu.custom_field_id = cfu.id AND cfvu.related_to_type = 'estimates'
-        JOIN 
+        LEFT JOIN 
             crm_users us ON FIND_IN_SET(us.id, cfvu.value) > 0 $where_us
-        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status = 'accepted' AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status = 'accepted' AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL) $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -891,7 +903,7 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 1 $where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -907,7 +919,7 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 
@@ -916,10 +928,12 @@ class Estimates_model extends Crud_model {
         $estimate_items_table = $this->db->prefixTable('estimate_items');
         $custom_fields_table = $this->db->prefixTable('custom_fields');
         $custom_field_values_table = $this->db->prefixTable('custom_field_values');
+        $estimate_value_items_table = $this->db->prefixTable('estimate_value_items');
         
         $where = [];
         $parameters = [];
         
+        // Filtrando pelo item
         $item = $this->_get_clean_value($options, "item");
         if ($item) {
             $item_conditions = [];
@@ -931,6 +945,7 @@ class Estimates_model extends Crud_model {
             $where[] = "(" . implode(" OR ", $item_conditions) . ")";
         }
         
+        // Filtrando pelas datas
         $date_start = $this->_get_clean_value($options, "date_start");
         $date_end = $this->_get_clean_value($options, "date_end");
         if ($date_start && $date_end) {
@@ -941,63 +956,63 @@ class Estimates_model extends Crud_model {
         
         $where_clause = $where ? " AND " . implode(" AND ", $where) : "";
         
-        // $sql = "SELECT 
-        //             SUM($estimate_items_table.quantity * $estimate_items_table.rate) AS total
-        //         FROM 
-        //             $estimates_table
-        //         LEFT JOIN 
-        //             $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimate_items_table.deleted = 0
-        //         WHERE 
-        //             $estimates_table.deleted = 0 AND $estimates_table.status = 'accepted' $where_clause";
-
-        $sql = "SELECT 
-                SUM(total_value) AS total
-            FROM (
-                SELECT 
-                    $estimates_table.id AS estimate_id,
-                    COALESCE(
-                        MAX(cfv.value), 
-                        0
-                    ) AS total_value
-                FROM 
-                    $estimates_table
-                LEFT JOIN 
-                    $custom_fields_table cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
-                LEFT JOIN 
-                    $custom_field_values_table cfv ON $estimates_table.id = cfv.related_to_id 
-                        AND cfv.custom_field_id = cf.id 
-                        AND cfv.related_to_type = 'estimates'
-                LEFT JOIN 
-                    $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id 
-                        AND $estimate_items_table.deleted = 0
-                WHERE 
-                    $estimates_table.deleted = 0 
-                    AND $estimates_table.status = 'accepted'
-                    AND $estimates_table.estimate_number IS NOT NULL 
-                    AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL)
-                    AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE())
-                    $where_clause
-                GROUP BY 
-                    $estimates_table.id
-            ) AS subquery;";
+        // Construindo a consulta SQL
+        $sql = "
+            SELECT 
+                SUM(COALESCE(
+                    CASE 
+                        WHEN ev.is_checked = 1 THEN 
+                            CASE 
+                                WHEN ev.currency = 'BRL' THEN ev.converted_amount
+                                ELSE ev.amount 
+                            END
+                        ELSE
+                            CASE 
+                                WHEN ev.currency = 'BRL' THEN ev.converted_amount
+                                ELSE ev.amount 
+                            END
+                    END, 0)) AS total
+            FROM 
+                $estimates_table
+            LEFT JOIN 
+                $estimate_value_items_table ev ON ev.estimate_id = $estimates_table.id
+            LEFT JOIN 
+                $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id 
+                AND $estimate_items_table.deleted = 0
+            LEFT JOIN 
+                $custom_fields_table cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+            LEFT JOIN 
+                $custom_field_values_table cfv ON $estimates_table.id = cfv.related_to_id 
+                AND cfv.custom_field_id = cf.id 
+                AND cfv.related_to_type = 'estimates'
+            WHERE 
+                $estimates_table.deleted = 0 
+                AND $estimates_table.status = 'accepted'
+                AND $estimates_table.estimate_number IS NOT NULL 
+                AND ($estimates_table.is_bidding = 0 OR $estimates_table.is_bidding IS NULL)
+                AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE())
+                $where_clause;
+        ";
         
-             
-        
+        // Executando a consulta
         $query = $this->db->query($sql, $parameters);
         $result = $query->getRow();
         
         return $result ? $result->total : 0;
     }
     
+    
     function count_total_amount_bidding_estimates($options = array(), $date_start = null, $date_end = null) {
         $estimates_table = $this->db->prefixTable('estimates');
         $estimate_items_table = $this->db->prefixTable('estimate_items');
         $custom_fields_table = $this->db->prefixTable('custom_fields');
         $custom_field_values_table = $this->db->prefixTable('custom_field_values');
+        $estimate_value_items_table = $this->db->prefixTable('estimate_value_items');
         
         $where = [];
         $parameters = [];
         
+        // Filtrando pelo item
         $item = $this->_get_clean_value($options, "item");
         if ($item) {
             $item_conditions = [];
@@ -1009,6 +1024,7 @@ class Estimates_model extends Crud_model {
             $where[] = "(" . implode(" OR ", $item_conditions) . ")";
         }
         
+        // Filtrando pelas datas
         $date_start = $this->_get_clean_value($options, "date_start");
         $date_end = $this->_get_clean_value($options, "date_end");
         if ($date_start && $date_end) {
@@ -1019,19 +1035,45 @@ class Estimates_model extends Crud_model {
         
         $where_clause = $where ? " AND " . implode(" AND ", $where) : "";
         
-        $sql = "SELECT 
-                    SUM(COALESCE($estimate_items_table.quantity * $estimate_items_table.rate, cfv.value)) AS total
-                FROM 
-                    $estimates_table
-                LEFT JOIN 
-                    $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id AND $estimate_items_table.deleted = 0
-                LEFT JOIN 
-                    $custom_fields_table cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
-                LEFT JOIN 
-                    $custom_field_values_table cfv ON $estimates_table.id = cfv.related_to_id AND cfv.custom_field_id = cf.id AND cfv.related_to_type = 'estimates'
-                WHERE 
-                    $estimates_table.deleted = 0 AND $estimates_table.estimate_number IS NOT NULL AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE()) AND $estimates_table.status = 'accepted' AND $estimates_table.is_bidding = 1 $where_clause";
+        // Construindo a consulta SQL
+        $sql = "
+            SELECT 
+                SUM(COALESCE(
+                    CASE 
+                        WHEN ev.is_checked = 1 THEN 
+                            CASE 
+                                WHEN ev.currency = 'BRL' THEN ev.converted_amount
+                                ELSE ev.amount 
+                            END
+                        ELSE
+                            CASE 
+                                WHEN ev.currency = 'BRL' THEN ev.converted_amount
+                                ELSE ev.amount 
+                            END
+                    END, 0)) AS total
+            FROM 
+                $estimates_table
+            LEFT JOIN 
+                $estimate_value_items_table ev ON ev.estimate_id = $estimates_table.id
+            LEFT JOIN 
+                $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id 
+                AND $estimate_items_table.deleted = 0
+            LEFT JOIN 
+                $custom_fields_table cf ON cf.title = 'Valor Estimado' AND cf.related_to = 'estimates'
+            LEFT JOIN 
+                $custom_field_values_table cfv ON $estimates_table.id = cfv.related_to_id 
+                AND cfv.custom_field_id = cf.id 
+                AND cfv.related_to_type = 'estimates'
+            WHERE 
+                $estimates_table.deleted = 0 
+                AND $estimates_table.status = 'accepted'
+                AND $estimates_table.estimate_number IS NOT NULL 
+                AND ($estimates_table.is_bidding = 1)
+                AND YEAR($estimates_table.estimate_date) = YEAR(CURDATE())
+                $where_clause;
+        ";
         
+        // Executando a consulta
         $query = $this->db->query($sql, $parameters);
         $result = $query->getRow();
         

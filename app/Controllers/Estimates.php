@@ -220,7 +220,7 @@ class Estimates extends Security_Controller {
         $converted_value = $data->converted_amount;
         $converted_date = $data->converted_date;
         $currency = $data->currency;
-        $amount_value = $data->amount;
+        $amount_value = ($currency != "BRL" ? $data->amount : $data->converted_amount);
 
         if ($data->is_checked == 1) {
             $is_checked_value = 0;
