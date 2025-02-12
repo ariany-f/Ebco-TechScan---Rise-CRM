@@ -2472,7 +2472,11 @@ if (!function_exists('sellers_conversions_overview_widget')) {
         
         foreach($temp as $key => $tmp)
         {
-            $percent = (isset($tmp['Propostas']) && $tmp['Propostas'] !== 0 && isset($tmp['Vendas']) && $tmp['Vendas'] !== 0) ? (($tmp['Vendas'])/($tmp['Propostas'])) * 100 : 0;
+            // $percent = (isset($tmp['Propostas']) && $tmp['Propostas'] !== 0 && isset($tmp['Vendas']) && $tmp['Vendas'] !== 0) ? (($tmp['Vendas'])/($tmp['Propostas'])) * 100 : 0;
+            $percent = (isset($tmp['Propostas']) && $tmp['Propostas'] > 0 && isset($tmp['Vendas']) && $tmp['Vendas'] > 0) 
+            ? ($tmp['Vendas'] / $tmp['Propostas']) * 100 
+            : 0;
+        
             $vendedor = [
                 'first_name' => $key,
                 'total_sells' => $tmp['Vendas'] ?? 0,
