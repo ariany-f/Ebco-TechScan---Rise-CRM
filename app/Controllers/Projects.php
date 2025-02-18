@@ -2919,9 +2919,10 @@ class Projects extends Security_Controller {
         $ticket_id = $this->request->getPost('ticket_id');
 
         $model_info = $this->Tasks_model->get_one($id);
-        $project_id = $this->request->getPost('project_id') ? $this->request->getPost('project_id') : $model_info->project_id;
-
+        // $project_id = $this->request->getPost('project_id') ? $this->request->getPost('project_id') : $model_info->project_id;
+        $project_id = 1;
         $final_project_id = $project_id;
+        
         if ($add_type == "multiple" && $last_id) {
             //we've to show the lastly added information if it's the operation of adding multiple tasks
             $model_info = $this->Tasks_model->get_one($last_id);
@@ -3039,7 +3040,7 @@ class Projects extends Security_Controller {
 
     function save_task() {
 
-        $project_id = $this->request->getPost('project_id');
+        $project_id = 1;
         $id = $this->request->getPost('id');
         $add_type = $this->request->getPost('add_type');
         $ticket_id = $this->request->getPost('ticket_id');

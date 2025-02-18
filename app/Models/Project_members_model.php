@@ -73,35 +73,56 @@ class Project_members_model extends Crud_model {
     function get_project_members_dropdown_list($project_id = 0, $user_ids = array(), $add_client_contacts = false, $show_active_users_only = false) {
         $project_members_table = $this->db->prefixTable('project_members');
         $users_table = $this->db->prefixTable('users');
-
-        $where = " AND $project_members_table.project_id=$project_id";
-
-        if (is_array($user_ids) && count($user_ids)) {
-            $users_list = join(",", $user_ids);
-            $where .= " AND $users_table.id IN($users_list)";
+    
+        if ($project_id == 1) {
+            // Retornar todos os usuários da tabela users onde deleted = 0
+            $where = "$users_table.deleted = 0";
+        } else {
+            // Manter a lógica original para outros projetos
+            $where = "$project_members_table.project_id = $project_id AND $project_members_table.deleted = 0";
+            
+            if (is_array($user_ids) && count($user_ids)) {
+                $users_list = join(",", $user_ids);
+                $where .= " AND $users_table.id IN($users_list)";
+            }
+    
+            $user_where = "";
+            if (!$add_client_contacts) {
+                $user_where .= " AND $users_table.user_type='staff'";
+            }
+    
+            if ($show_active_users_only) {
+                $user_where .= " AND $users_table.status='active'";
+            }
+    
+            if ($user_where) {
+                $where .= " AND $project_members_table.user_id IN (SELECT $users_table.id FROM $users_table WHERE $users_table.deleted=0 $user_where)";
+            }
         }
-
-        $user_where = "";
-        if (!$add_client_contacts) {
-            $user_where .= " AND $users_table.user_type='staff'";
+    
+        // Ajustando a consulta conforme a condição
+        if ($project_id == 1) {
+            $sql = "SELECT $users_table.id AS user_id, 
+                           CONCAT($users_table.first_name, ' ', $users_table.last_name) AS member_name, 
+                           $users_table.status AS member_status, 
+                           $users_table.user_type
+                    FROM $users_table
+                    WHERE $users_table.deleted = 0
+                    ORDER BY $users_table.user_type, $users_table.first_name ASC";
+        } else {
+            $sql = "SELECT $project_members_table.user_id, 
+                           CONCAT($users_table.first_name, ' ', $users_table.last_name) AS member_name, 
+                           $users_table.status AS member_status, 
+                           $users_table.user_type
+                    FROM $project_members_table
+                    LEFT JOIN $users_table ON $users_table.id = $project_members_table.user_id
+                    WHERE $where
+                    GROUP BY $project_members_table.user_id
+                    ORDER BY $users_table.user_type, $users_table.first_name ASC";
         }
-
-        if ($show_active_users_only) {
-            $user_where .= " AND $users_table.status='active'";
-        }
-
-        if ($user_where) {
-            $where .= " AND $project_members_table.user_id IN (SELECT $users_table.id FROM $users_table WHERE $users_table.deleted=0 $user_where)";
-        }
-
-        $sql = "SELECT $project_members_table.user_id, CONCAT($users_table.first_name, ' ',$users_table.last_name) AS member_name, $users_table.status AS member_status, $users_table.user_type
-        FROM $project_members_table
-        LEFT JOIN $users_table ON $users_table.id= $project_members_table.user_id
-        WHERE $project_members_table.deleted=0 $where 
-        GROUP BY $project_members_table.user_id 
-        ORDER BY $users_table.user_type, $users_table.first_name ASC";
+    
         return $this->db->query($sql);
-    }
+    }    
 
     function is_user_a_project_member($project_id = 0, $user_id = 0) {
         $info = $this->get_one_where(array("project_id" => $project_id, "user_id" => $user_id, "deleted" => 0));

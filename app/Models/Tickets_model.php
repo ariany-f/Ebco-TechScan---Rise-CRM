@@ -162,7 +162,7 @@ class Tickets_model extends Crud_model {
         $join_custom_fieds    
         WHERE $tickets_table.deleted=0 $where $custom_fields_where
         $order $limit_offset";
-
+        
         $raw_query = $this->db->query($sql);
 
         $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();

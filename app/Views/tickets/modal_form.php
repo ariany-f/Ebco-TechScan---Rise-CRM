@@ -33,7 +33,7 @@
                         <label for="client_id" class=" col-md-3"><?php echo app_lang('client'); ?></label>
                         <div class="col-md-9">
                             <?php
-                            echo form_dropdown("client_id", $clients_dropdown, array($model_info->client_id), "class='select2 validate-hidden' id='client_id' data-rule-required='true', data-msg-required='" . app_lang('field_required') . "'");
+                            echo form_dropdown("client_id", $clients_dropdown, array($model_info->client_id), "class='select2 validate-hidden' id='client_id'");
                             ?>
                         </div>
                     </div>

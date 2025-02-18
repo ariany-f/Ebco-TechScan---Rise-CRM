@@ -156,7 +156,7 @@ class Tickets extends Security_Controller {
             ));
         } else {
             $this->validate_submitted_data(array(
-                "client_id" => "required|numeric",
+                // "client_id" => "required|numeric",
                 "ticket_type_id" => "required|numeric"
             ));
         }
@@ -384,7 +384,7 @@ class Tickets extends Security_Controller {
 
         $ticket_status = "<span class='badge $ticket_status_class large'>" . app_lang($data->status) . "</span> ";
 
-        $title = anchor(get_uri("tickets/view/" . $data->id), $data->title);
+        $title = anchor(get_uri("tickets/view/" . $data->id), ($data->title ?? ''));
 
         //show labels fild to team members only
         $ticket_labels = make_labels_view_data($data->labels_list, true);
