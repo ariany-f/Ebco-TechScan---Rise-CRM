@@ -54,7 +54,7 @@
                                 <?php
                             }
                         } else {
-                            if ($estimate_status == "draft" || $estimate_status == "sent") {
+                            if ($estimate_status == "draft" || $estimate_status == "sent" || $estimate_status == "accepted") {
                                 ?>
                                 <li role="presentation"><?php echo modal_anchor(get_uri("estimates/send_estimate_modal_form/" . $estimate_info->id), "<i data-feather='send' class='icon-16'></i> " . app_lang('send_to_client'), array("title" => app_lang('send_to_client'), "data-post-id" => $estimate_info->id, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
                                 <?php

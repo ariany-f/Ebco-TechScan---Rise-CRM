@@ -885,6 +885,37 @@ class Estimates extends Security_Controller {
             }
         }
 
+        $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
+        $options = [
+            "custom_fields" => $custom_fields
+        ];
+        $revisions = $this->Estimates_model->get_revisions($options, $estimate_id)->getResult();
+        $revision_fl = [];
+        $revision_files = [];
+        log_message(1, count($revisions), []);
+        foreach($revisions as $index => $revision)
+        {
+            if($revision->files)
+            {
+                $revision_fl[] = unserialize($revision->files);
+                foreach ($revision_fl as $f => $data) {
+                    if(count($data) > 0) {
+                        $data = current($data);
+                    }
+                    if($data["file_id"]){
+                        $exists = $this->General_files_model->get_one_where(array("id" => $data["file_id"], "deleted" => 0));
+                        
+                        $in_array = array_search($exists->id, array_column($result, 0)) !== false;
+
+                        // Se não existir, adiciona o item ao array
+                        if (!$in_array) {
+                            $result[] = $this->_make_files_row($data);
+                        }
+                    }
+                }
+            }
+        }
+
         echo json_encode(array("data" => $result));
     }
 
@@ -1152,10 +1183,45 @@ class Estimates extends Security_Controller {
             $cf_id = "cfv_" . $field->id;
             if($field->title === 'Valor Estimado') {
                 //get checklist items
-                $estimate_value_items_array = array();
-                $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => 1))->getResult();
-                foreach ($estimate_value_items as $estimate_value_item) {
-                    $estimate_value_items_array[] = $estimate_value_item;
+                if($data->has_revisions)
+                {
+                    $custom_fields = $this->Custom_fields_model->get_available_fields_for_table("estimates", $this->login_user->is_admin, $this->login_user->user_type);
+                    $options = [
+                        "custom_fields" => $custom_fields
+                    ];
+                    $revisions = $this->Estimates_model->get_revisions($options, $data->id)->getResult();
+                    
+                    // Verificar se há revisões
+                    if (!empty($revisions)) {
+                        // Ordenar as revisões pela data (assumindo que há um campo 'created_at' ou similar)
+                        usort($revisions, function($a, $b) {
+                            return strtotime($b->created_at) - strtotime($a->created_at);
+                        });
+
+                        // Pegar a última revisão
+                        $ultima_revisao = $revisions[0];
+                        $estimate_value_items_array = array();
+                        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $ultima_revisao->id, "checked" => 1))->getResult();
+                        foreach ($estimate_value_items as $estimate_value_item) {
+                            $estimate_value_items_array[] = $estimate_value_item;
+                        }
+                    } else {
+                       
+                        $estimate_value_items_array = array();
+                        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => 1))->getResult();
+                        foreach ($estimate_value_items as $estimate_value_item) {
+                            $estimate_value_items_array[] = $estimate_value_item;
+                        }
+                    }
+                    
+                }
+                else{
+
+                    $estimate_value_items_array = array();
+                    $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => 1))->getResult();
+                    foreach ($estimate_value_items as $estimate_value_item) {
+                        $estimate_value_items_array[] = $estimate_value_item;
+                    }
                 }
            
                 $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => to_currency((float)($estimate_value_items_array[0]->currency != "BRL" ? $estimate_value_items_array[0]->amount : $estimate_value_items_array[0]->converted_amount), $data->currency_symbol)));
