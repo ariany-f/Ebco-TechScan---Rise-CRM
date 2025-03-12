@@ -781,7 +781,7 @@ class Estimates_model extends Crud_model {
                         SELECT 
                             DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
                             e.company_id,
-                            SUM(ei.quantity * ei.rate) AS 'ValorEmitido',
+                            SUM(ev.amount) AS 'ValorEmitido',
                             SUM(CASE WHEN e.status = 'accepted' THEN COALESCE(
                             CASE 
                                 WHEN ev.is_checked = 1 THEN 
