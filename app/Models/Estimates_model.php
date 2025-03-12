@@ -564,10 +564,20 @@ class Estimates_model extends Crud_model {
                             IFNULL(us.image, COALESCE(u.image, '')), '--::--', 
                             IFNULL(us.user_type, u.user_type)
                         ) AS 'Vendedor',
-                    SUM(ei.quantity * ei.rate) AS 'ValorEmitido',
-                    SUM(CASE WHEN e.status = 'accepted' THEN COALESCE(ei.quantity * ei.rate, cfv.value) ELSE 0 END) AS 'ValorFechado'
+                    SUM(ev.amount) AS 'ValorEmitido',
+                    SUM(CASE WHEN e.status = 'accepted' THEN COALESCE(
+                    CASE 
+                        WHEN ev.is_checked = 1 THEN 
+                            CASE 
+                                WHEN ev.currency = 'BRL' THEN ev.converted_amount
+                                ELSE ev.amount 
+                            END
+                        ELSE 0
+                    END, 0) ELSE 0 END) AS 'ValorFechado'
                 FROM 
                     crm_estimates e
+                LEFT JOIN 
+                    crm_estimate_value_items ev ON ev.estimate_id = e.id AND ev.deleted = 0
                 JOIN 
                     crm_custom_fields cfu ON cfu.title = 'Vendedor' AND cfu.related_to = 'estimates'
                 JOIN 
@@ -640,6 +650,7 @@ class Estimates_model extends Crud_model {
                 crm_estimates e
             WHERE 
                 e.deleted = 0
+                AND e.estimate_number IS NOT NULL
                 AND YEAR(e.estimate_date) = YEAR(CURDATE())
                 AND (e.is_bidding = 0 OR e.is_bidding IS NULL)
                 $where
