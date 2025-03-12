@@ -782,9 +782,19 @@ class Estimates_model extends Crud_model {
                             DATE_FORMAT(e.estimate_date, '%Y-%m') AS 'Mes',
                             e.company_id,
                             SUM(ei.quantity * ei.rate) AS 'ValorEmitido',
-                            SUM(CASE WHEN e.status = 'accepted' THEN COALESCE(ei.quantity * ei.rate, cfv.value) ELSE 0 END) AS 'ValorFechado'
+                            SUM(CASE WHEN e.status = 'accepted' THEN COALESCE(
+                            CASE 
+                                WHEN ev.is_checked = 1 THEN 
+                                    CASE 
+                                        WHEN ev.currency = 'BRL' THEN ev.converted_amount
+                                        ELSE ev.amount 
+                                    END
+                                ELSE 0
+                            END, 0) ELSE 0 END) AS 'ValorFechado'
                         FROM 
                             crm_estimates e
+                        LEFT JOIN 
+                            crm_estimate_value_items ev ON ev.estimate_id = e.id AND ev.deleted = 0
                         JOIN 
                             crm_company c ON e.company_id = c.id
                         LEFT JOIN 
