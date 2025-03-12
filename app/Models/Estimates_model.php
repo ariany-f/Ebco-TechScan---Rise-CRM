@@ -980,16 +980,12 @@ class Estimates_model extends Crud_model {
                                 WHEN ev.currency = 'BRL' THEN ev.converted_amount
                                 ELSE ev.amount 
                             END
-                        ELSE
-                            CASE 
-                                WHEN ev.currency = 'BRL' THEN ev.converted_amount
-                                ELSE ev.amount 
-                            END
+                        ELSE 0
                     END, 0)) AS total
             FROM 
                 $estimates_table
             LEFT JOIN 
-                $estimate_value_items_table ev ON ev.estimate_id = $estimates_table.id
+                $estimate_value_items_table ev ON ev.estimate_id = $estimates_table.id AND ev.deleted = 0
             LEFT JOIN 
                 $estimate_items_table ON $estimate_items_table.estimate_id = $estimates_table.id 
                 AND $estimate_items_table.deleted = 0

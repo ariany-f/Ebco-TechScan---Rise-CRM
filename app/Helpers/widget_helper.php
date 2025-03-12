@@ -2550,11 +2550,31 @@ if (!function_exists('termometer_proposals_widget')) {
             }
             $total = ($estimate_value_items_array[0]->currency != "BRL" ? $estimate_value_items_array[0]->amount : $estimate_value_items_array[0]->converted_amount);
 
+            $color = "#762abd";
+            switch($term->cfv_1)
+            {
+                case 'Fria':
+                    $color = "#2d9cdb";
+                    break;
+                case 'Morna':
+                    $color = "#f1c40f";
+                    break;
+                case 'Quente':
+                    $color = "#f5325c";
+                    break;
+                case 'Aprovada':
+                    $color = "#56ba0e";
+                    break;
+                case 'Recusada':
+                    $color = "#fd5639";
+                    break;
+            }
+            
             $termometro_categorias[$term->cfv_1] = [
                 'title' => $term->cfv_1,
                 'amount' => $termometro_categorias[$term->cfv_1]['amount'] + $total,
                 'total' => isset($termometro_categorias[$term->cfv_1]) ? ($termometro_categorias[$term->cfv_1]['total'] + 1) : 1,
-                'color' => ($term->cfv_1 == 'Fria') ? '#2d9cdb' : (($term->cfv_1 == 'Morna') ? '#f1c40f' : (($term->cfv_1 == 'Quente') ? '#f5325c' : '#01B393'))
+                'color' => $color
             ];
         }
         

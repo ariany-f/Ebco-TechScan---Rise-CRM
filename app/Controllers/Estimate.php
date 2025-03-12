@@ -523,12 +523,22 @@ class Estimate extends Security_Controller {
 
         //client can only update the status once and the value should be either accepted or declined
         if ($status == "accepted" || $status == "declined" || $status == "in_revision" || $status == "sent") {
-            
+          
             $estimate_data = array("status" => $status);
+            
             $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
 
             //create notification
             if ($status == "accepted") {
+            
+                $status_pt = 'Aprovada';
+                $data["custom_field_id"] = 1;
+                $data['value'] = $status_pt;
+                $data['related_to_type'] = 'estimates';
+                $data['related_to_id'] = $estimate_id;
+
+                $this->Custom_field_values_model->upsert($data, "");
+
                 log_notification("estimate_accepted", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
 
                  //estimate accepted, create a new project
@@ -549,6 +559,15 @@ class Estimate extends Security_Controller {
                 $this->session->setFlashdata("success_message", app_lang("estimate_accepted"));
 
             } else if ($status == "declined") {
+
+                $status_pt = 'Recusada';
+                $data["custom_field_id"] = 1;
+                $data['value'] = $status_pt;
+                $data['related_to_type'] = 'estimates';
+                $data['related_to_id'] = $estimate_id;
+
+                $this->Custom_field_values_model->upsert($data, "");
+
                 log_notification("estimate_rejected", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
                 $this->session->setFlashdata("error_message", app_lang('estimate_rejected'));
             }
@@ -649,6 +668,16 @@ class Estimate extends Security_Controller {
         $estimate_data["status"] = "accepted";
 
         if ($this->Estimates_model->ci_save($estimate_data, $estimate_id)) {
+            
+
+            $status_pt = 'Aprovada';
+            $data["custom_field_id"] = 1;
+            $data['value'] = $status_pt;
+            $data['related_to_type'] = 'estimates';
+            $data['related_to_id'] = $estimate_id;
+
+            $this->Custom_field_values_model->upsert($data, "");
+            
             log_notification("estimate_accepted", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
 
             //estimate accepted, create a new project
@@ -778,6 +807,15 @@ class Estimate extends Security_Controller {
         $estimate_data["status"] = "declined";
 
         if ($this->Estimates_model->ci_save($estimate_data, $estimate_id)) {
+            
+            $status_pt = 'Recusada';
+            $data["custom_field_id"] = 1;
+            $data['value'] = $status_pt;
+            $data['related_to_type'] = 'estimates';
+            $data['related_to_id'] = $estimate_id;
+
+            $this->Custom_field_values_model->upsert($data, "");
+
             log_notification("estimate_rejected", array("estimate_id" => $estimate_id), isset($this->login_user->id) ? $this->login_user->id : "999999996");
             echo json_encode(array("success" => true, "message" => app_lang("estimate_declined")));
         } else {

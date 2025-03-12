@@ -669,7 +669,21 @@ class Estimates extends Security_Controller {
                 show_404();
             }
 
-            $estimate_data = array("status" => $status);
+            if($status == 'accepted' || $status == 'declined')
+            {
+                $estimate_data = array("status" => $status);
+
+                $status_pt = (($status == 'accepted') ? 'Aprovada' : 'Recusada');
+                $data["custom_field_id"] = 1;
+                $data['value'] = $status_pt;
+                $data['related_to_type'] = 'estimates';
+                $data['related_to_id'] = $estimate_id;
+
+                $this->Custom_field_values_model->upsert($data, "");
+            } else
+            {
+                $estimate_data = array("status" => $status);
+            }
 
             //estimate acceptation with signature
             if ($is_modal) {
@@ -728,7 +742,23 @@ class Estimates extends Security_Controller {
                 show_404();
             }
 
-            $estimate_data = array("status" => $status);
+            
+            if($status == 'accepted' || $status == 'declined')
+            {
+                $estimate_data = array("status" => $status);
+                
+                $status_pt = (($status == 'accepted') ? 'Aprovada' : 'Recusada');
+                $data["custom_field_id"] = 1;
+                $data['value'] = $status_pt;
+                $data['related_to_type'] = 'estimates';
+                $data['related_to_id'] = $estimate_id;
+
+                $this->Custom_field_values_model->upsert($data, "");
+            } else
+            {
+                $estimate_data = array("status" => $status);
+            }
+            
             $estimate_id = $this->Estimates_model->ci_save($estimate_data, $estimate_id);
 
             //estimate accepted, create a new project
@@ -840,6 +870,17 @@ class Estimates extends Security_Controller {
         $estimate_info = $this->Estimates_model->get_one($id);
 
         if ($this->Estimates_model->delete($id)) {
+            if($estimate_info->parent_estimate)
+            {
+                $revisions = $this->Estimates_model->get_revisions([], $estimate_info->id);
+                foreach($revisions as $index => $revision)
+                {
+                    $revision_info = $this->Estimates_model->get_one($revision->id);
+                    if ($this->Estimates_model->delete($revision_info->id)) {
+
+                    }
+                }
+            }
             //delete signature file
             $signer_info = @unserialize($estimate_info->meta_data);
             if ($signer_info && is_array($signer_info) && get_array_value($signer_info, "signature")) {
@@ -1113,6 +1154,14 @@ class Estimates extends Security_Controller {
                     case 'Quente':
                         $style = "border-left: 5px solid #FD397A !important;";
                     break;
+                    case 'Aprovada':
+                        $style = "border-left: 5px solid #56ba0e !important;";
+                    break;
+                    case 'Recusada':
+                        $style = "border-left: 5px solid #fd5639 !important;";
+                    break;
+                    default:
+                        $style = "border-left: 5px solid #762abd !important;";
                 }
                 $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => "<span style='padding:10px;$style'>" . $data->$cf_id . "</span>"));
             } else if($field->title === "Vendedor")
@@ -1194,21 +1243,24 @@ class Estimates extends Security_Controller {
                     // Verificar se há revisões
                     if (!empty($revisions)) {
                         // Ordenar as revisões pela data (assumindo que há um campo 'created_at' ou similar)
+                        // usort($revisions, function($a, $b) {
+                        //     return strtotime($b->estimate_date) - strtotime($a->estimate_date);
+                        // });
                         usort($revisions, function($a, $b) {
-                            return strtotime($b->created_at) - strtotime($a->created_at);
+                            return $b->id - $a->id;
                         });
 
                         // Pegar a última revisão
                         $ultima_revisao = $revisions[0];
                         $estimate_value_items_array = array();
-                        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $ultima_revisao->id, "checked" => 1))->getResult();
+                        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $ultima_revisao->id, "checked" => '1'))->getResult();
                         foreach ($estimate_value_items as $estimate_value_item) {
                             $estimate_value_items_array[] = $estimate_value_item;
                         }
                     } else {
                        
                         $estimate_value_items_array = array();
-                        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => 1))->getResult();
+                        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => '1'))->getResult();
                         foreach ($estimate_value_items as $estimate_value_item) {
                             $estimate_value_items_array[] = $estimate_value_item;
                         }
@@ -1218,7 +1270,7 @@ class Estimates extends Security_Controller {
                 else{
 
                     $estimate_value_items_array = array();
-                    $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => 1))->getResult();
+                    $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $data->id, "checked" => '1'))->getResult();
                     foreach ($estimate_value_items as $estimate_value_item) {
                         $estimate_value_items_array[] = $estimate_value_item;
                     }
@@ -1239,6 +1291,13 @@ class Estimates extends Security_Controller {
                     case 'Quente':
                         $style = "border-left: 5px solid #FD397A !important;";
                     break;
+                    case 'Aprovada':
+                        $style = "border-left: 5px solid rgb(86, 186, 14) !important;";
+                    break;
+                    case 'Recusada':
+                        $style = "border-left: 5px solid rgb(253, 86, 57) !important;";
+                    break;
+                    default:
                 }
                 $row_data[] = $this->template->view("custom_fields/output_" . $field->field_type, array("value" => "<span style='padding:10px;$style'>" . $data->$cf_id . "</span>"));
             } else if($field->title === "Vendedor")

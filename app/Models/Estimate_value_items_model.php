@@ -22,6 +22,11 @@ class Estimate_value_items_model extends Crud_model {
             $where .= " AND $estimate_value_items_table.estimate_id=$estimate_id";
         }
 
+        $checked = $this->_get_clean_value($options, "checked");
+        if ($checked) {
+            $where .= " AND $estimate_value_items_table.is_checked='$checked'";
+        }
+
         $sql = "SELECT $estimate_value_items_table.*, IF($estimate_value_items_table.sort!=0, $estimate_value_items_table.sort, $estimate_value_items_table.id) AS new_sort
         FROM $estimate_value_items_table
         INNER JOIN $estimates_table ON $estimates_table.deleted = 0 AND (($estimates_table.id = $estimate_value_items_table.estimate_id))
