@@ -1263,6 +1263,7 @@ if (!function_exists('get_estimate_making_data')) {
         validate_numeric_value($estimate_id);
         $ci = new App_Controller();
         $estimate_info = $ci->Estimates_model->get_details(array("id" => $estimate_id))->getRow();
+        
         if ($estimate_info) {
             $data['estimate_info'] = $estimate_info;
             $data['client_info'] = $ci->Clients_model->get_one($data['estimate_info']->client_id);

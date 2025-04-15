@@ -4,10 +4,10 @@
         <?php
         if ($estimate_info->is_lead) {
             echo app_lang("lead") . ": ";
-            echo (anchor(get_uri("leads/view/" . $estimate_info->client_id), $estimate_info->company_name));
+            echo (anchor(get_uri("leads/view/" . $estimate_info->client_id), ($estimate_info->company_name ?? '')));
         } else {
             echo app_lang("client") . ": ";
-            echo (anchor(get_uri("clients/view/" . $estimate_info->client_id), $estimate_info->company_name));
+            echo (anchor(get_uri("clients/view/" . $estimate_info->client_id), ($estimate_info->company_name ?? '')));
         }
         ?>
     </span>

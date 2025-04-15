@@ -124,6 +124,23 @@ if (!function_exists('is_image_file')) {
 
 }
 
+/**
+ * check the file is a excel
+ * 
+ * @param string $file_name
+ * @return true/false
+ */
+if (!function_exists('is_excel_file')) {
+
+    function is_excel_file($file_name = "") {
+        $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        $excel_files = array("xlsx", "csv");
+        return (in_array($extension, $excel_files)) ? true : false;
+    }
+
+}
+
+
 
 /**
  * check the file preview supported by google
@@ -135,7 +152,7 @@ if (!function_exists('is_google_preview_available')) {
 
     function is_google_preview_available($file_name = "") {
         $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        $image_files = array("doc", "docx", "ppt", "pptx", "css");
+        $image_files = array("doc", "docx", "ppt", "pptx", "css", "xlsx", "csv");
         return (in_array($extension, $image_files)) ? true : false;
     }
 
@@ -379,7 +396,7 @@ if (!function_exists("get_drive_folder_name")) {
 if (!function_exists('get_source_url_of_file')) {
 
     function get_source_url_of_file($file_info = array(), $file_path = "", $view_type = "", $only_file_path = false, $add_slash = false, $show_full_size_thumbnail = false) {
-        $file_name = get_array_value($file_info, 'file_name');
+        $file_name = urlencode(get_array_value($file_info, 'file_name'));
         $file_id = get_array_value($file_info, "file_id");
         $service_type = get_array_value($file_info, "service_type");
 

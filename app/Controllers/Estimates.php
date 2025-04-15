@@ -932,18 +932,16 @@ class Estimates extends Security_Controller {
         ];
         $revisions = $this->Estimates_model->get_revisions($options, $estimate_id)->getResult();
         $revision_fl = [];
-        $revision_files = [];
-        log_message(1, count($revisions), []);
+        
         foreach($revisions as $index => $revision)
         {
             if($revision->files)
             {
                 $revision_fl[] = unserialize($revision->files);
-                foreach ($revision_fl as $f => $data) {
-                    if(count($data) > 0) {
-                        $data = current($data);
-                    }
+                foreach ($revision_fl[0] as $f => $data) {
+                   
                     if($data["file_id"]){
+                        
                         $exists = $this->General_files_model->get_one_where(array("id" => $data["file_id"], "deleted" => 0));
                         
                         $in_array = array_search($exists->id, array_column($result, 0)) !== false;
@@ -1056,13 +1054,14 @@ class Estimates extends Security_Controller {
                 app_redirect("forbidden");
             }
 
-            $this->can_access_this_client($file_info->client_id);
+            // $this->can_access_this_client($file_info->client_id);
 
             $view_data['can_comment_on_files'] = false;
             $file_url = get_source_url_of_file(make_array_of_file($file_info), get_general_file_path("client", $file_info->client_id));
-
+            
             $view_data["file_url"] = $file_url;
             $view_data["is_image_file"] = is_image_file($file_info->file_name);
+            $view_data["is_excel_file"] = is_excel_file($file_info->file_name);
             $view_data["is_iframe_preview_available"] = is_iframe_preview_available($file_info->file_name);
             $view_data["is_google_preview_available"] = is_google_preview_available($file_info->file_name);
             $view_data["is_viewable_video_file"] = is_viewable_video_file($file_info->file_name);
@@ -1765,7 +1764,7 @@ class Estimates extends Security_Controller {
             $revisions = $this->Estimates_model->get_revisions($options, $estimate_id)->getResult();
             $revision_fl = [];
             $revision_files = [];
-            log_message(1, count($revisions), []);
+            
             foreach($revisions as $index => $revision)
             {
                 if($revision->files)

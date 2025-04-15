@@ -79,7 +79,10 @@ class Estimates_model extends Crud_model {
         }
         else
         {
-            $where .= " AND (YEAR($estimates_table.estimate_date) = YEAR(CURDATE())) ";
+            if(!$id)
+            {
+                $where .= " AND (YEAR($estimates_table.estimate_date) = YEAR(CURDATE())) ";
+            }
         }
 
         $after_tax_1 = "(IFNULL(tax_table.percentage,0)/100*IFNULL(items_table.estimate_value,0))";
@@ -155,8 +158,6 @@ class Estimates_model extends Crud_model {
             $where .= " AND $estimates_table.client_id IN(SELECT $clients_table.id FROM $clients_table WHERE $clients_table.deleted=0 AND $clients_table.is_lead=0)";
         }
 
-        
-
         //prepare custom fild binding query
         $custom_fields = get_array_value($options, "custom_fields");
         $custom_field_filter = get_array_value($options, "custom_field_filter");
@@ -185,7 +186,7 @@ class Estimates_model extends Crud_model {
         $join_custom_fieds
         $estrajoin
         WHERE $estimates_table.deleted=0 AND $estimates_table.parent_estimate IS NULL $where $custom_fields_where GROUP BY $estimates_table.id";
-
+log_message('error', '[ERROR] '.$sql, []);
         return $this->db->query($sql);
     }
 
