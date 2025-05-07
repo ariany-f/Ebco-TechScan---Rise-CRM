@@ -259,6 +259,7 @@ $lang["timezone"] = "Fuso horário";
 $lang["date_format"] = "Formato da Data";
 $lang["time_format"] = "Formato da Hora";
 $lang["first_day_of_week"] = "Primeiro dia da semana";
+$lang["edit_estimate_last_revision"] = "Editar revisão atual";
 $lang["currency_symbol"] = "Símbolo da Moeda";
 $lang["general"] = "Geral";
 $lang["general_settings"] = "Configurações Gerais";

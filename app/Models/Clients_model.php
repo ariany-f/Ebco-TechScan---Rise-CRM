@@ -724,7 +724,7 @@ class Clients_model extends Crud_model {
         FROM $clients_table 
         LEFT JOIN $lead_source_table ON $clients_table.lead_source_id = $lead_source_table.id 
         LEFT JOIN $users_table ON $users_table.id = $clients_table.owner_id AND $users_table.deleted=0 AND $users_table.user_type='staff' 
-        WHERE $clients_table.deleted=0 AND $clients_table.is_lead=1 $where $custom_fields_where
+        WHERE $clients_table.deleted=0 AND $clients_table.status_id <> 2 AND $clients_table.is_lead=1 $where $custom_fields_where
         ORDER BY new_sort ASC";
 
         return $this->db->query($sql);

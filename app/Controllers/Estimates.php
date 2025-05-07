@@ -115,7 +115,31 @@ class Estimates extends Security_Controller {
     function yearly() {
         return $this->template->view("estimates/yearly_estimates");
     }
+    
+    /* load new estimate modal */
+    function follow_up() {
+        $this->access_only_allowed_members();
 
+        $this->validate_submitted_data(array(
+            "id" => "numeric"
+        ));
+
+        $id = $this->request->getPost('id');
+        $this->can_access_this_estimate($id);
+
+        $model_info = $this->Estimates_model->get_one($id);
+        
+        $assigned_to_list = $this->Users_model->get_dropdown_list(array("first_name", "last_name"), "id", array("deleted" => 0, "user_type" => "staff"));
+        foreach ($assigned_to_list as $key => $value) {
+            $collaborators_dropdown[] = array("id" => $key, "text" => $value);
+        }
+
+        $view_data['collaborators_dropdown'] = json_encode($collaborators_dropdown);
+        $view_data['model_info'] = $model_info;
+
+        return $this->template->view('estimates/follow_up_modal_form', $view_data);
+    }
+    
     /* load new estimate modal */
     function modal_form() {
         $this->access_only_allowed_members();
@@ -996,7 +1020,6 @@ class Estimates extends Security_Controller {
         );
 
         $list_data = $this->Estimates_model->get_details($options)->getResult();
-      
         $result = array();
         foreach ($list_data as $data) {
             $result[] = $this->_make_row($data, $custom_fields);
@@ -1214,7 +1237,6 @@ class Estimates extends Security_Controller {
             $client,
             $data->estimate_date,
             format_to_date($data->estimate_date, false),
-            '<span class="mt0 badge '.($data->estimate_type == "Revisão" ? "bg-info" : "bg-secondary").'  large">'. ($data->estimate_type == "Revisão" ? $data->estimate_type : "Primeira Proposta")  . '</span>',
             $this->_get_estimate_status_label($data),
             (($data->has_revisions) ? ("<span class='mt0 badge bg-success'>" . app_lang('yes') . "</span>") : ("<span class='mt0 badge bg-danger'>" . app_lang('no') . "</span>")),
             $licitacao,
@@ -1317,8 +1339,13 @@ class Estimates extends Security_Controller {
         }
 
 
+        $revisions = $this->Estimates_model->get_revisions($options, $data->id)->getResult();
+        $last_revision = end($revisions);
+
         $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
                 . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-modal-xl" => 1, "data-post-id" => $data->id))
+                // . modal_anchor(get_uri("estimates/follow_up"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-modal-xl" => 1, "data-post-id" => $data->id))
+                . ($last_revision->id ? modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit-3' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate_last_revision'), "data-modal-xl" => 1, "data-post-id" => $last_revision->id)) : '')
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"))
                 . ajax_anchor(get_uri("estimates/create_revision"), "<i data-feather='copy' class='icon-16'></i> ", array('title' => app_lang('create_revision'), "class" => "delete", "data-post-id" => $data->id, "data-reload-on-success" => true, "data-bs-toggle" => "tooltip", "data-placement" => "left"));
 

@@ -46,7 +46,6 @@
                 {title: "<?php echo app_lang("client") ?>"},
                 {visible: false, searchable: false},
                 {title: "<?php echo app_lang("estimate_date") ?>", "iDataSort": 3, "class": "w5p"},
-                {visible: false, searchable: false, title: "<?php echo app_lang("estimate_type") ?>", "class": "text-center w5p"},
                 {title: "<?php echo app_lang("status") ?>", "class": "text-center"},
                 {title: "<?php echo app_lang("has_revisions") ?>", "class": "text-center"},
                 {title: "<?php echo app_lang("is_bidding") ?>", "class": "text-center"},
@@ -56,7 +55,7 @@
             ],
             printColumns: combineCustomFieldsColumns([0, 2, 4, 5, 6, 7, 8], '<?php echo $custom_field_headers; ?>'),
             xlsColumns: combineCustomFieldsColumns([0, 2, 4, 5, 6, 7, 8], '<?php echo $custom_field_headers; ?>'),
-            summation: [{column: 12, dataType: 'currency', currencySymbol: AppHelper.settings.currencySymbol, conversionRate: <?php echo $conversion_rate; ?>}]
+            summation: [{column: 11, dataType: 'currency', currencySymbol: AppHelper.settings.currencySymbol, conversionRate: <?php echo $conversion_rate; ?>}]
         });
     };
     $(document).ready(function () {

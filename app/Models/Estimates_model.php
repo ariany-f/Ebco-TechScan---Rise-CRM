@@ -186,7 +186,7 @@ class Estimates_model extends Crud_model {
         $join_custom_fieds
         $estrajoin
         WHERE $estimates_table.deleted=0 AND $estimates_table.parent_estimate IS NULL $where $custom_fields_where GROUP BY $estimates_table.id";
-log_message('error', '[ERROR] '.$sql, []);
+
         return $this->db->query($sql);
     }
 
@@ -254,7 +254,7 @@ log_message('error', '[ERROR] '.$sql, []);
         $estimates_table = $this->db->prefixTable('estimates');
         $sql = "SELECT $estimates_table.files
         FROM $estimates_table
-        WHERE $estimates_table.deleted=0 AND ($estimates_table.estimate_number = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id) OR $estimates_table.estimate_number_temp = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id))";
+        WHERE $estimates_table.deleted=0 AND ($estimates_table.estimate_number = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id) OR $estimates_table.estimate_number_temp = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id)) OR $estimates_table.parent_estimate = (SELECT COALESCE(estimate_number, estimate_number_temp) FROM $estimates_table WHERE id = $estimate_id)";
         
         return $this->db->query($sql);
     }
