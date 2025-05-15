@@ -8,11 +8,13 @@ use DateTime;
 class Estimate extends Security_Controller {
 
     protected $Estimate_value_items_model;
+    protected $Checklist_items_model;
 
     function __construct() {
         parent::__construct(false);
         
         $this->Estimate_value_items_model = model('App\Models\Estimate_value_items_model');
+        $this->Checklist_items_model = model('App\Models\Checklist_items_model');
     }
 
     function index() {
@@ -730,8 +732,178 @@ class Estimate extends Security_Controller {
         }
     }
 
-    /* create new project from accepted estimate */
 
+    private function _prepare_all_related_data_for_timelog($estimate_id = 0) {
+        //we have to check if any defined project exists, then go through with the project id
+        $show_porject_members_dropdown = false;
+        if ($estimate_id) {
+            //prepare members dropdown list
+            $project_members = $this->Project_members_model->get_project_members_dropdown_list($estimate_id)->getResult(); //get all members of this project
+          
+            $project_members_dropdown = array();
+            if ($project_members) {
+                foreach ($project_members as $member) {
+
+                    if ($member->user_id !== $this->login_user->id) {
+                        $show_porject_members_dropdown = true; //user can manage other users time.
+                    }
+
+                    $project_members_dropdown[] = array("id" => $member->user_id, "text" => $member->member_name);
+                }
+            }
+        } else {
+            //we have show an empty dropdown when there is no project_id defined
+            $project_members_dropdown = array(array("id" => "", "text" => "-"));
+            $show_porject_members_dropdown = true;
+        }
+
+        return array(
+            "project_members_dropdown" => $project_members_dropdown,
+            "show_porject_members_dropdown" => $show_porject_members_dropdown
+        );
+    }
+    
+    function get_all_related_data_of_selected_estimate_for_timelog($estimate_id = "") {
+        validate_numeric_value($estimate_id);
+        if ($estimate_id) {
+            $related_data = $this->_prepare_all_related_data_for_timelog($estimate_id);
+
+            echo json_encode(array(
+                "project_members_dropdown" => get_array_value($related_data, "project_members_dropdown"),
+                "tasks_dropdown" => json_decode(get_array_value($related_data, "tasks_dropdown"))
+            ));
+        }
+    }
+
+    private function get_all_related_data_of_estimate($estimate_id, $collaborators = "", $task_labels = "") {
+
+        if ($estimate_id) {
+            $show_client_contacts = false;
+
+            $project_members = $this->Project_members_model->get_project_members_dropdown_list(1, array(), $show_client_contacts, true)->getResult();
+            $project_members_dropdown = array(array("id" => "", "text" => "-"));
+            $collaborators_dropdown = array();
+            $collaborators_array = $collaborators ? explode(",", $collaborators) : array();
+            foreach ($project_members as $member) {
+                $project_members_dropdown[] = array("id" => $member->user_id, "text" => $member->member_name);
+
+                //if there is already any inactive user in collaborators list
+                //we've to show the user(s) for furthur operation
+                if (in_array($member->user_id, $collaborators_array) || $member->member_status == "active") {
+                    $collaborators_dropdown[] = array("id" => $member->user_id, "text" => $member->member_name);
+                }
+            }
+            return array(
+                "assign_to_dropdown" => $project_members_dropdown,
+                "collaborators_dropdown" => $collaborators_dropdown
+            );
+        }
+    }
+
+    private function _initialize_all_related_data_of_estimate($estimate_id = 0, $collaborators = "", $task_labels = "") {
+        //we have to check if any defined project exists, then go through with the project id
+        if ($estimate_id) {
+            // $this->init_project_permission_checker($estimate_id);
+
+            $related_data = $this->get_all_related_data_of_estimate($estimate_id, $collaborators, $task_labels);
+
+            $view_data['assign_to_dropdown'] = $related_data["assign_to_dropdown"];
+            $view_data['collaborators_dropdown'] = $related_data["collaborators_dropdown"];
+        }
+
+        return $view_data;
+    }
+
+    function task_modal_form($estimate_id) {
+
+        $id = $this->request->getPost('id');
+
+        $model_info = $this->Tasks_model->get_one($id);
+        $data['model_info'] = $model_info;
+        $project_id = 1;
+
+        $view_data = $this->_initialize_all_related_data_of_estimate($estimate_id, $model_info->collaborators, $model_info->labels);
+        $view_data["estimates_dropdown"] = $this->_get_estimates_dropdown(); //projects dropdown is necessary on add multiple tasks
+        $view_data['project_id'] = $project_id;
+        $view_data['estimate_id'] = $estimate_id;
+
+        $view_data['show_assign_to_dropdown'] = true;
+
+        $view_data["custom_fields"] = $this->Custom_fields_model->get_combined_details("tasks", $view_data['model_info']->id, $this->login_user->is_admin, $this->login_user->user_type)->getResult();
+
+        $view_data['has_checklist'] = $this->Checklist_items_model->get_details(array("task_id" => $id))->resultID->num_rows;
+        
+        return $this->template->view('estimates/tasks/modal_form', $view_data);
+    }
+
+
+    function save_task() {
+
+        $project_id = 1;
+        $now = get_current_utc_time();
+
+        // $this->init_project_permission_checker($project_id);
+
+        if (!$this->can_create_tasks()) {
+            app_redirect("forbidden");
+        }
+
+        $assigned_to = $this->request->getPost('assigned_to');
+        $collaborators = $this->request->getPost('collaborators');
+        $estimate_id = $this->request->getPost("estimate_id");
+
+        $data = array(
+            "title" => "Follow Up para Proposta #" . $estimate_id,
+            "description" => "Follow Up para Proposta #" . $estimate_id,
+            "estimate_id" => $estimate_id,
+            "project_id" => $project_id,
+            "milestone_id" => 0,
+            "points" => 0,
+            "status_id" => 1,
+            "priority_id" => 0,
+            "labels" => "",
+            "start_date" => date('Y-m-d'),
+            "deadline" => $this->request->getPost('deadline'),
+            "recurring" => 0,
+            "repeat_every" => 0,
+            "repeat_type" => NULL,
+            "no_of_cycles" => 0,
+        );
+        
+        //clint can't save the assign to and collaborators
+        $data["assigned_to"] = $assigned_to;
+        $data["collaborators"] = $collaborators;
+
+        $data = clean_data($data);
+
+        //set null value after cleaning the data
+        if (!$data["start_date"]) {
+            $data["start_date"] = NULL;
+        }
+
+        if (!$data["deadline"]) {
+            $data["deadline"] = NULL;
+        }
+
+        //deadline must be greater or equal to start date
+        if ($data["start_date"] && $data["deadline"] && $data["deadline"] < $data["start_date"]) {
+            echo json_encode(array("success" => false, 'message' => app_lang('deadline_must_be_equal_or_greater_than_start_date')));
+            return false;
+        }
+
+        $save_id = $this->Tasks_model->ci_save($data);
+        if ($save_id) {
+
+            //created
+            log_notification("project_task_created", array("project_id" => $project_id, "task_id" => $save_id));
+
+            echo json_encode(array("success" => true, 'id' => $save_id, 'message' => app_lang('record_saved')));
+        } else {
+            echo json_encode(array("success" => false, 'message' => app_lang('error_occurred')));
+        }
+    }
+
+    /* create new project from accepted estimate */
     private function _create_project_from_estimate($estimate_id) {
         if ($estimate_id) {
             $estimate_info = $this->Estimates_model->get_one($estimate_id);

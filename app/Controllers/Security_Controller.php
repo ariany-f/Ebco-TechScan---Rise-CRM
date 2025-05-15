@@ -728,6 +728,29 @@ class Security_Controller extends App_Controller {
 
         return json_encode($team_members_dropdown);
     }
+    
+    //get projects dropdown
+    protected function _get_estimates_dropdown() {
+        $project_options = array("status" => "open");
+        if ($this->login_user->user_type == "staff") {
+            if (!$this->can_manage_all_projects()) {
+                $project_options["user_id"] = $this->login_user->id; //normal user's should be able to see only the projects where they are added as a team mmeber.
+            }
+        } else {
+            $project_options["client_id"] = $this->login_user->client_id; //get client's projects
+        }
+
+        $projects = $this->Estimates_model->get_details($project_options)->getResult();
+        $projects_dropdown = array("" => "-");
+
+        if ($projects) {
+            foreach ($projects as $project) {
+                $projects_dropdown[$project->id] = $project->title;
+            }
+        }
+
+        return $projects_dropdown;
+    }
 
     //get projects dropdown
     protected function _get_projects_dropdown() {

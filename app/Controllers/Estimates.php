@@ -1206,6 +1206,7 @@ class Estimates extends Security_Controller {
 
         $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
                 . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-modal-xl" => 1, "data-post-id" => $data->id))
+                . modal_anchor(get_uri("estimates/task/modal_form"), "<i data-feather='clock' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('follow_up'), "data-modal-xl" => 1, "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"));
 
         return $row_data;
@@ -1338,13 +1339,14 @@ class Estimates extends Security_Controller {
             }
         }
 
-
         $revisions = $this->Estimates_model->get_revisions($options, $data->id)->getResult();
         $last_revision = end($revisions);
 
-        $row_data[] = anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
+        $row_data[] = ""
+                // anchor(get_uri("estimate/preview/" . $data->id . "/" . $data->public_key), "<i data-feather='external-link' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('estimate') . " " . app_lang("url"), "target" => "_blank"))
                 . modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-modal-xl" => 1, "data-post-id" => $data->id))
                 // . modal_anchor(get_uri("estimates/follow_up"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate'), "data-modal-xl" => 1, "data-post-id" => $data->id))
+                . modal_anchor(get_uri("estimate/task_modal_form/" . $data->id), "<i data-feather='clock' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('follow_up'), "data-modal-xl" => 1, "data-post-id" => $data->id))
                 . ($last_revision->id ? modal_anchor(get_uri("estimates/modal_form"), "<i data-feather='edit-3' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_estimate_last_revision'), "data-modal-xl" => 1, "data-post-id" => $last_revision->id)) : '')
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_estimate'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("estimates/delete"), "data-action" => "delete-confirmation"))
                 . ajax_anchor(get_uri("estimates/create_revision"), "<i data-feather='copy' class='icon-16'></i> ", array('title' => app_lang('create_revision'), "class" => "delete", "data-post-id" => $data->id, "data-reload-on-success" => true, "data-bs-toggle" => "tooltip", "data-placement" => "left"));

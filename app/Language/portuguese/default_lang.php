@@ -829,6 +829,8 @@ $lang["estimate_preview"] = "Visualizar Proposta";
 $lang["estimate_to"] = "Proposta para";
 $lang["estimate_value_options"] = "Opção a aceitar";
 
+$lang["follow_up"] = "Follow Up";
+
 $lang["can_access_estimates"] = "Pode acessar propostas?";
 $lang["request_an_estimate"] = "Solicitar uma proposta";
 $lang["estimate_request_form_selection_title"] = "Selecione um formulário da lista a seguir para enviar sua solicitação.";
