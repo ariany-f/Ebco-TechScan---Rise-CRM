@@ -27,8 +27,10 @@
                         <?php
                         if ($estimate_status == "draft" || $estimate_status == "sent") {
                             ?>
-                            <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/accepted"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                            <!-- <li role="presentation"><?php //echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/accepted"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li> -->
                             <!-- <li role="presentation"><?php //echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/declined"), "<i data-feather='x-circle' class='icon-16'></i> " . app_lang('mark_as_declined'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li> -->
+                            <li role="presentation"><?php echo modal_anchor(get_uri("estimate/accept_estimate_modal_form/" . $estimate_info->id), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("title" => app_lang("mark_as_accepted"), "data-post-id" => $estimate_info->id, "data-post-is_lead" => true, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
+
                             <li role="presentation"><?php echo modal_anchor(get_uri("estimate/reject_estimate_modal_form/" . $estimate_info->id), "<i data-feather='x' class='icon-16'></i> " . app_lang('mark_as_declined'), array("title" => app_lang('mark_as_declined'), "data-post-id" => $estimate_info->id, "data-post-is_lead" => true, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
                         <?php } else if ($estimate_status == "in_revision") {
                         ?>
@@ -40,7 +42,9 @@
                             <?php
                         } else if ($estimate_status == "declined") {
                             ?>
-                            <li role="presentation"><?php echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/accepted"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li>
+                            <li role="presentation"><?php echo modal_anchor(get_uri("estimate/accept_estimate_modal_form/" . $estimate_info->id), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("title" => app_lang("mark_as_accepted"), "data-post-id" => $estimate_info->id, "data-post-is_lead" => true, "role" => "menuitem", "tabindex" => "-1", "class" => "dropdown-item")); ?> </li>
+
+                            <!-- <li role="presentation"><?php //echo ajax_anchor(get_uri("estimates/update_estimate_status/" . $estimate_info->id . "/accepted"), "<i data-feather='check-circle' class='icon-16'></i> " . app_lang('mark_as_accepted'), array("data-reload-on-success" => "1", "class" => "dropdown-item")); ?> </li> -->
                             <?php
                         }
                         ?>

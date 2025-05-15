@@ -827,6 +827,7 @@ $lang["sent"] = "Enviado";
 $lang["revisions"] = "Revisões";
 $lang["estimate_preview"] = "Visualizar Proposta";
 $lang["estimate_to"] = "Proposta para";
+$lang["estimate_value_options"] = "Opção a aceitar";
 
 $lang["can_access_estimates"] = "Pode acessar propostas?";
 $lang["request_an_estimate"] = "Solicitar uma proposta";

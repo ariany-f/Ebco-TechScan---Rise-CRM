@@ -7,8 +7,12 @@ use DateTime;
 
 class Estimate extends Security_Controller {
 
+    protected $Estimate_value_items_model;
+
     function __construct() {
         parent::__construct(false);
+        
+        $this->Estimate_value_items_model = model('App\Models\Estimate_value_items_model');
     }
 
     function index() {
@@ -594,22 +598,25 @@ class Estimate extends Security_Controller {
             $view_data["show_info_fields"] = true;
         } else {
             //estimate preview, should be logged in client contact
-            $this->access_only_clients();
-            if ($this->login_user->user_type === "client" && $this->login_user->client_id !== $estimate_info->client_id) {
-                show_404();
-            }
+            // $this->access_only_clients();
+            // if ($this->login_user->user_type === "client" && $this->login_user->client_id !== $estimate_info->client_id) {
+            //     show_404();
+            // }
 
-            $view_data["show_info_fields"] = false;
+            $view_data["show_info_fields"] = true;
         }
 
+        //get checklist items
+        $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
+      
+        $view_data["estimate_value_items"] = $estimate_value_items;
         $view_data["model_info"] = $estimate_info;
         return $this->template->view('estimates/accept_estimate_modal_form', $view_data);
     }
 
     function accept_estimate() {
         $validation_array = array(
-            "id" => "numeric|required",
-            "public_key" => "required"
+            "id" => "numeric|required"
         );
 
         if (get_setting("add_signature_option_on_accepting_estimate")) {
@@ -624,14 +631,18 @@ class Estimate extends Security_Controller {
             show_404();
         }
 
-        $public_key = $this->request->getPost("public_key");
-        if ($estimate_info->public_key !== $public_key) {
-            show_404();
-        }
+        // $public_key = $this->request->getPost("public_key");
+        // if ($estimate_info->public_key !== $public_key) {
+        //     show_404();
+        // }
 
         $name = $this->request->getPost("name");
         $email = $this->request->getPost("email");
         $signature = $this->request->getPost("signature");
+        $accepted_value = $this->request->getPost("selected_estimate_value");
+        // $accepted_amount = $this->request->getPost("selected_amount");
+        // $accepted_amount_description = $this->request->getPost("selected_amount_description");
+        // log_message('error', json_encode($accepted_value));
 
         $meta_data = array();
         $estimate_data = array();
@@ -668,7 +679,25 @@ class Estimate extends Security_Controller {
         $estimate_data["status"] = "accepted";
 
         if ($this->Estimates_model->ci_save($estimate_data, $estimate_id)) {
-            
+             
+            $others = $this->Estimate_value_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
+
+            $uncheck = array(
+                "is_checked" => 0
+            );
+            foreach($others as $estimate_value)
+            {
+                if($estimate_value->id != $accepted_value)
+                {
+                    $this->Estimate_value_items_model->ci_save($uncheck, $estimate_value->id);
+                }
+            }
+
+            $data = array(
+                "is_checked" => 1
+            );
+
+            $save_id = $this->Estimate_value_items_model->ci_save($data, $accepted_value);
 
             $status_pt = 'Aprovada';
             $data["custom_field_id"] = 1;

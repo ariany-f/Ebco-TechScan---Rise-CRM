@@ -2,8 +2,8 @@
 <div class="modal-body clearfix">
     <div class="container-fluid">
         <input type="hidden" name="id" value="<?php echo $model_info->id; ?>" />
-        <input type="hidden" name="public_key" value="<?php echo $model_info->public_key; ?>" />
-
+        <input type="hidden" name="selected_amount" id="selected_amount" value="" />
+        <input type="hidden" name="selected_amount_description" id="selected_amount_description" value="" />
         <?php if ($show_info_fields) { ?>
             <div class="form-group">
                 <div class="row">
@@ -41,6 +41,29 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-md-3"><?php echo app_lang('estimate_value_options'); ?></label>
+                    <div class="col-md-9">
+                        <?php foreach ($estimate_value_items as $item) { ?>
+                            <div class="radio">
+                                <label>
+                                    <?php
+                                    echo form_radio(array(
+                                        "name" => "selected_estimate_value",
+                                        "value" => $item->id,
+                                        "data-amount" => $item->amount,
+                                        "data-description" => $item->title,
+                                        "checked" => $item->is_checked ? "checked" : ""
+                                    ));
+                                    ?>
+                                    <?php echo $item->title . " - " . to_currency($item->amount); ?>
+                                </label>
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
         <?php } ?>
 
         <?php if (get_setting("add_signature_option_on_accepting_estimate")) { ?>
@@ -67,6 +90,14 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        // Atualiza o campo hidden com o valor do radio selecionado
+        $(".estimate-value-radio").change(function() {
+            if ($(this).is(":checked")) {
+                $("#selected_amount").val($(this).data("amount"));
+                $("#selected_amount_description").val($(this).data("description"));
+            }
+        });
+
         $("#accept-estimate-form").appForm({
             onSuccess: function (result) {
                 if (result.success) {
@@ -79,10 +110,11 @@
         });
 
         $("#name").focus();
-
-        initSignature("signature", {
-            required: true,
-            requiredMessage: "<?php echo app_lang("field_required"); ?>"
-        });
+        <?php if (get_setting("add_signature_option_on_accepting_estimate")) { ?>
+            initSignature("signature", {
+                required: true,
+                requiredMessage: "<?php echo app_lang("field_required"); ?>"
+            });
+        <?php } ?>
     });
 </script>
