@@ -46,9 +46,9 @@
                 {visible: false, searchable: false},
                 {visible: false, searchable: false},
                 {visible: false, searchable: false},
-                {visible: false, searchable: false},
                 {visible: false, searchable: false}
-                <?php echo $custom_field_headers; ?>
+                <?php echo $custom_field_headers; ?>,
+                {title: "<i data-feather='menu' class='icon-16'></i>", "class": "text-center option w150"}
             ],
             rowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 $('td:eq(0)', nRow).attr("style", "border-left:5px solid " + aData[0] + " !important;");
