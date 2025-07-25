@@ -806,7 +806,7 @@ class Clients_model extends Crud_model {
 
         $sql = "SELECT $clients_table.id, CONCAT($clients_table.company_name, ' - ', $clients_table.cnpj) AS title
         FROM $clients_table  
-        WHERE $clients_table.deleted=0 AND ($clients_table.company_name LIKE '%$search%' OR  REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') OR  REPLACE(REPLACE(REPLACE(REPLACE(matriz_cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') ESCAPE '!') $where
+        WHERE $clients_table.deleted=0 AND $clients_table.status_id <> 2 AND ($clients_table.company_name LIKE '%$search%' OR  REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') OR  REPLACE(REPLACE(REPLACE(REPLACE(matriz_cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') ESCAPE '!') $where
         ORDER BY $clients_table.company_name ASC
         LIMIT 0, 10";
 

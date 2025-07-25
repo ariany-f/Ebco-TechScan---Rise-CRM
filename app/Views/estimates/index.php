@@ -39,6 +39,7 @@
             filterDropdown: [
                 {name: "status", class: "w150", options: <?php echo view("estimates/estimate_statuses_dropdown"); ?>},
                 {name: "is_bidding", class: "w150", options: <?php echo  view("estimates/estimate_bidding_dropdown");?>},
+                {name: "public_client", class: "w150", options: <?php echo  view("estimates/estimate_public_clients_dropdown");?>},
             <?php echo $custom_field_filters; ?>],
             columns: [
                 {title: "<?php echo app_lang("estimate_number") ?> ", "class": "all"},

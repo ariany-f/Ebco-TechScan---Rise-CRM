@@ -1736,6 +1736,7 @@ $lang["total_approved_bidding_estimates"] = "Licitações Ganhas no Período";
 
 $lang["visits"] = "Visitas";
 $lang["is_bidding"] = "Licitação";
+$lang["public_client"] = "Cliente setor público";
 $lang["message_sending_error_message"] = "Este usuário não tem permissão para enviar mensagens para você. É por isso que você também não pode enviar mensagem!";
 
 $lang["days_view"] = "Visualização de dias";

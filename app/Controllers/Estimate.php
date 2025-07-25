@@ -610,7 +610,15 @@ class Estimate extends Security_Controller {
 
         //get checklist items
         $estimate_value_items = $this->Estimate_value_items_model->get_details(array("estimate_id" => $estimate_id))->getResult();
-      
+        $revisions = $this->Estimates_model->get_revisions([], $estimate_id)->getResult();
+        $revision_value_items = [];
+        foreach($revisions as $i => $revision)
+        {
+            $revision_value_items[$i] = $this->Estimate_value_items_model->get_details(array("estimate_id" => $revision->id))->getResult();
+
+        }
+        $view_data['revision_value_items'] = $revision_value_items;
+        $view_data['estimate_revisions'] = $revisions;
         $view_data["estimate_value_items"] = $estimate_value_items;
         $view_data["model_info"] = $estimate_info;
         return $this->template->view('estimates/accept_estimate_modal_form', $view_data);
@@ -687,6 +695,7 @@ class Estimate extends Security_Controller {
             $uncheck = array(
                 "is_checked" => 0
             );
+
             foreach($others as $estimate_value)
             {
                 if($estimate_value->id != $accepted_value)
@@ -695,11 +704,30 @@ class Estimate extends Security_Controller {
                 }
             }
 
-            $data = array(
+            $revisions = $this->Estimates_model->get_revisions([], $estimate_id)->getResult();
+
+            foreach($revisions as $revision)
+            {
+                $revision_others = $this->Estimate_value_items_model->get_details(array("estimate_id" => $revision->id))->getResult();
+
+                $uncheck = array(
+                    "is_checked" => 0
+                );
+                
+                foreach($revision_others as $revision_value)
+                {
+                    if($revision_value->id != $accepted_value)
+                    {
+                        $this->Estimate_value_items_model->ci_save($uncheck, $revision_value->id);
+                    }
+                }
+            }
+
+            $check = array(
                 "is_checked" => 1
             );
 
-            $save_id = $this->Estimate_value_items_model->ci_save($data, $accepted_value);
+            $save_id = $this->Estimate_value_items_model->ci_save($check, $accepted_value);
 
             $status_pt = 'Aprovada';
             $data["custom_field_id"] = 1;

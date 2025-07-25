@@ -72,6 +72,20 @@ class Estimates_model extends Crud_model {
             }
         }
 
+        $public_client = $this->_get_clean_value($options, "public_client");
+
+        if (!empty($public_client)) {
+            if($public_client == 0)
+            {
+
+                $where .= " AND ($clients_table.setor='private')";
+            }
+            else
+            {
+                $where .= " AND $clients_table.setor='public'";
+            }
+        }
+
         $start_date = $this->_get_clean_value($options, "start_date");
         $end_date = $this->_get_clean_value($options, "end_date");
         if ($start_date && $end_date) {

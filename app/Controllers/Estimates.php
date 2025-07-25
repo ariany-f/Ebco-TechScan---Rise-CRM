@@ -1013,6 +1013,7 @@ class Estimates extends Security_Controller {
             "start_date" => $this->request->getPost("start_date"),
             "end_date" => $this->request->getPost("end_date"),
             "is_bidding" => $this->request->getPost("is_bidding"),
+            "public_client" => $this->request->getPost("public_client"),
             "show_own_estimates_only_user_id" => $this->show_own_estimates_only_user_id(),
             "custom_fields" => $custom_fields,
             "seller_ids" => $seller_ids,

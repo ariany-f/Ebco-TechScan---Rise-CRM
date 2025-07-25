@@ -52,6 +52,7 @@
                                     echo form_radio(array(
                                         "name" => "selected_estimate_value",
                                         "value" => $item->id,
+                                        "data-revision" => null,
                                         "data-amount" => $item->amount,
                                         "data-description" => $item->title,
                                         "checked" => $item->is_checked ? "checked" : ""
@@ -60,6 +61,25 @@
                                     <?php echo $item->title . " - " . to_currency($item->amount); ?>
                                 </label>
                             </div>
+                        <?php } ?>
+                        <?php foreach($revision_value_items as $revision) { ?>
+                            <?php foreach ($revision as $item) { ?>
+                            <div class="radio">
+                                <label>
+                                    <?php
+                                    echo form_radio(array(
+                                        "name" => "selected_estimate_value",
+                                        "value" => $item->id,
+                                        "data-revision" => $item->estimate_id,
+                                        "data-amount" => $item->amount,
+                                        "data-description" => $item->title,
+                                        "checked" => $item->is_checked ? "checked" : ""
+                                    ));
+                                    ?>
+                                    <?php echo "Revisão " . $item->estimate_id . " | " . $item->title . " - " . to_currency($item->amount); ?>
+                                </label>
+                            </div>
+                        <?php } ?>
                         <?php } ?>
                     </div>
                 </div>
