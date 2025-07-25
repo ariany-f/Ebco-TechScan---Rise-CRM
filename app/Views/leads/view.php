@@ -23,9 +23,9 @@
                     <?php if ($show_estimate_info) { ?>
                         <li><a  role="presentation" data-bs-toggle="tab" href="<?php echo_uri("leads/estimates/" . $lead_info->id); ?>" data-bs-target="#lead-estimates"> <?php echo app_lang('estimates'); ?></a></li>
                     <?php } ?>
-                    <?php if ($show_proposal_info) { ?>
-                        <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("leads/proposals/" . $lead_info->id); ?>" data-bs-target="#lead-proposals"> <?php echo app_lang('proposals'); ?></a></li>
-                    <?php } ?>
+                    <!-- <?php if ($show_proposal_info) { ?>
+                        <li><a role="presentation" data-bs-toggle="tab" href="<?php //echo_uri("leads/proposals/" . $lead_info->id); ?>" data-bs-target="#lead-proposals"> <?php //echo app_lang('proposals'); ?></a></li>
+                    <?php } ?> -->
                     <?php if ($show_estimate_request_info) { ?>
                         <li><a  role="presentation" data-bs-toggle="tab" href="<?php echo_uri("leads/estimate_requests/" . $lead_info->id); ?>" data-bs-target="#lead-estimate-requests"> <?php echo app_lang('estimate_requests'); ?></a></li>
                     <?php } ?>
@@ -62,7 +62,7 @@
                     <div role="tabpanel" class="tab-pane fade" id="lead-contacts"></div>
                     <div role="tabpanel" class="tab-pane fade" id="lead-contracts"></div>
                     <div role="tabpanel" class="tab-pane fade" id="lead-estimates"></div>
-                    <div role="tabpanel" class="tab-pane fade" id="lead-proposals"></div>
+                    <!-- <div role="tabpanel" class="tab-pane fade" id="lead-proposals"></div> -->
                     <div role="tabpanel" class="tab-pane fade" id="lead-estimate-requests"></div>
                     <div role="tabpanel" class="tab-pane fade" id="lead-tickets"></div>
                     <div role="tabpanel" class="tab-pane fade" id="lead-notes"></div>
