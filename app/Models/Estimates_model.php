@@ -677,7 +677,7 @@ class Estimates_model extends Crud_model {
     }
     
 
-    function get_conversion_bidding_data($options = array()) {
+    function get_conversion_bidding_data($options = array(), $start_date = null, $end_date = null) {
         $where = "";
         
         $month = $this->_get_clean_value($options, "month");
@@ -689,9 +689,15 @@ class Estimates_model extends Crud_model {
         if ($year) {
             $where .= " AND DATE_FORMAT(e.estimate_date, '%Y') = $year";
         }
-        
-        $start_date = $this->_get_clean_value($options, "start_date");
-        $end_date = $this->_get_clean_value($options, "end_date");
+        if(!$start_date)
+        {
+            $start_date = $this->_get_clean_value($options, "start_date");
+        }
+        if(!$end_date)
+        {
+            $end_date = $this->_get_clean_value($options, "end_date");
+        }
+
         if ($start_date && $end_date) {
             $where .= " AND (e.estimate_date BETWEEN '$start_date' AND '$end_date') ";
         }
@@ -707,6 +713,7 @@ class Estimates_model extends Crud_model {
             WHERE 
                 e.deleted = 0
                 AND e.is_bidding = 1
+                AND e.estimate_number IS NOT NULL
                 $where
         ";
     
@@ -956,7 +963,7 @@ class Estimates_model extends Crud_model {
 
         $sql = "SELECT COUNT(DISTINCT $estimates_table.id) AS total
         FROM $estimates_table 
-        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.status <> 'accepted' AND $estimates_table.is_bidding = 1 $where";
+        WHERE $estimates_table.deleted=0 AND $estimates_table.estimate_number IS NOT NULL AND $estimates_table.is_bidding = 1 $where";
         return $this->db->query($sql)->getRow()->total;
     }
 

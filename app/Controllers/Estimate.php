@@ -750,8 +750,8 @@ class Estimate extends Security_Controller {
             $client = $this->Clients_model->get_one($estimate_new_data->client_id);
             if($client->is_lead == 1)
             {
-                $data["is_lead"] = 0;
-                $this->Clients_model->ci_save($data, $estimate_new_data->client_id);
+                $client_data["is_lead"] = 0;
+                $this->Clients_model->ci_save($client_data, $estimate_new_data->client_id);
             }
             
             echo json_encode(array("success" => true, "message" => app_lang("estimate_accepted")));
