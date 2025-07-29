@@ -796,17 +796,19 @@ class Clients_model extends Crud_model {
 
         $client_groups = $this->_get_clean_value($options, "client_groups");
         $where .= $this->prepare_allowed_client_groups_query($clients_table, $client_groups);
-
         
         $is_lead = $this->_get_clean_value($options, "is_lead");
-        if($is_lead)
-        {
-            $where .= " AND $clients_table.is_lead = $is_lead";
-        }
-
+        $where .= " AND $clients_table.is_lead = $is_lead";
+        
         $sql = "SELECT $clients_table.id, CONCAT($clients_table.company_name, ' - ', $clients_table.cnpj) AS title
         FROM $clients_table  
-        WHERE $clients_table.deleted=0 AND $clients_table.status_id <> 2 AND ($clients_table.company_name LIKE '%$search%' OR  REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') OR  REPLACE(REPLACE(REPLACE(REPLACE(matriz_cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') ESCAPE '!') $where
+        WHERE 
+                $clients_table.deleted=0 
+            AND 
+                $clients_table.status_id <> 2 
+            AND 
+                ($clients_table.company_name LIKE '%$search%' OR  REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') OR  REPLACE(REPLACE(REPLACE(REPLACE(matriz_cnpj, '.', ''), '-', ''), '/', ''), ' ', '') LIKE CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE('$search', '.', ''), '-', ''), '/', ''), ' ', ''), '%') ESCAPE '!') 
+            $where
         ORDER BY $clients_table.company_name ASC
         LIMIT 0, 10";
 

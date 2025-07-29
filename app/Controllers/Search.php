@@ -66,7 +66,7 @@ class Search extends Security_Controller {
                 if (!$this->can_access_clients()) {
                     app_redirect("forbidden");
                 }
-                $options["is_lead"] = 0;
+                $options["is_lead"] = '0';
                 $options["show_own_clients_only_user_id"] = $this->show_own_clients_only_user_id();
 
                 $this->init_permission_checker("client");
