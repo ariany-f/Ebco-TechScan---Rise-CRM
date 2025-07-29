@@ -439,11 +439,15 @@ class Clients_model extends Crud_model {
                 c.client_migration_date,
                 c.owner_id,
                 CASE
-                    WHEN c.is_lead = 1 AND s.lead_status_title LIKE 'Prospect%' THEN 'Prospect'
-                    WHEN c.is_lead = 1 THEN 'Lead'
+                    WHEN (c.is_lead = 1 OR s.lead_status_title LIKE 'Prospect%') AND s.lead_status_title LIKE 'Prospect%' THEN 'Prospect'
+                    WHEN c.is_lead = 1 OR s.lead_status_title LIKE 'Prospect%' THEN 'Lead' -- Agora considera prospects diretos como leads
                     ELSE 'Client'
                 END AS current_status,
-                s.lead_status_title AS current_status_title
+                s.lead_status_title AS current_status_title,
+                CASE
+                    WHEN s.lead_status_title LIKE 'Prospect%' AND c.client_migration_date IS NOT NULL THEN 1
+                    ELSE 0
+                END AS is_real_prospect
             FROM
                 crm_clients c
             LEFT JOIN
@@ -464,9 +468,16 @@ class Clients_model extends Crud_model {
                 cws.client_migration_date,
                 cws.created_date,
                 cws.owner_id,
+                cws.is_real_prospect,
                 ps.user_id,
                 ps.seller_name,
-                CONCAT( CASE WHEN EXTRACT(MONTH FROM cws.client_migration_date) = 0 THEN EXTRACT(MONTH FROM cws.created_date) ELSE EXTRACT(MONTH FROM cws.client_migration_date) END, '/', CASE WHEN EXTRACT(YEAR FROM cws.client_migration_date) = 0 THEN EXTRACT(YEAR FROM cws.created_date) ELSE EXTRACT(YEAR FROM cws.client_migration_date) END) AS migration_date
+                CONCAT( 
+                    CASE WHEN EXTRACT(MONTH FROM cws.client_migration_date) = 0 THEN EXTRACT(MONTH FROM cws.created_date) 
+                    ELSE EXTRACT(MONTH FROM cws.client_migration_date) END, 
+                    '/', 
+                    CASE WHEN EXTRACT(YEAR FROM cws.client_migration_date) = 0 THEN EXTRACT(YEAR FROM cws.created_date) 
+                    ELSE EXTRACT(YEAR FROM cws.client_migration_date) END
+                ) AS migration_date
             FROM
                 clients_with_status cws
             LEFT JOIN
@@ -477,13 +488,14 @@ class Clients_model extends Crud_model {
         SELECT
             DATE_FORMAT(STR_TO_DATE(csi.migration_date, '%m/%Y'), '%M') AS 'Mes',
             csi.seller_name as 'Vendedor',
-            COUNT(CASE WHEN csi.current_status = 'Lead' THEN 1 END) AS new_leads,
-            COUNT(CASE WHEN csi.current_status = 'Prospect' AND csi.client_migration_date IS NOT NULL THEN 1 END) AS new_prospects,
+            COUNT(CASE WHEN csi.current_status = 'Lead' OR csi.current_status_title LIKE 'Prospect%' THEN 1 END) AS new_leads,
+            COUNT(CASE WHEN csi.is_real_prospect = 1 THEN 1 END) AS new_prospects,
             CONCAT(
                 ROUND(
                     CASE 
-                        WHEN COUNT(CASE WHEN csi.current_status = 'Lead' THEN 1 END) = 0 THEN 0
-                        ELSE COUNT(CASE WHEN csi.current_status = 'Prospect' AND csi.client_migration_date IS NOT NULL THEN 1 END) * 100.0 / COUNT(CASE WHEN csi.current_status = 'Lead' THEN 1 END)
+                        WHEN COUNT(CASE WHEN csi.current_status = 'Lead' OR csi.current_status_title LIKE 'Prospect%' THEN 1 END) = 0 THEN 0
+                        ELSE COUNT(CASE WHEN csi.is_real_prospect = 1 THEN 1 END) * 100.0 / 
+                             COUNT(CASE WHEN csi.current_status = 'Lead' OR csi.current_status_title LIKE 'Prospect%' THEN 1 END)
                     END, 2
                 ), '%'
             ) AS 'Conversao'

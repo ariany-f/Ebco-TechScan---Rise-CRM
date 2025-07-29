@@ -366,7 +366,29 @@
         <?php echo form_close(); ?>
     <?php endif; ?>
 </div> 
+<style>
 
+    /* Estilo para o botão dentro do dropdown */
+    .select2-results__option .add-new-client-btn {
+        width: 100%;
+        padding: 6px 12px;
+        color: #5e5e5e;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .select2-results__option .add-new-client-btn:hover {
+        background-color: #e9ecef;
+    }
+
+    /* Espaçamento para a mensagem acima do botão */
+    .select2-results__option .text-center {
+        padding: 8px;
+    }
+
+</style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
 
@@ -673,7 +695,37 @@
 
         $("#estimate-form .tax-select2").select2();
         $("#estimate-form .estimate-type-select2").select2();
-        $("#estimate_client_id").select2();
+
+        // Configuração do Select2 com template personalizado
+        $("#estimate_client_id").select2({
+            formatNoMatches: function(term) {
+                return `<div class="text-center p-2">
+                            <div class="mb-2">Nenhum cliente encontrado com esses termos</div>
+                            <button onclick='addNewItem("` + term + `")' type="button" id="add-new-client-btn" class="btn btn-light btn-sm add-new-client-btn">
+                                <span data-feather="plus" class="icon-16"></span> 
+                                Adicionar novo cliente
+                            </button>
+                        </div>`;
+            },
+            language: {
+                noResults: function(params) {
+                    // Retorna o HTML do botão como mensagem de "nenhum resultado"
+                    return `
+                        <div class="text-center p-2">
+                            <div class="mb-2">Nenhum cliente encontrado com esses termos</div>
+                            <button type="button" id="add-new-client-btn" class="btn btn-light btn-sm add-new-client-btn">
+                                <span data-feather="plus" class="icon-16"></span> 
+                                Adicionar novo cliente
+                            </button>
+                        </div>
+                    `;
+                }
+            },
+            escapeMarkup: function(markup) {
+                // Permite que o HTML seja renderizado
+                return markup;
+            }
+        });
 
         setTimeout(() => {
             $("input[name='custom_field_5']").mask('#.###.##0,00', { reverse: true });
@@ -780,4 +832,63 @@
             }
         });
     });
+
+    function addNewItem(searchTerm) {
+        // Fecha o dropdown do Select2
+        $("#estimate_client_id").select2('close');
+        
+        // Abre o modal de cadastro de cliente
+        var modal = $("#link-of-new-view").find("a");
+        modal.attr("data-action-url", "<?php echo get_uri("clients/modal_form"); ?>");
+        modal.attr("data-title", '<?php echo app_lang("add_client"); ?>');
+        
+        // Se estiver pesquisando por CNPJ/CPF, pré-preenche no modal
+        if(searchTerm.match(/^[0-9]{11,14}$/)) {
+            modal.attr("data-post-cnpj", searchTerm);
+        } else {
+            // Se for texto, assume que é nome da empresa
+            modal.attr("data-post-company_name", searchTerm);
+        }
+        
+        // Adiciona um parâmetro para indicar que deve voltar para o modal de proposta
+        modal.attr("data-post-redirect_to_estimate", "true");
+        
+        modal.trigger("click");
+        
+        // Quando o modal de cliente fechar
+        $('#ajaxModal').on('hidden.bs.modal', function() {
+            // Recarrega os clientes
+            $.ajax({
+                url: "<?php echo get_uri('clients/get_clients_dropdown'); ?>",
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $("#estimate_client_id").empty().select2({
+                        data: data
+                    });
+                    
+                    // Tenta selecionar o cliente recém-cadastrado
+                    if(searchTerm) {
+                        var newClient = data.find(function(client) {
+                            return client.id.includes(searchTerm) || 
+                                client.text.includes(searchTerm);
+                        });
+                        
+                        if(newClient) {
+                            $("#estimate_client_id").val(newClient.id).trigger('change');
+                        }
+                    }
+                    
+                    // Reabre o modal de proposta
+                    setTimeout(function() {
+                        var estimateModal = $("#link-of-new-view").find("a");
+                        estimateModal.attr("data-action-url", "<?php echo get_uri("estimates/modal_form"); ?>");
+                        estimateModal.attr("data-title", '<?php echo app_lang("estimate"); ?>');
+                        estimateModal.attr("data-post-id", "<?php echo $model_info->id; ?>");
+                        estimateModal.trigger("click");
+                    }, 300);
+                }
+            });
+        });
+    }
 </script>
