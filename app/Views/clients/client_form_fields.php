@@ -465,7 +465,21 @@
         </div>
     </div> -->
 <?php } ?>
-
+<div class="form-group">
+        <div class="row">
+            <label for="status_id" class="<?php echo $label_column; ?>"><?php echo app_lang('status_id'); ?></label>
+            <div class="<?php echo $field_column; ?>">
+                <?php
+                echo form_input(array(
+                    "id" => "status_id",
+                    "name" => "status_id",
+                    "value" => $model_info->status_id,
+                    "class" => "form-control"
+                ));
+                ?>
+            </div>
+        </div>
+    </div>    
 <?php if ($login_user->is_admin && get_setting("module_invoice")) { ?>
     <div class="form-group">
         <div class="row">
@@ -525,6 +539,11 @@
             if ($('#currency').length) {
                 $('#currency').select2({data: <?php echo json_encode($currency_dropdown); ?>});
             }
+<?php } ?>
+<?php if (isset($status_id_dropdown)) { ?>
+    if ($('#status_id').length) {
+        $('#status_id').select2({data: <?php echo json_encode($status_id_dropdown); ?>});
+    }
 <?php } ?>
 
 <?php if (isset($setor_dropdown)) { ?>

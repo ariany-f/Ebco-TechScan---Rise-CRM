@@ -79,6 +79,7 @@ class Clients extends Security_Controller {
         $view_data["ticket_id"] = $this->request->getPost('ticket_id'); //needed only when loading from the ticket's details view and created by unknown client
         $view_data['model_info'] = $this->Clients_model->get_one($client_id);
         $view_data["currency_dropdown"] = $this->_get_currency_dropdown_select2_data();
+        $view_data["status_id_dropdown"] = $this->_get_status_id_dropdown_select2_data();
 
         //prepare groups dropdown list
         $view_data['groups_dropdown'] = $this->_get_groups_dropdown_select2_data();
@@ -152,6 +153,7 @@ class Clients extends Security_Controller {
             "country" => $this->request->getPost('country'),
             "phone" => $this->request->getPost('phone'),
             "website" => $this->request->getPost('website'),
+            "status_id" => $this->request->getPost('status_id') || '1',
             "vat_number" => $this->request->getPost('vat_number'),
             "gst_number" => $this->request->getPost('gst_number')
         );
@@ -1101,6 +1103,7 @@ class Clients extends Security_Controller {
 
             $view_data["team_members_dropdown"] = $this->get_team_members_dropdown();
             $view_data["currency_dropdown"] = $this->_get_currency_dropdown_select2_data();
+            $view_data["status_id_dropdown"] = $this->_get_status_id_dropdown_select2_data();
 
             return $this->template->view('clients/contacts/company_info_tab', $view_data);
         }

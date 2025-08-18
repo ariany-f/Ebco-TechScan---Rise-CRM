@@ -326,4 +326,19 @@ class App_Controller extends Controller {
         return $currency;
     }
 
+    
+
+    //get status_id dropdown list
+    protected function _get_status_id_dropdown_select2_data() {
+        $statuses_id = array(array("id" => "", "text" => "-"));
+        $data = [
+            '1' => 'Ativo',
+            '2' => 'Inativo'
+        ];
+        foreach ($data as $i => $value) {
+            $statuses_id[] = array("id" => $i, "text" => $value);
+        }
+        return $statuses_id;
+    }
+
 }
