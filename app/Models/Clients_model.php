@@ -247,11 +247,13 @@ class Clients_model extends Crud_model {
                 WHERE deleted=0 
                 GROUP BY client_id) AS estimates_table ON estimates_table.client_id = $clients_table.id
         $join_custom_fieds               
-        WHERE $clients_table.deleted = 0 AND $clients_table.status_id <> 2 $where $custom_fields_where  
+        WHERE $clients_table.deleted = 0 $where $custom_fields_where  
         $order $limit_offset";
         $raw_query = $this->db->query($sql);
 
-      
+        
+        log_message('error', '[ERROR] {exception}', ['exception' => $sql]);
+
         $total_rows = $this->db->query("SELECT FOUND_ROWS() as found_rows")->getRow();
 
         if ($limit) {
