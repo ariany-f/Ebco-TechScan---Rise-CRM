@@ -808,6 +808,7 @@ $lang["field_type_checkbox"] = "Checkbox";
 $lang["field_type_textarea"] = "TextArea";
 $lang["field_type_select"] = "Selecionar";
 $lang["field_type_multi_select"] = "Múltipla seleção";
+$lang["status_id"] = "Status";
 
 $lang["request_an_estimate"] = "Solicitar uma Proposta";
 $lang["estimate_submission_message"] = "Sua solicitação foi enviada com sucesso!";
