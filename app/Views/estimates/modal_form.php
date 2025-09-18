@@ -308,7 +308,7 @@
                             "name" => "currency",
                             "value" => $model_info->currency,
                             "class" => "form-control",
-                            "placeholder" => app_lang('keep_it_blank_to_use_default') . " (" . get_setting("default_currency") . ")"
+                            "placeholder" => app_lang('currency')
                         ));
                         ?>
                     </div>
